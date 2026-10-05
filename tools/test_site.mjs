@@ -156,7 +156,9 @@ for (const p of fichiers) {
   (s.match(/\?v=([0-9a-f]+)/g) || []).forEach(x => V.add(x));
   const m = s.match(/<img class="hero-photo" src="([^"]+)"/);
   check(`${p} : photo du bandeau présente (≤ 150 Ko) et créditée`, !!m && existsSync(join(root, dirname(p), m[1])) && statSync(join(root, dirname(p), m[1])).size <= 150000 && /class="credit-photo"[^]*Wikimedia Commons/.test(s));
+  check(`${p} : pas de traduction automatique (translate="no" sur <html>, meta google notranslate)`, /<html translate="no"[ >]/.test(s) && /<meta charset="utf-8">\s*<meta name="google" content="notranslate">/.test(s));
   const w = await page(p), doc = w.document, pied = doc.getElementById("pied").textContent;
+  check(`${p} : translate="no" gardé par le JavaScript (français puis arabe)`, doc.documentElement.getAttribute("translate") === "no" && (doc.querySelector(".langue")?.click(), doc.documentElement.lang === "ar" && doc.documentElement.getAttribute("translate") === "no"));
   check(`${p} : en-tête avec logo, pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
   check(`${p} : dates « vérifié le » = la constante MAJ`, [...doc.querySelectorAll("[data-maj]")].every(x => x.textContent === w.eval("MAJ")));
   const ld = [...s.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(x => JSON.parse(x[1]));

@@ -56,9 +56,10 @@ export function pages(root) {
 
   function tete({ titre, desc, chemin, racine, scripts, jsonld }) {
     return `<!doctype html>
-<html lang="fr" dir="ltr" data-racine="${racine}">
+<html translate="no" lang="fr" dir="ltr" data-racine="${racine}">
 <head>
 <meta charset="utf-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="${CSP}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
