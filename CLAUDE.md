@@ -68,3 +68,14 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 ## Reste à faire / idées
 - Relecture des 4 grands contrats par un avocat, puis modèles.
 - Pages « explication seulement » (certificat de résidence, non gage, TEJ…). Autres documents de l'étude (55).
+
+## Mise à jour du 05/10/2026 (soir)
+- **Icône (famille commune des 5 sites)** : un seul symbole en aplats 2-3 tons, accent doré `#F2B33D`, sans texte ni brillance (règle d'Ahmed : jamais d'effet « image IA » ni de clip-art). Ce site : **plume de stylo**. Source = `assets/logo.svg` ; PNG 192/512 = dessin arrondi, maskable 512 et iPhone 180 = même dessin sur carré plein, symbole à 78 %. Générateur (hors dépôt) : `_claude code project/icones des sites - generateur.py`. Changer l'icône → renouveler `CACHE_VERSION` de `sw.js`.
+- **« Gratuit » mis en avant** (titres Google, descriptions, aperçus de partage, manifeste), seulement là où c'est vrai. La future partie payante n'est jamais annoncée à l'avance (décision d'Ahmed).
+- **Aperçus WhatsApp** : tous les sites sont réglés pareil (1200 × 630, JPEG léger). WhatsApp sur PC fait de petites vignettes : envoyer les liens depuis le téléphone (ou transférer un message préparé sur le téléphone).
+- **Règle d'Ahmed : tout tourne sur internet (GitHub), sans son PC ni son intervention, « même s'il meurt ».**
+- **PDF** : mise en page de lettre administrative (police à empattement, titre détaché, marges A4 25/22 mm, 45 mm pour signer et légaliser) ; aucune mention du site.
+- **Statistiques GoatCounter** : événements `pdf-<slug>` (PDF fabriqués) et `recherche-vide/<mot>` (recherche sans résultat, chiffres retirés, une fois par mot) ; annoncés dans À propos et sous la recherche.
+- **Robot privé** `Ah6259/documents-tunisie-robot` (dépôt PRIVÉ = dossier `../robot nuit`) : `releve.yml` chaque nuit à 1h07 (relève GoatCounter, clé en secret `GOATCOUNTER_CLE`, compteur **prix-eaux-tunisie** avec x) → `liste des documents demandes.md` ; `controle-matin.yml` à 7h (journal écrit depuis moins de 26 h, pas d'échec signalé, tests du site ; e-mail GitHub sinon).
+- **Tâche Claude dans le cloud** `documents-tunisie-nuit` (créée par Ahmed via /schedule, 2h chaque nuit, https://claude.ai/code/routines/trig_01PPNDm6h4qk7N2mtKHJ7tHq) : une nouveauté au plus par nuit ; documents simples publiés seulement si tous les tests passent ; contrats et documents à risque en brouillon (`brouillons/` du dépôt privé) ; compte rendu dans `journal de nuit.md`.
+- Contrôle des concurrents étendu (empreintes de mots et de noms de domaine complets ; un nom de rue de Tunis présent dans un crédit photo reste autorisé).

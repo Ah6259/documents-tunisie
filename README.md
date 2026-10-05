@@ -49,3 +49,6 @@ changer `CACHE_VERSION` dans `sw.js`. Test : `node tools/test_sw.mjs`.
 **Chaque janvier (loi de finances)** et en cas d'alerte : demander à Claude « revérifie les sources de Documents Tunisie »
 (droits d'enregistrement, timbre, légalisation, délais), corriger `assets/documents.js`, changer `MAJ`, générer, tester.
 **Points encore « à vérifier »** : ils sont marqués sur chaque page concernée (jamais inventés).
+
+## Nouveautés
+- 05/10/2026 : nouvelle icône ; PDF sans mention du site et mise en page de lettre ; recherches sans résultat notées pour ajouter les documents demandés ; robot de nuit privé.

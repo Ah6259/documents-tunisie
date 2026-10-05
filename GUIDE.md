@@ -32,3 +32,8 @@
 - Meta iPhone dans le gabarit `tools/generer.mjs` : `apple-mobile-web-app-capable`, `apple-mobile-web-app-title`.
 - Test `node tools/test_sw.mjs` (faux navigateur) ; sabotage vérifié (HTML en cache d'abord, POST intercepté, mauvaise portée).
 - Vieille version bloquée sur un téléphone : changer `CACHE_VERSION` dans `sw.js`.
+
+## 05/10/2026 (soir) — PDF, statistiques, robot de nuit
+- PDF : mise en page de lettre administrative, aucune mention du site (test + sabotage).
+- GoatCounter (compteur prix-eaux-tunisie, avec x) : filtrer sur `pdf-` (documents les plus fabriqués) et `recherche-vide/` (documents qui manquent).
+- Chaque nuit, sans PC : relevé à 1h07 (dépôt privé documents-tunisie-robot), tâche Claude à 2h (une nouveauté au plus), contrôle à 7h (e-mail si problème).
