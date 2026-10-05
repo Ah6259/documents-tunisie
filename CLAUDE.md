@@ -29,6 +29,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - `robots.txt` : moteurs de recherche autorisés, robots d'IA et aspirateurs interdits ; `<meta name="robots" content="noai, noimageai">`.
 - Statistiques **GoatCounter** (anonymes, sans cookies, 05/10/2026) sur toutes les pages : compteur partagé
   `https://prix-eaux-tunisie.goatcounter.com` (constante `COMPTEUR` dans generer.mjs ; pages séparées par chemin). Mentionné dans À propos.
+  Événement `pdf-<slug>` envoyé au clic sur « Télécharger le PDF » (modele.js) : seulement le nom du modèle, jamais le contenu → classement des documents les plus demandés (onglet Events / chemins pdf-… dans GoatCounter).
 - Installation sur le téléphone : `manifest.webmanifest` avec `"id": "/documents-tunisie/"` (UNIQUE : tous les sites d'Ahmed
   partagent l'origine ah6259.github.io ; sans id, Chrome disait « déjà installée »), icônes `assets/icons/` (192, 512, maskable,
   apple-touch-icon 180) tirées de `assets/logo.svg`. Liens dans le gabarit ; vérifié par le test.

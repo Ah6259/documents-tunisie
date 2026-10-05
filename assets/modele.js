@@ -217,6 +217,8 @@
       const nomFichier = (v[doc.champs.find(c => /nom$/.test(c.id || "")).id] || "").replace(/[^\p{L}\p{N}]+/gu, "-");
       document.title = doc.slug + (nomFichier ? "-" + nomFichier : "");
       window.addEventListener("afterprint", () => { document.title = titre; }, { once: true });
+      // statistique anonyme : seulement le nom du modèle (documents les plus demandés), jamais ce qui est écrit
+      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "pdf-" + doc.slug, title: "PDF : " + doc.slug, event: true }); } catch (e) {}
       window.print();
       setTimeout(() => { document.title = titre; }, 1500);
     });
