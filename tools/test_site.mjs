@@ -112,6 +112,7 @@ for (const d of DOCS) {
   doc.getElementById("telecharger").click();
   const imp = doc.getElementById("impression");
   check(`${d.slug} : PDF lancé, document final sans champ vide`, w.__imprime === 1 && imp && imp.querySelectorAll(".feuille").length === 2 && !imp.querySelector("mark.vide") && doc.getElementById("erreurs").hidden);
+  check(`${d.slug} : le PDF imprimé ne contient aucun lien d'annuaire`, !/avocats-notaires-tunisie|mariage-tunisie/.test(imp.innerHTML));
   check(`${d.slug} : sections étapes, pièces, où aller, FAQ, sources`, ["etapes", "pieces", "ou", "faq", "sources"].every(id => doc.getElementById(id)) && doc.querySelectorAll("#etapes .schema li").length === d.etapes.length);
   check(`${d.slug} : avertissement « non officiel, ne remplace pas un avocat »`, doc.querySelector(".avert").textContent.includes("ne remplace pas un avocat"));
   check(`${d.slug} : champs du formulaire sélectionnables (pas dans une zone protégée)`, !f.closest(".protege"));
@@ -133,6 +134,20 @@ for (const d of GUIDES) {
   const w = await page(d.slug + "/index.html"), doc = w.document;
   check(`${d.slug} : pas de formulaire, encart « explication seulement », sections « À vérifier » et sources`, !doc.getElementById("formulaire") && !!doc.getElementById("explication-seulement") && !!doc.getElementById("a-verifier") && doc.querySelectorAll("#sources a").length === d.sources.length);
 }
+// Annuaire gratuit des avocats et notaires : grands contrats, démarches expliquées et documents à risque
+const AVEC_ANNUAIRE = [...CONTRATS, ...GUIDES].map(d => d.slug).concat("reconnaissance-de-dette");
+for (const slug of AVEC_ANNUAIRE) {
+  const w = await page(slug + "/index.html"), doc = w.document;
+  const liens = [...doc.querySelectorAll('#annuaire a[href^="https://ah6259.github.io/avocats-notaires-tunisie/"]')];
+  check(`${slug} : lien vers l'annuaire des avocats et notaires (FR + AR, clic compté, hors du PDF)`, liens.length === 2
+    && liens.every(a => a.dataset.annuaire === "lien-avocats/" + slug && /noopener/.test(a.rel)) && !doc.querySelector("#annuaire").closest("#impression, .feuille"));
+  check(`${slug} : texte neutre (pas de « meilleur », pas de classement)`, !/meilleur|top \d|أفضل/i.test(doc.getElementById("annuaire").textContent));
+  let compte = null; w.goatcounter = { count: o => { compte = o; } };
+  liens[0].addEventListener("click", e => e.preventDefault()); liens[0].click();
+  check(`${slug} : clic sur l'annuaire compté anonymement (lien-avocats/${slug})`, compte && compte.path === "lien-avocats/" + slug && compte.event === true);
+}
+check("mariage : second lien vers l'annuaire des prestataires de mariage", /href="https:\/\/ah6259\.github\.io\/mariage-tunisie\/"[^>]*data-annuaire="lien-mariage\/mariage"/.test(lire("mariage/index.html")));
+check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "ar"].every(L => !/avocats-notaires-tunisie|mariage-tunisie/.test(M.feuille(d, valeursEx(d), L)))));
 {
   const w = await page("index.html"), doc = w.document;
   check("accueil : 23 cartes de documents", doc.querySelectorAll("[data-cherche]").length === 23);

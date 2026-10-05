@@ -140,6 +140,11 @@ mark.vide{background:#FCE7B2;color:#7a5200;border-radius:4px;padding:0 4px;font-
 .etiquette{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:var(--or-clair);color:var(--or);border-radius:999px;padding:2px 9px;vertical-align:2px}
 .etiquette.p{background:var(--p-clair);color:var(--p)}
 .contrat-bientot{border-top:4px solid var(--or)}
+.annuaire{border-inline-start:4px solid var(--p)}
+.annuaire p{margin:0 0 8px}
+.annuaire .annuaire-lien a{font-weight:700;color:var(--p)}
+.annuaire .annuaire-second a{font-size:14px;color:var(--doux)}
+.annuaire .note{margin:0}
 
 /* ---- FAQ ---- */
 details{border-bottom:1px solid var(--ligne);padding:10px 0}

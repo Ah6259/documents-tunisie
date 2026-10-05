@@ -85,6 +85,13 @@ document.addEventListener("click", e => {
   b.parentNode.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
 });
 
+/* --- lien vers un annuaire gratuit : clic compté anonymement (seulement le nom de la page, rien d'autre) --- */
+document.addEventListener("click", e => {
+  const a = e.target.closest && e.target.closest("a[data-annuaire]");
+  if (!a) return;
+  try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: a.dataset.annuaire, title: "Annuaire : " + a.dataset.annuaire, event: true }); } catch (err) {}
+});
+
 function lienWhatsApp(texte) { return "https://wa.me/?text=" + encodeURIComponent(texte + " " + location.href.split("?")[0]); }
 
 /* --- accueil : recherche et catégories --- */

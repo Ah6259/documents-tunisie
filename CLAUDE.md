@@ -56,8 +56,8 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Formspree gratuit = 50 envois/mois pour TOUS les sites (même formulaire). Test : `node tools/test_avis.mjs` (accepte un dossier).
 
 ## Tests (obligatoires avant toute publication)
-- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 920 vérifications) → **TOUT PASSE**.
-- `node tools/sabotage.mjs` : 17 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 965 vérifications) → **TOUT PASSE**.
+- `node tools/sabotage.mjs` : 19 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
 - `node tools/test_avis.mjs` : Votre avis (section, lien du pied de page sur toutes les pages, CSP, envoi simulé, refus si vide).
 - Captures : serveur `python -m http.server 8931 --bind 127.0.0.1` dans `site/`, puis `sh tools/captures.sh`.
@@ -81,3 +81,4 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - **Robot privé** `Ah6259/documents-tunisie-robot` (dépôt PRIVÉ = dossier `../robot nuit`) : `releve.yml` chaque nuit à 1h07 (relève GoatCounter, clé en secret `GOATCOUNTER_CLE`, compteur **prix-eaux-tunisie** avec x) → `liste des documents demandes.md` ; `controle-matin.yml` à 7h (journal écrit depuis moins de 26 h, pas d'échec signalé, tests du site ; e-mail GitHub sinon).
 - **Tâche Claude dans le cloud** `documents-tunisie-nuit` (créée par Ahmed via /schedule, 2h chaque nuit, https://claude.ai/code/routines/trig_01PPNDm6h4qk7N2mtKHJ7tHq) : une nouveauté au plus par nuit ; documents simples publiés seulement si tous les tests passent ; contrats et documents à risque en brouillon (`brouillons/` du dépôt privé) ; compte rendu dans `journal de nuit.md`.
 - Contrôle des concurrents étendu (empreintes de mots et de noms de domaine complets ; un nom de rue de Tunis présent dans un crédit photo reste autorisé).
+- **Lien vers l'annuaire gratuit « Avocats et notaires Tunisie »** (constante `ANNUAIRE` de generer.mjs, encart `#annuaire` avant les étapes) : 4 grands contrats, 4 démarches expliquées et reconnaissance de dette ; mariage = notaires (عدول الإشهاد) + annuaire des prestataires de mariage. Texte neutre (profession réglementée : jamais « meilleur », pas de classement), jamais dans le PDF (test + 2 sabotages), clic compté par page.js (événements `lien-avocats/<slug>` et `lien-mariage/mariage`).

@@ -85,6 +85,26 @@ export function pages(root) {
     <p class="avis-mention"><span data-l="fr">Votre avis est envoyé au créateur du site (service Formspree). Rien n'est envoyé sans clic sur « Envoyer ».</span><span data-l="ar">يُرسل رأيك إلى صاحب الموقع (خدمة ⁨Formspree⁩). لا يُرسل أي شيء دون الضغط على «إرسال».</span></p>
   </form>
 </section>`;
+  // Annuaires gratuits d'Ahmed (05/10/2026) : encart sur les grands contrats et les pages à risque, JAMAIS dans le PDF
+  // (il est dans <main>, caché à l'impression). Profession réglementée : texte neutre, pas de « meilleur », pas de classement.
+  // Clic compté anonymement par page.js (attribut data-annuaire → événement GoatCounter).
+  const AVOCATS = "https://ah6259.github.io/avocats-notaires-tunisie/", MARIAGE = "https://ah6259.github.io/mariage-tunisie/";
+  const RELIRE = ["Faire relire ce contrat par un avocat ou un notaire près de chez vous (annuaire gratuit)", "مراجعة هذا العقد من قبل محام أو عدل إشهاد قريب منك (دليل مجاني)"];
+  const ANNUAIRE = {
+    "vente-voiture": [RELIRE], "vente-moto": [RELIRE], "location-maison": [RELIRE], "bail-commercial": [RELIRE], "contrat-de-travail": [RELIRE],
+    "reconnaissance-de-dette": [["Faire relire ce document par un avocat ou un notaire près de chez vous (annuaire gratuit)", "مراجعة هذه الوثيقة من قبل محام أو عدل إشهاد قريب منك (دليل مجاني)"]],
+    "divorce": [["Trouver un avocat près de chez vous (annuaire gratuit)", "إيجاد محام قريب منك (دليل مجاني)"]],
+    "civp-karama-service-civil": [["Une question sur votre contrat ? Trouver un avocat près de chez vous (annuaire gratuit)", "سؤال حول عقدك؟ إيجاد محام قريب منك (دليل مجاني)"]],
+    "mariage": [["Trouver un notaire (عدل إشهاد) près de chez vous (annuaire gratuit)", "إيجاد عدل إشهاد قريب منك (دليل مجاني)"],
+                ["Prestataires de mariage (annuaire gratuit)", "مزودو خدمات الأعراس (دليل مجاني)", MARIAGE, "lien-mariage"]]
+  };
+  const lienAnnuaire = (slug, [fr, ar, url = AVOCATS, ev = "lien-avocats"], i) =>
+    `<p class="${i ? "annuaire-second" : "annuaire-lien"}">${[["fr", fr, url], ["ar", ar, url + "?lang=ar"]].map(([L, t, u]) =>
+      `<a data-l="${L}" href="${u}" rel="noopener noreferrer" target="_blank" data-annuaire="${ev}/${slug}">${esc(L === "ar" ? isoler(t) : t)}</a>`).join("")}</p>`;
+  const encartAnnuaire = d => ANNUAIRE[d.slug] ? `<aside class="carte annuaire" id="annuaire">
+  ${ANNUAIRE[d.slug].map((x, i) => lienAnnuaire(d.slug, x, i)).join("\n  ")}
+  <p class="note">${bi("Annuaire gratuit par gouvernorat, sans classement ni recommandation.", "دليل مجاني حسب الولاية، دون ترتيب ولا توصية.")}</p>
+</aside>\n` : "";
   const CSP = `default-src 'self'; script-src 'self' https://gc.zgo.at; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: ${COMPTEUR}; connect-src 'self' ${COMPTEUR} ${FORMSPREE}; object-src 'none'; base-uri 'self'; form-action 'self' ${FORMSPREE}; upgrade-insecure-requests`;
 
   function tete({ titre, desc, chemin, racine, scripts, jsonld }) {
@@ -220,6 +240,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
 </section>
 <p class="avert">${bi("Modèle indicatif — ce site n'est pas officiel et ne remplace pas un avocat. Relisez le document avant de le signer.", "نموذج استرشادي — هذا الموقع ليس رسميا ولا يعوض المحامي. أعد قراءة الوثيقة قبل إمضائها.")}</p>\n`;
     }
+    s += encartAnnuaire(d);
     s += `<section class="carte protege" id="etapes">
   ${h2("liste", "Les étapes", "المراحل")}
   <ol class="schema">${d.etapes.map(e => `<li><span class="ic">${svg(ICONES[e.ic])}</span><div><h3>${bi(e.fr[0], e.ar[0])}</h3><p>${bi(e.fr[1], e.ar[1])}</p></div></li>`).join("")}</ol>
@@ -322,8 +343,8 @@ ${pied}`;
   <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>العقود الهامة (بيع عربة، كراء، كراء تجاري) لن يكون لها نموذج إلا <b>بعد مراجعتها من قبل محام</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
-  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF et les mots cherchés sans résultat (sans les chiffres), jamais ce que vous écrivez dans les formulaires. Seule exception, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer ».</p>
-  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام)، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناء الوحيد، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال».</p>
+  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) et les clics vers les annuaires gratuits d'avocats et de notaires, jamais ce que vous écrivez dans les formulaires. Seule exception, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer ».</p>
+  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية للمحامين وعدول الإشهاد، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناء الوحيد، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال».</p>
 </section>
 <section class="carte" id="credits">${h2("info", "Crédits photos", "مصادر الصور")}
   <ul class="sources">${Object.values(CREDITS).map(c => `<li>${esc(c.titre)} — ${esc(c.auteur)}, <a href="${esc(c.licence_url || c.source)}" rel="noopener noreferrer" target="_blank">${esc(c.licence)}</a>, <a href="${esc(c.source)}" rel="noopener noreferrer" target="_blank">Wikimedia Commons</a> (${bi("recadrée et compressée", "مقصوصة ومضغوطة")})</li>`).join("")}</ul>

@@ -22,9 +22,9 @@ Adresse prévue : https://ah6259.github.io/documents-tunisie/ (GitHub Pages, bra
 | `assets/style.css` | présentation (couleur bordeaux), impression A4 |
 | `assets/photos/` | photos des bandeaux (Wikimedia Commons, licences libres, `credits.json`) |
 | `tools/generer.mjs` | fabrique les pages, le plan du site et le `?v=` (empreinte des fichiers) |
-| `tools/test_site.mjs` | test complet (≈ 920 vérifications) — **à lancer après chaque modification** |
+| `tools/test_site.mjs` | test complet (≈ 965 vérifications) — **à lancer après chaque modification** |
 | `assets/avis.js`, `tools/test_avis.mjs` | section « Votre avis » de l'accueil (`#avis`, lien dans le pied de page) : envoi **au clic** à Formspree (formulaire `mwlpakqj`, commun à tous les sites d'Ahmed) avec les champs cachés `site` = « Documents Tunisie » et `page` ; son test (envoi simulé) |
-| `tools/sabotage.mjs` | prouve que le test attrape les erreurs (17 sabotages) |
+| `tools/sabotage.mjs` | prouve que le test attrape les erreurs (19 sabotages) |
 | `tools/surveiller_sources.mjs` + `test_robot.mjs` | robot de surveillance des sources officielles et ses scénarios de panne |
 | `tools/captures.sh` | captures téléphone 340/390 px, français et arabe (dans `captures/`, ignoré) |
 
