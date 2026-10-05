@@ -37,3 +37,7 @@
 - PDF : mise en page de lettre administrative, aucune mention du site (test + sabotage).
 - GoatCounter (compteur prix-eaux-tunisie, avec x) : filtrer sur `pdf-` (documents les plus fabriqués) et `recherche-vide/` (documents qui manquent).
 - Chaque nuit, sans PC : relevé à 1h07 (dépôt privé documents-tunisie-robot), tâche Claude à 2h (une nouveauté au plus), contrôle à 7h (e-mail si problème).
+
+## 05/10/2026 (nuit) — Liens vers les annuaires gratuits
+- 9 pages (grands contrats, divorce, CIVP, mariage) ont un encart vers l'annuaire Avocats et notaires (et Mariage pour la page mariage). Liste `ANNUAIRE` dans `tools/generer.mjs`.
+- L'encart n'est jamais dans le PDF (test + sabotage). Clics dans GoatCounter : filtrer sur `lien-avocats/` et `lien-mariage/`.
