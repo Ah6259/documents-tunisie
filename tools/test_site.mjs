@@ -16,13 +16,13 @@ let erreurs = 0;
 const muet = !!process.env.MUET;
 const check = (desc, cond) => { if (!cond || !muet) console.log((cond ? "OK   " : "FAIL ") + desc); if (!cond) erreurs++; };
 const req = createRequire(join(root, "tools", "x.js"));
-const { DOCS, CONTRATS, CATEGORIES, SOURCES } = req(join(root, "assets/documents.js"));
+const { DOCS, CONTRATS, GUIDES, CATEGORIES, SOURCES } = req(join(root, "assets/documents.js"));
 const M = req(join(root, "assets/modele.js"));
-const TOUS = [...DOCS, ...CONTRATS];
+const TOUS = [...DOCS, ...CONTRATS, ...GUIDES];
 const ARABE = /[؀-ۿ]/;
 
 // ---- 1. Données : chaque document est complet ---------------------------------
-check("15 documents à remplir et 4 grands contrats", DOCS.length === 15 && CONTRATS.length === 4);
+check("15 documents à remplir, 4 grands contrats et 4 démarches expliquées", DOCS.length === 15 && CONTRATS.length === 4 && GUIDES.length === 4);
 check("adresses (slug) uniques", new Set(TOUS.map(d => d.slug)).size === TOUS.length);
 const bil = o => o && o.fr && o.ar && ARABE.test(JSON.stringify(o.ar)) && JSON.stringify(o.fr).length > 4;
 for (const d of TOUS) {
@@ -37,6 +37,7 @@ for (const d of TOUS) {
 }
 for (const d of CONTRATS) check(`${d.slug} : PAS de modèle à remplir (relecture d'un avocat d'abord)`, !d.champs && !d.fr && !d.ar);
 for (const d of CONTRATS) check(`${d.slug} : droits d'enregistrement non confirmés marqués « à vérifier »`, d.averifier.fr.length >= 1);
+for (const d of GUIDES) check(`${d.slug} : explication seulement (aucun modèle à remplir), points non confirmés « à vérifier »`, d.guide === true && !d.champs && !d.fr && !d.ar && d.averifier.fr.length >= 1);
 for (const d of DOCS) check(`${d.slug} : modèle français et arabe`, typeof d.fr === "function" && typeof d.ar === "function" && d.champs.length >= 5);
 check("toutes les sources sont des sites officiels (.gov.tn, organismes publics)", Object.values(SOURCES).every(s => /\.(gov\.tn|tn)\//.test(s.url)));
 
@@ -128,9 +129,13 @@ for (const d of CONTRATS) {
   check(`${d.slug} : pas de formulaire, encart « modèle après relecture par un avocat »`, !doc.getElementById("formulaire") && /avocat/.test(doc.getElementById("modele-a-venir").textContent));
   check(`${d.slug} : section « À vérifier » visible`, !!doc.getElementById("a-verifier"));
 }
+for (const d of GUIDES) {
+  const w = await page(d.slug + "/index.html"), doc = w.document;
+  check(`${d.slug} : pas de formulaire, encart « explication seulement », sections « À vérifier » et sources`, !doc.getElementById("formulaire") && !!doc.getElementById("explication-seulement") && !!doc.getElementById("a-verifier") && doc.querySelectorAll("#sources a").length === d.sources.length);
+}
 {
   const w = await page("index.html"), doc = w.document;
-  check("accueil : 19 cartes de documents", doc.querySelectorAll("[data-cherche]").length === 19);
+  check("accueil : 23 cartes de documents", doc.querySelectorAll("[data-cherche]").length === 23);
   check("accueil : 6 catégories avec icône", doc.querySelectorAll(".cat svg").length === 6);
   check("accueil : 3 badges de confiance", doc.querySelectorAll(".badge-c").length === 3);
   const r = doc.getElementById("recherche");
@@ -150,7 +155,7 @@ const V = new Set();
 for (const p of fichiers) {
   const s = lire(p);
   check(`${p} : titre, description, canonical`, /<title>.{20,}<\/title>/.test(s) && /name="description" content=".{50,}"/.test(s) && s.includes('rel="canonical"'));
-  check(`${p} : image d'aperçu og-image-v2.jpg (type JPEG)`, s.includes("og-image-v2.jpg") && s.includes('<meta property="og:image:type" content="image/jpeg">') && !s.includes("og-image-v1.png"));
+  check(`${p} : image d'aperçu og-image-v3.jpg (type JPEG)`, s.includes("og-image-v3.jpg") && s.includes('<meta property="og:image:type" content="image/jpeg">') && !s.includes("og-image-v1.png"));
   check(`${p} : meta noai, CSP, referrer`, s.includes('<meta name="robots" content="noai, noimageai">') && s.includes('http-equiv="Content-Security-Policy"') && /script-src 'self' https:\/\/gc\.zgo\.at;/.test(s) && s.includes('name="referrer"'));
   check(`${p} : statistiques GoatCounter (sans cookies) chargées, CSP compatible`,
     s.includes('<script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>')
@@ -175,7 +180,7 @@ const gen = await import("file://" + join(root, "tools/generer.mjs").replace(/\\
 const attendu = gen.pages(root);
 const perimees = Object.entries(attendu).filter(([f, s]) => !existsSync(join(root, f)) || lire(f).replace(/\r\n/g, "\n") !== s).map(([f]) => f);
 check(`pages à jour (sinon : node tools/generer.mjs)${perimees.length ? " — " + perimees.join(", ") : ""}`, !perimees.length);
-check("plan du site : 21 pages", (lire("sitemap.xml").match(/<loc>/g) || []).length === 21);
+check("plan du site : 25 pages", (lire("sitemap.xml").match(/<loc>/g) || []).length === 25);
 
 // photos : licence libre, crédit, preuves
 const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
@@ -221,7 +226,7 @@ check(".gitignore : captures et node_modules ignorés", /captures/.test(lire(".g
 // taille d'une image JPEG : lue dans son en-tête SOF (marqueurs FFC0 à FFC2)
 const tailleJpeg = b => { for (let o = 2; o < b.length - 9;) { const m = b[o + 1], n = b.readUInt16BE(o + 2);
   if (m >= 0xC0 && m <= 0xC2) return [b.readUInt16BE(o + 7), b.readUInt16BE(o + 5)]; o += 2 + n; } return [0, 0]; };
-const ogJpg = existsSync(join(root, "assets/og-image-v2.jpg")) ? readFileSync(join(root, "assets/og-image-v2.jpg")) : Buffer.alloc(4);
+const ogJpg = existsSync(join(root, "assets/og-image-v3.jpg")) ? readFileSync(join(root, "assets/og-image-v3.jpg")) : Buffer.alloc(4);
 check("image d'aperçu 1200×630 présente", (([l, h]) => l === 1200 && h === 630)(tailleJpeg(ogJpg)));
 // manifeste : id UNIQUE = chemin du site (sinon Chrome croit le site « déjà installé » : tous les sites partagent ah6259.github.io)
 let man = {}; try { man = JSON.parse(lire("manifest.webmanifest")); } catch (e) {}

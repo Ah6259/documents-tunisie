@@ -8,6 +8,8 @@ Adresse prévue : https://ah6259.github.io/documents-tunisie/ (GitHub Pages, bra
   « Enregistrer au format PDF »). Rien n'est envoyé, aucun compte, aucune bibliothèque externe.
 - **4 grands contrats** (vente de voiture, de moto, location de maison, bail commercial) : pages « étapes » seulement ;
   le modèle sera publié **après relecture par un avocat**.
+- **4 démarches expliquées** (divorce, mariage, contrat de travail CDI/CDD depuis la loi n° 2025-9, CIVP/Karama/Service civil) :
+  explication seulement à partir des textes officiels, **aucun modèle** (`GUIDES` dans `assets/documents.js`).
 - Toutes les données (textes, champs, étapes, sources) sont dans `assets/documents.js`.
   Les pages HTML sont **fabriquées** par `node tools/generer.mjs` (ne pas les modifier à la main).
 
@@ -20,7 +22,7 @@ Adresse prévue : https://ah6259.github.io/documents-tunisie/ (GitHub Pages, bra
 | `assets/style.css` | présentation (couleur bordeaux), impression A4 |
 | `assets/photos/` | photos des bandeaux (Wikimedia Commons, licences libres, `credits.json`) |
 | `tools/generer.mjs` | fabrique les pages, le plan du site et le `?v=` (empreinte des fichiers) |
-| `tools/test_site.mjs` | test complet (≈ 760 vérifications) — **à lancer après chaque modification** |
+| `tools/test_site.mjs` | test complet (≈ 920 vérifications) — **à lancer après chaque modification** |
 | `assets/avis.js`, `tools/test_avis.mjs` | section « Votre avis » de l'accueil (`#avis`, lien dans le pied de page) : envoi **au clic** à Formspree (formulaire `mwlpakqj`, commun à tous les sites d'Ahmed) avec les champs cachés `site` = « Documents Tunisie » et `page` ; son test (envoi simulé) |
 | `tools/sabotage.mjs` | prouve que le test attrape les erreurs (17 sabotages) |
 | `tools/surveiller_sources.mjs` + `test_robot.mjs` | robot de surveillance des sources officielles et ses scénarios de panne |

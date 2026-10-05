@@ -11,7 +11,7 @@ export function pages(root) {
   const lire = f => readFileSync(join(root, f), "utf8");
   const req = createRequire(join(root, "tools", "x.js"));
   delete req.cache[req.resolve(join(root, "assets/documents.js"))];
-  const { DOCS, CONTRATS, CATEGORIES, SOURCES, LEG_SUPPR } = req(join(root, "assets/documents.js"));
+  const { DOCS, CONTRATS, GUIDES, CATEGORIES, SOURCES, LEG_SUPPR } = req(join(root, "assets/documents.js"));
   const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
   const URL = "https://ah6259.github.io/documents-tunisie/";
@@ -106,7 +106,7 @@ export function pages(root) {
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${URL}${chemin}">
 <meta property="og:locale" content="fr_TN"><meta property="og:locale:alternate" content="ar_TN">
-<meta property="og:image" content="${URL}assets/og-image-v2.jpg">
+<meta property="og:image" content="${URL}assets/og-image-v3.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -148,15 +148,17 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   const elision = t => (/^[aeiouéèêh]/i.test(t) ? "d'" : "de ") + t.charAt(0).toLowerCase() + t.slice(1);
 
   const out = {};
-  const tous = [...DOCS, ...CONTRATS];
+  const tous = [...DOCS, ...CONTRATS, ...GUIDES];
 
   /* ---------------- pages des documents ---------------- */
   for (const d of tous) {
     const k = cat(d.cat), racine = "../";
-    const titre = d.contrat
+    const titre = d.guide
+      ? `${d.titre.fr}${/Tunisie/.test(d.titre.fr) ? "" : " (Tunisie)"} – guide gratuit, français et arabe – ${d.titre.ar}`
+      : d.contrat
       ? `${d.titre.fr.replace(" : les étapes", "")} en Tunisie : les étapes (légalisation, enregistrement) – ${d.titre.ar.split(":")[0]}`
       : `Modèle gratuit ${elision(d.titre.fr)} en Tunisie (PDF, français et arabe) – ${d.titre.ar}`;
-    const desc = `${d.contrat ? "Guide gratuit" : "Modèle gratuit"}. ${d.bref.fr.length > 150 ? d.bref.fr.slice(0, d.bref.fr.lastIndexOf(" ", 147)) + "…" : d.bref.fr} ${d.titre.ar}.`;
+    const desc = `${d.contrat || d.guide ? "Guide gratuit" : "Modèle gratuit"}. ${d.bref.fr.length > 150 ? d.bref.fr.slice(0, d.bref.fr.lastIndexOf(" ", 147)) + "…" : d.bref.fr} ${d.titre.ar}.`;
     const faq = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: d.faq.flatMap(q => ["fr", "ar"].map(L => ({
       "@type": "Question", name: q[L][0], acceptedAnswer: { "@type": "Answer", text: q[L][1] } }))) };
     const fil = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
@@ -165,27 +167,34 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
     const L = d.legal;
     const fait = (ic, frT, arT, val) => `<div class="fait"><b>${svg(ICONES[ic])}${bi(frT, arT)}</b><span class="val">${val}</span></div>`;
     const oui = x => `<span class="${OUI[x][2]}">${bi(OUI[x][0], OUI[x][1])}</span>`;
-    const pastilles = [
+    const pastilles = d.guide ? [`<span class="pastille">${bi("Explication seulement", "شرح فقط")}</span>`] : [
       `<span class="pastille">${bi("Légalisation : ", "التعريف بالإمضاء: ")}${bi(OUI[L.legalisation][0], OUI[L.legalisation][1])}</span>`,
       d.contrat ? `<span class="pastille">${bi("Enregistrement : oui", "التسجيل: نعم")}</span>` : `<span class="pastille">${bi("PDF gratuit", "PDF مجاني")}</span>`];
-    let s = tete({ titre, desc, chemin: d.slug + "/", racine, scripts: d.contrat ? ["page.js"] : ["documents.js", "page.js", "modele.js"], jsonld: [faq, fil] });
-    s += corpsDebut(d.contrat ? ` data-contrat="${d.slug}"` : ` data-doc="${d.slug}"`) + "\n";
+    let s = tete({ titre, desc, chemin: d.slug + "/", racine, scripts: d.contrat || d.guide ? ["page.js"] : ["documents.js", "page.js", "modele.js"], jsonld: [faq, fil] });
+    s += corpsDebut(d.guide ? ` data-guide="${d.slug}"` : d.contrat ? ` data-contrat="${d.slug}"` : ` data-doc="${d.slug}"`) + "\n";
     s += hero({ photo: k.photo, racine, fil: `<a href="../">${bi("Accueil", "الرئيسية")}</a> › ${bi(k.fr, k.ar)}`,
-      h1: d.contrat ? bi(d.titre.fr, d.titre.ar) : bi(`Modèle ${elision(d.titre.fr)}`, `نموذج ${d.titre.ar}`),
+      h1: d.contrat || d.guide ? bi(d.titre.fr, d.titre.ar) : bi(`Modèle ${elision(d.titre.fr)}`, `نموذج ${d.titre.ar}`),
       intro: bi(d.court.fr, d.court.ar), pastilles });
     s += `\n<main class="wrap chevauche">
 <section class="carte" id="bref">
   ${h2("info", "En bref", "باختصار")}
   <p class="bref">${bi(d.bref.fr, d.bref.ar)}</p>
   <div class="faits">
-    ${fait("municipalite", "Légalisation", "التعريف بالإمضاء", oui(L.legalisation))}
-    ${fait("recette", "Enregistrement", "التسجيل", oui(L.enregistrement))}
+    ${d.guide ? "" : `${fait("municipalite", "Légalisation", "التعريف بالإمضاء", oui(L.legalisation))}
+    ${fait("recette", "Enregistrement", "التسجيل", oui(L.enregistrement))}`}
     ${fait("liste", "Coût", "الكلفة", bi(L.cout.fr, L.cout.ar))}
     ${fait("horloge", "Délai", "الأجل", bi(L.delai.fr, L.delai.ar))}
   </div>
   ${L.legalisation !== "non" ? `<p class="note">${bi(LEG_SUPPR.fr, LEG_SUPPR.ar)}</p>` : ""}
 </section>\n`;
-    if (d.contrat) {
+    if (d.guide) {
+      s += `<section class="carte contrat-bientot" id="explication-seulement">
+  ${h2("info", "Explication seulement", "شرح فقط")}
+  <p>${bi("Cette page explique les règles et les étapes à partir des textes officiels. Il n'y a pas de modèle à remplir : pour votre cas personnel, adressez-vous à l'administration concernée ou à un avocat.",
+           "تشرح هذه الصفحة القواعد والمراحل انطلاقا من النصوص الرسمية. لا يوجد نموذج للتعمير: لوضعيتك الخاصة، توجه إلى الإدارة المعنية أو إلى محام.")}</p>
+</section>
+`;
+    } else if (d.contrat) {
       const utiles = DOCS.filter(x => x.cat === d.cat);
       s += `<section class="carte contrat-bientot" id="modele-a-venir">
   ${h2("cadenas", "Modèle de contrat : bientôt", "نموذج العقد: قريبا")}
@@ -230,7 +239,7 @@ ${d.averifier.fr.length ? `<section class="carte averifier" id="a-verifier">${h2
   ${sourcesHTML(d.sources)}
   <p class="note">${bi("Vérifié le", "تم التثبت في")} <span data-maj>${MAJ}</span>. ${bi("Ce site n'est pas officiel. Les textes de loi font foi.", "هذا الموقع ليس رسميا. النصوص القانونية هي المرجع.")}</p>
 </section>
-<p><a class="partage" id="partage" href="https://wa.me/" rel="noopener noreferrer" target="_blank" data-fr="${esc(d.titre.fr + " : modèle gratuit et étapes")}" data-ar="${esc(d.titre.ar + ": نموذج مجاني والمراحل")}">${WHATSAPP}${bi("Partager sur WhatsApp", "مشاركة عبر واتساب")}</a></p>
+<p><a class="partage" id="partage" href="https://wa.me/" rel="noopener noreferrer" target="_blank" data-fr="${esc(d.titre.fr + (d.guide ? " : explications gratuites" : " : modèle gratuit et étapes"))}" data-ar="${esc(d.titre.ar + (d.guide ? ": شرح مجاني" : ": نموذج مجاني والمراحل"))}">${WHATSAPP}${bi("Partager sur WhatsApp", "مشاركة عبر واتساب")}</a></p>
 <h2 class="titre-section">${bi("Dans la même catégorie", "في نفس الصنف")}</h2>
 <div class="docs">${tous.filter(x => x.cat === d.cat && x.slug !== d.slug).map(x => carteDoc(x, "../")).join("")}</div>
 </main>
@@ -267,6 +276,9 @@ ${pied}`;
 <section class="bloc-docs"><h2 class="titre-section">${bi("Les grands contrats : toutes les étapes", "العقود الكبرى: كل المراحل")}</h2>
 <p class="conseil">${bi("Étapes, pièces et frais tout de suite ; modèle à remplir après relecture par un avocat.", "المراحل والوثائق والمعاليم الآن؛ النموذج بعد مراجعته من قبل محام.")}</p>
 <div class="docs">${CONTRATS.map(x => carteDoc(x, "")).join("")}</div></section>
+<section class="bloc-docs"><h2 class="titre-section">${bi("Démarches expliquées", "إجراءات مشروحة")}</h2>
+<p class="conseil">${bi("Explication seulement, à partir des textes officiels : aucun modèle à remplir.", "شرح فقط، انطلاقا من النصوص الرسمية: لا يوجد نموذج للتعمير.")}</p>
+<div class="docs">${GUIDES.map(x => carteDoc(x, "")).join("")}</div></section>
 <section class="carte" id="comment">
   ${h2("info", "Comment ça marche ?", "كيف يعمل الموقع؟")}
   <div class="comment">
@@ -326,7 +338,7 @@ ${pied}`;
   }
 
   /* ---------------- plan du site ---------------- */
-  const urls = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), "a-propos/"];
+  const urls = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), ...GUIDES.map(d => d.slug + "/"), "a-propos/"];
   const [j, m, a] = MAJ.split("/");
   out["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

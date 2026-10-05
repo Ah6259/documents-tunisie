@@ -16,15 +16,17 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Couleur principale bordeaux `#8C2B3A`. Français + arabe (bouton, ou `?lang=ar`). Mobile d'abord.
 - **Le PDF ne porte AUCUNE mention du site** (décision d'Ahmed 05/10/2026 : c'est le document de la personne, on aide seulement à l'écrire ; l'avertissement « modèle indicatif / relisez » reste sur la page web). Test + sabotage le vérifient.
 - 15 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**) + 4 grands contrats en « étapes seulement »
-  (vente voiture, vente moto, location maison, bail commercial) : **modèle seulement après relecture par un avocat**.
+  (vente voiture, vente moto, location maison, bail commercial) : **modèle seulement après relecture par un avocat**
+  + 4 « démarches expliquées » (`GUIDES`, explication seulement, jamais de modèle, 05/10/2026) : divorce, mariage,
+  contrat de travail CDI/CDD (loi n° 2025-9), CIVP/Karama/Service civil (décret n° 2019-542, ANETI).
 - Données : `assets/documents.js`. Pages fabriquées par `node tools/generer.mjs` (ne pas éditer les HTML à la main).
 - Date unique « vérifié le » : `MAJ` dans `assets/page.js`. Ne la changer qu'après une vraie relecture des sources.
 - Ce qui n'est pas confirmé par un texte officiel va dans `averifier` (affiché « À vérifier »), jamais inventé.
 - Sources citées : **officielles seulement** (`SOURCES` dans documents.js), liens en `rel="noopener noreferrer"`.
 - Photos : Wikimedia Commons, licence libre vérifiée, crédit sur chaque bandeau + page À propos, ≤ 150 Ko,
   pas de visage, pas d'emblème de l'État. Preuves dans `..\preuves conditions d'utilisation\<date>\photos\`.
-- Image d'aperçu : `assets/og-image-v2.jpg` (modèle `tools/og.html`). Si on la change : **nouveau nom de fichier**.
-  Toujours en **JPEG < 250 Ko** (sinon WhatsApp n'affiche qu'une petite vignette ; le test le vérifie). L'ancien `og-image-v1.png` n'est plus utilisé.
+- Image d'aperçu : `assets/og-image-v3.jpg` (modèle `tools/og.html`, logo plume du 05/10/2026). Si on la change : **nouveau nom de fichier**.
+  Toujours en **JPEG < 250 Ko** (sinon WhatsApp n'affiche qu'une petite vignette ; le test le vérifie). Les anciens `og-image-v1.png` et `og-image-v2.jpg` ne sont plus utilisés.
 
 ## Sécurité (consigne commune du 05/10/2026)
 - `robots.txt` : moteurs de recherche autorisés, robots d'IA et aspirateurs interdits ; `<meta name="robots" content="noai, noimageai">`.
@@ -54,7 +56,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Formspree gratuit = 50 envois/mois pour TOUS les sites (même formulaire). Test : `node tools/test_avis.mjs` (accepte un dossier).
 
 ## Tests (obligatoires avant toute publication)
-- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 760 vérifications) → **TOUT PASSE**.
+- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 920 vérifications) → **TOUT PASSE**.
 - `node tools/sabotage.mjs` : 17 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
 - `node tools/test_avis.mjs` : Votre avis (section, lien du pied de page sur toutes les pages, CSP, envoi simulé, refus si vide).
@@ -67,7 +69,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 
 ## Reste à faire / idées
 - Relecture des 4 grands contrats par un avocat, puis modèles.
-- Pages « explication seulement » (certificat de résidence, non gage, TEJ…). Autres documents de l'étude (55).
+- Autres pages « explication seulement » (`GUIDES`, encart « Explication seulement », section « Démarches expliquées » de l'accueil) : certificat de résidence, non gage, TEJ… Autres documents de l'étude (55).
 
 ## Mise à jour du 05/10/2026 (soir)
 - **Icône (famille commune des 5 sites)** : un seul symbole en aplats 2-3 tons, accent doré `#F2B33D`, sans texte ni brillance (règle d'Ahmed : jamais d'effet « image IA » ni de clip-art). Ce site : **plume de stylo**. Source = `assets/logo.svg` ; PNG 192/512 = dessin arrondi, maskable 512 et iPhone 180 = même dessin sur carré plein, symbole à 78 %. Générateur (hors dépôt) : `_claude code project/icones des sites - generateur.py`. Changer l'icône → renouveler `CACHE_VERSION` de `sw.js`.
