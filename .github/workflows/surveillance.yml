@@ -1,0 +1,67 @@
+# Chaque mois : vérifie que les sources officielles citées sur le site répondent toujours.
+# Si une source a disparu ou ne répond plus : une alerte (issue GitHub) est ouverte -> email à Ahmed.
+# Le commit mensuel sert de « battement de cœur » (GitHub met en pause les robots après 60 jours sans activité).
+# Le robot ne modifie jamais les textes ni la date « vérifié le » (seule une relecture humaine peut la changer).
+name: Surveillance des sources
+on:
+  schedule:
+    - cron: "23 6 1 * *"     # le 1er de chaque mois, 7h23 à Tunis
+  workflow_dispatch:
+permissions:
+  contents: write
+  issues: write
+env:
+  TZ: Africa/Tunis
+concurrency:
+  group: robot
+  cancel-in-progress: false
+jobs:
+  surveiller:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install --no-save --no-package-lock jsdom
+      - name: Tests du site et du robot
+        run: |
+          node tools/test_robot.mjs
+          MUET=1 node tools/test_site.mjs
+      - name: Vérifier les sources officielles
+        id: verif
+        run: |
+          set +e
+          node tools/surveiller_sources.mjs
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+      - name: Battement de cœur
+        if: always()
+        run: |
+          git config user.name "robot-documents"
+          git config user.email "robot-documents@users.noreply.github.com"
+          git commit --allow-empty -m "Battement de coeur : sources verifiees le $(date +%d/%m/%Y)"
+          git push
+      - name: Fermer les alertes résolues
+        if: steps.verif.outputs.code == '0'
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          for n in $(gh issue list --label alerte-robot --state open --json number -q '.[].number'); do
+            gh issue close "$n" --comment "Résolu : toutes les sources répondent de nouveau le $(date +%d/%m/%Y)."
+          done
+      - name: Alerte
+        if: steps.verif.outputs.code != '0' || failure()
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          gh label create alerte-robot --color B60205 --force >/dev/null 2>&1 || true
+          if [ "${{ steps.verif.outputs.code }}" = "2" ]; then
+            titre="Une source officielle ne répond plus : fiches à revérifier"
+            corps="Sources en panne (après 3 essais) :
+          $(cat sources_ko.txt 2>/dev/null)
+          Ce peut être une panne passagère. Si elle dure, demander à Claude : « revérifie les sources de Documents Tunisie »."
+          else
+            titre="Robot de surveillance en échec"
+            corps="Les tests ou la vérification ont échoué. Journal : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
+          n=$(gh issue list --label alerte-robot --state open --search "$titre in:title" --json number -q '.[0].number')
+          if [ -n "$n" ]; then gh issue comment "$n" --body "Toujours vrai le $(date +%d/%m/%Y). $corps"
+          else gh issue create --title "$titre" --body "$corps" --label alerte-robot; fi

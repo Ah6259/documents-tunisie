@@ -1,0 +1,72 @@
+{
+ "accueil": {
+  "fichier": "assets/photos/accueil.jpg",
+  "titre": "Doors of Sidi Bou Said 002.JPG",
+  "auteur": "SvenZ",
+  "licence": "CC BY-SA 2.5",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/2.5",
+  "source": "https://commons.wikimedia.org/wiki/File:Doors_of_Sidi_Bou_Said_002.JPG",
+  "modif": "recadrée et compressée",
+  "octets": 140857
+ },
+ "logement": {
+  "fichier": "assets/photos/logement.jpg",
+  "titre": "Tunis Saiedy bu saied 01.jpg",
+  "auteur": "Ms.Abeer Ali",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Tunis_Saiedy_bu_saied_01.jpg",
+  "modif": "recadrée et compressée",
+  "octets": 149059
+ },
+ "vehicules": {
+  "fichier": "assets/photos/vehicules.jpg",
+  "titre": "Road Matmata Tunisia.jpg",
+  "auteur": "TOUKATOUKA",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Road_Matmata_Tunisia.jpg",
+  "modif": "recadrée et compressée",
+  "octets": 140462
+ },
+ "travail": {
+  "fichier": "assets/photos/travail.jpg",
+  "titre": "Avenue Safia Chamia (Centre Urbain Nord), 2019 - 3.jpg",
+  "auteur": "Mohatatou",
+  "licence": "CC BY-SA 4.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+  "source": "https://commons.wikimedia.org/wiki/File:Avenue_Safia_Chamia_(Centre_Urbain_Nord),_2019_-_3.jpg",
+  "modif": "recadrée et compressée",
+  "octets": 132738
+ },
+ "famille": {
+  "fichier": "assets/photos/famille.jpg",
+  "titre": "Aéroport international de Tunis-Carthage - mars 2018.jpg",
+  "auteur": "Benoît Prieur",
+  "licence": "CC0",
+  "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+  "source": "https://commons.wikimedia.org/wiki/File:A%C3%A9roport_international_de_Tunis-Carthage_-_mars_2018.jpg",
+  "modif": "recadrée et compressée",
+  "octets": 99462
+ },
+ "administration": {
+  "fichier": "assets/photos/administration.jpg",
+  "titre": "Tunis Rue Diwan.jpg",
+  "auteur": "Rais67",
+  "licence": "Public domain",
+  "licence_url": "",
+  "source": "https://commons.wikimedia.org/wiki/File:Tunis_Rue_Diwan.jpg",
+  "modif": "recadrée et compressée",
+  "octets": 89735
+ },
+ "argent": {
+  "fichier": "assets/photos/argent.jpg",
+  "titre": "BCT - Tunis.jpg",
+  "auteur": "DrFO.Jr.Tn",
+  "licence": "CC BY-SA 3.0",
+  "licence_url": "https://creativecommons.org/licenses/by-sa/3.0",
+  "source": "https://commons.wikimedia.org/wiki/File:BCT_-_Tunis.jpg",
+  "modif": "recadrée et compressée",
+  "octets": 104170
+ }
+}

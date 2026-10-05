@@ -1,0 +1,6 @@
+node_modules/
+captures/
+sources_ko.txt
+__pycache__/
+# preuves des conditions d'utilisation : jamais publiées (elles sont en dehors de ce dossier)
+preuves*/
