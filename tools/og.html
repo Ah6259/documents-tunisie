@@ -1,6 +1,7 @@
 <!doctype html>
 <!-- Modèle de l'image d'aperçu (1200×630). Fabriquer : serveur local dans site/, puis
-     chrome --headless=new --window-size=1200,630 --screenshot=assets/og-image-vN.png http://127.0.0.1:8931/tools/og.html
+     chrome --headless=new --window-size=1200,630 --screenshot=og.png http://127.0.0.1:8931/tools/og.html
+     puis convertir en JPEG < 250 Ko (Pillow, qualite 88) : assets/og-image-vN.jpg (actuelle : og-image-v2.jpg ; sinon WhatsApp ne montre qu'une petite vignette).
      Toujours un NOUVEAU nom de fichier (WhatsApp/Facebook gardent l'ancienne image en cache). -->
 <html translate="no" lang="fr"><head><meta charset="utf-8">
 <meta name="google" content="notranslate">

@@ -83,7 +83,8 @@ for (const d of DOCS) {
 // ---- 4. Pages chargées comme dans un navigateur ------------------------------------
 async function page(chemin, lang = "fr") {
   const dossier = dirname(join(root, chemin));
-  const html = lire(chemin).replace(/<script([^>]*) src="([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
+  // (les scripts externes, comme GoatCounter, ne sont pas chargés)
+  const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
     (_, a, src) => `<script>${readFileSync(join(dossier, src), "utf8")}</script>`);
   const vc = new VirtualConsole(); vc.on("jsdomError", e => { if (!/Not implemented/.test(e.message)) { console.log("   erreur JS :", chemin, e.message); erreurs++; } });
   const dom = new JSDOM(html, { url: `https://ah6259.github.io/documents-tunisie/${chemin.replace("index.html", "")}?lang=${lang}`,
@@ -148,8 +149,11 @@ const V = new Set();
 for (const p of fichiers) {
   const s = lire(p);
   check(`${p} : titre, description, canonical`, /<title>.{20,}<\/title>/.test(s) && /name="description" content=".{50,}"/.test(s) && s.includes('rel="canonical"'));
-  check(`${p} : image d'aperçu og-image-v1.png`, s.includes("og-image-v1.png"));
-  check(`${p} : meta noai, CSP, referrer`, s.includes('<meta name="robots" content="noai, noimageai">') && s.includes('http-equiv="Content-Security-Policy"') && /script-src 'self'/.test(s) && s.includes('name="referrer"'));
+  check(`${p} : image d'aperçu og-image-v2.jpg (type JPEG)`, s.includes("og-image-v2.jpg") && s.includes('<meta property="og:image:type" content="image/jpeg">') && !s.includes("og-image-v1.png"));
+  check(`${p} : meta noai, CSP, referrer`, s.includes('<meta name="robots" content="noai, noimageai">') && s.includes('http-equiv="Content-Security-Policy"') && /script-src 'self' https:\/\/gc\.zgo\.at;/.test(s) && s.includes('name="referrer"'));
+  check(`${p} : statistiques GoatCounter (sans cookies) chargées, CSP compatible`,
+    s.includes('<script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>')
+    && /connect-src[^;]*https:\/\/prix-eaux-tunisie\.goatcounter\.com/.test(s) && /img-src[^;]*https:\/\/prix-eaux-tunisie\.goatcounter\.com/.test(s));
   check(`${p} : aucun script en ligne exécutable (CSP)`, [...s.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)].every(m => /application\/ld\+json/.test(m[1])) && !/\son[a-z]+="/i.test(s) && !/\sstyle="/.test(s));
   check(`${p} : liens externes en rel="noopener"`, [...s.matchAll(/<a [^>]*href="https?:[^"]*"[^>]*>/g)].every(m => /rel="noopener/.test(m[0])));
   check(`${p} : protection (page.js) chargée`, /src="(\.\.\/)?assets\/page\.js\?v=/.test(s));
@@ -209,7 +213,12 @@ check("aucun secret (clé, jeton, mot de passe, e-mail privé)", !/(api[_-]?key|
 check("LICENSE tous droits réservés", lire("LICENSE").includes("Tous droits réservés"));
 check(".gitattributes : fins de ligne LF", /\*\s+text=auto\s+eol=lf/.test(lire(".gitattributes")));
 check(".gitignore : captures et node_modules ignorés", /captures/.test(lire(".gitignore")) && /node_modules/.test(lire(".gitignore")));
-check("image d'aperçu 1200×630 présente", existsSync(join(root, "assets/og-image-v1.png")) && (b => b.readUInt32BE(16) === 1200 && b.readUInt32BE(20) === 630)(readFileSync(join(root, "assets/og-image-v1.png"))));
+// taille d'une image JPEG : lue dans son en-tête SOF (marqueurs FFC0 à FFC2)
+const tailleJpeg = b => { for (let o = 2; o < b.length - 9;) { const m = b[o + 1], n = b.readUInt16BE(o + 2);
+  if (m >= 0xC0 && m <= 0xC2) return [b.readUInt16BE(o + 7), b.readUInt16BE(o + 5)]; o += 2 + n; } return [0, 0]; };
+const ogJpg = existsSync(join(root, "assets/og-image-v2.jpg")) ? readFileSync(join(root, "assets/og-image-v2.jpg")) : Buffer.alloc(4);
+check("image d'aperçu 1200×630 présente", (([l, h]) => l === 1200 && h === 630)(tailleJpeg(ogJpg)));
+check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vignette) : ${Math.round(ogJpg.length / 1024)} Ko`, ogJpg[0] === 0xFF && ogJpg[1] === 0xD8 && ogJpg.length < 250000);
 
 console.log(erreurs ? `\n${erreurs} PROBLÈME(S)` : "\nTOUT PASSE");
 process.exit(erreurs ? 1 : 0);

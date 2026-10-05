@@ -52,7 +52,9 @@ export function pages(root) {
   const WHATSAPP = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.3 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.1.1.6-.1 1.2z"/></svg>';
   const cat = id => CATEGORIES.find(c => c.id === id);
   const OUI = { oui: ["Oui", "نعم", "oui"], non: ["Non", "لا", "non"], parfois: ["Si on vous la demande", "عند الطلب", "oui"], possible: ["Facultatif", "اختياري", "oui"] };
-  const CSP = "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests";
+  // GoatCounter : statistiques de visite anonymes, sans cookies (compteur partagé avec les autres sites d'Ahmed)
+  const COMPTEUR = "https://prix-eaux-tunisie.goatcounter.com";
+  const CSP = `default-src 'self'; script-src 'self' https://gc.zgo.at; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: ${COMPTEUR}; connect-src 'self' ${COMPTEUR}; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests`;
 
   function tete({ titre, desc, chemin, racine, scripts, jsonld }) {
     return `<!doctype html>
@@ -73,7 +75,8 @@ export function pages(root) {
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${URL}${chemin}">
 <meta property="og:locale" content="fr_TN"><meta property="og:locale:alternate" content="ar_TN">
-<meta property="og:image" content="${URL}assets/og-image-v1.png">
+<meta property="og:image" content="${URL}assets/og-image-v2.jpg">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="${racine}assets/logo.svg" type="image/svg+xml">
@@ -83,6 +86,7 @@ export function pages(root) {
 <link rel="stylesheet" href="${racine}assets/style.css?v=${V}">
 ${scripts.map(s => `<script defer src="${racine}assets/${s}?v=${V}"></script>`).join("\n")}
 ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join("\n")}
+<script data-goatcounter="${COMPTEUR}/count" async src="https://gc.zgo.at/count.js"></script>
 </head>`;
   }
   const corpsDebut = (attrs = "") => `<body${attrs}>
@@ -269,8 +273,8 @@ ${pied}`;
   <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>العقود الهامة (بيع عربة، كراء، كراء تجاري) لن يكون لها نموذج إلا <b>بعد مراجعتها من قبل محام</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
-  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur.</p>
-  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك.</p>
+  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, jamais ce que vous écrivez.</p>
+  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها، ولا تحسب أبدًا ما تكتبه.</p>
 </section>
 <section class="carte" id="credits">${h2("info", "Crédits photos", "مصادر الصور")}
   <ul class="sources">${Object.values(CREDITS).map(c => `<li>${esc(c.titre)} — ${esc(c.auteur)}, <a href="${esc(c.licence_url || c.source)}" rel="noopener noreferrer" target="_blank">${esc(c.licence)}</a>, <a href="${esc(c.source)}" rel="noopener noreferrer" target="_blank">Wikimedia Commons</a> (${bi("recadrée et compressée", "مقصوصة ومضغوطة")})</li>`).join("")}</ul>

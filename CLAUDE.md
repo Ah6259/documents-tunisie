@@ -22,11 +22,14 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Sources citées : **officielles seulement** (`SOURCES` dans documents.js), liens en `rel="noopener noreferrer"`.
 - Photos : Wikimedia Commons, licence libre vérifiée, crédit sur chaque bandeau + page À propos, ≤ 150 Ko,
   pas de visage, pas d'emblème de l'État. Preuves dans `..\preuves conditions d'utilisation\<date>\photos\`.
-- Image d'aperçu : `assets/og-image-v1.png` (modèle `tools/og.html`). Si on la change : **nouveau nom de fichier**.
+- Image d'aperçu : `assets/og-image-v2.jpg` (modèle `tools/og.html`). Si on la change : **nouveau nom de fichier**.
+  Toujours en **JPEG < 250 Ko** (sinon WhatsApp n'affiche qu'une petite vignette ; le test le vérifie). L'ancien `og-image-v1.png` n'est plus utilisé.
 
 ## Sécurité (consigne commune du 05/10/2026)
 - `robots.txt` : moteurs de recherche autorisés, robots d'IA et aspirateurs interdits ; `<meta name="robots" content="noai, noimageai">`.
-- CSP en balise meta (scripts du site seulement, polices Google) : **aucun script en ligne, aucun `style="…"`, aucun `onclick`**.
+- Statistiques **GoatCounter** (anonymes, sans cookies, 05/10/2026) sur toutes les pages : compteur partagé
+  `https://prix-eaux-tunisie.goatcounter.com` (constante `COMPTEUR` dans generer.mjs ; pages séparées par chemin). Mentionné dans À propos.
+- CSP en balise meta (scripts du site + gc.zgo.at, polices Google ; envoi au compteur GoatCounter) : **aucun script en ligne, aucun `style="…"`, aucun `onclick`**.
 - Anti-copie légère (page.js + `.protege`) : modèles et étapes non sélectionnables, source ajoutée au texte copié ;
   les champs du formulaire restent libres. Anti-cadre (iframe d'un autre site).
 
@@ -41,5 +44,5 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - `tests.yml` : à chaque push.
 
 ## Reste à faire / idées
-- Relecture des 4 grands contrats par un avocat, puis modèles. Statistiques GoatCounter (à ajouter à la CSP).
+- Relecture des 4 grands contrats par un avocat, puis modèles.
 - Pages « explication seulement » (certificat de résidence, non gage, TEJ…). Autres documents de l'étude (55).
