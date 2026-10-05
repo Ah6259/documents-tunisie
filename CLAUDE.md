@@ -42,10 +42,20 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Anti-copie légère (page.js + `.protege`) : modèles et étapes non sélectionnables, source ajoutée au texte copié ;
   les champs du formulaire restent libres. Anti-cadre (iframe d'un autre site).
 
+## Votre avis (05/10/2026, règle d'Ahmed : sur chacun de ses sites)
+- Section `#avis` en bas de l'accueil (constante `AVIS` dans generer.mjs : carte FR + AR, note 😀🙂😐🙁 facultative, message
+  obligatoire ≤ 1000 caractères, e-mail facultatif), lien « Votre avis » dans le pied de page (`page.js`).
+- `assets/avis.js` (fichier externe, chargé seulement sur l'accueil, compté dans le `?v=`) envoie par `fetch` à
+  `https://formspree.io/f/mwlpakqj` (Accept JSON) **seulement au clic**, avec les champs cachés `site` = « Documents Tunisie »,
+  `page`, `_subject` et le piège `_gotcha`. CSP (`FORMSPREE` dans generer.mjs) : `connect-src` + `form-action`. Champs
+  sélectionnables malgré l'anti-copie ; le service worker laisse passer formspree.io ; mentionné dans À propos (« Vos données »).
+- Formspree gratuit = 50 envois/mois pour TOUS les sites (même formulaire). Test : `node tools/test_avis.mjs` (accepte un dossier).
+
 ## Tests (obligatoires avant toute publication)
 - `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 760 vérifications) → **TOUT PASSE**.
 - `node tools/sabotage.mjs` : 17 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
+- `node tools/test_avis.mjs` : Votre avis (section, lien du pied de page sur toutes les pages, CSP, envoi simulé, refus si vide).
 - Captures : serveur `python -m http.server 8931 --bind 127.0.0.1` dans `site/`, puis `sh tools/captures.sh`.
 - jsdom : `npm install --no-save --no-package-lock jsdom` (une fois par PC).
 

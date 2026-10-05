@@ -39,6 +39,7 @@ const SITE = "https://ah6259.github.io/documents-tunisie/";
           <a href="${racine}vente-voiture/">${T("Vendre une voiture", "بيع سيارة")}</a>
           <a href="${racine}location-maison/">${T("Louer un logement", "كراء مسكن")}</a>
           <a href="${racine}a-propos/">${T("À propos et méthode", "من نحن والمنهجية")}</a>
+          <a href="${racine}#avis">${T("Votre avis", "رأيك")}</a>
         </nav>
         <p>${T(`Informations vérifiées le ${MAJ} à partir des sources officielles citées sur chaque page.`, `معلومات تم التثبت منها في ${MAJ} انطلاقا من المصادر الرسمية المذكورة في كل صفحة.`)}</p>
         <p>${T("Site non officiel : modèles indicatifs qui ne remplacent pas un avocat. Le PDF est fabriqué dans votre téléphone : aucune donnée n'est envoyée.",

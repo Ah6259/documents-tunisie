@@ -16,7 +16,7 @@ export function pages(root) {
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
   const URL = "https://ah6259.github.io/documents-tunisie/";
   // ?v= : empreinte des fichiers communs (fins de ligne normalisées, pour que Windows et GitHub soient d'accord)
-  const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js"]
+  const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js", "assets/avis.js"]
     .map(f => lire(f).replace(/\r\n/g, "\n")).join("\n")).digest("hex").slice(0, 10);
 
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -54,7 +54,38 @@ export function pages(root) {
   const OUI = { oui: ["Oui", "نعم", "oui"], non: ["Non", "لا", "non"], parfois: ["Si on vous la demande", "عند الطلب", "oui"], possible: ["Facultatif", "اختياري", "oui"] };
   // GoatCounter : statistiques de visite anonymes, sans cookies (compteur partagé avec les autres sites d'Ahmed)
   const COMPTEUR = "https://prix-eaux-tunisie.goatcounter.com";
-  const CSP = `default-src 'self'; script-src 'self' https://gc.zgo.at; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: ${COMPTEUR}; connect-src 'self' ${COMPTEUR}; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests`;
+  // « Votre avis » (règle d'Ahmed du 05/10/2026 : sur chacun de ses sites) : envoi au clic vers Formspree (assets/avis.js)
+  const FORMSPREE = "https://formspree.io";
+  const AVIS = `<section class="carte avis" id="avis" aria-labelledby="avis-titre">
+  <h2 id="avis-titre"><span data-l="fr">Votre avis</span><span data-l="ar">رأيك يهمّنا</span></h2>
+  <p class="avis-intro"><span data-l="fr">Une remarque, une erreur, une idée ? Écrivez-nous : chaque message est lu.</span><span data-l="ar">ملاحظة، خطأ، فكرة؟ اكتب لنا: كل رسالة تُقرأ.</span></p>
+  <form id="avis-form" action="https://formspree.io/f/mwlpakqj" method="POST">
+    <fieldset>
+      <legend><span data-l="fr">Votre note (facultatif)</span><span data-l="ar">تقييمك (اختياري)</span></legend>
+      <div class="avis-notes">
+        <label><input type="radio" name="note" value="😀 Très bien"><span class="emoji" aria-hidden="true">😀</span><span class="avis-cache"><span data-l="fr">Très bien</span><span data-l="ar">ممتاز</span></span></label>
+        <label><input type="radio" name="note" value="🙂 Bien"><span class="emoji" aria-hidden="true">🙂</span><span class="avis-cache"><span data-l="fr">Bien</span><span data-l="ar">جيد</span></span></label>
+        <label><input type="radio" name="note" value="😐 Moyen"><span class="emoji" aria-hidden="true">😐</span><span class="avis-cache"><span data-l="fr">Moyen</span><span data-l="ar">متوسط</span></span></label>
+        <label><input type="radio" name="note" value="🙁 Pas bien"><span class="emoji" aria-hidden="true">🙁</span><span class="avis-cache"><span data-l="fr">Pas bien</span><span data-l="ar">سيئ</span></span></label>
+      </div>
+    </fieldset>
+    <label class="avis-etiquette" for="avis-message"><span data-l="fr">Votre message</span><span data-l="ar">رسالتك</span></label>
+    <textarea id="avis-message" name="message" required maxlength="1000" rows="4" data-ph-fr="Ce qui vous plaît, ce qui manque, une erreur à corriger…" data-ph-ar="ما يعجبك، ما ينقص، خطأ يجب تصحيحه…"></textarea>
+    <span class="avis-compte" id="avis-compte" aria-live="off">0 / 1000</span>
+    <label class="avis-etiquette" for="avis-email"><span data-l="fr">Votre e-mail (facultatif, pour vous répondre)</span><span data-l="ar">بريدك الإلكتروني (اختياري، للرد عليك)</span></label>
+    <input type="email" id="avis-email" name="email" autocomplete="email" maxlength="200" data-ph-fr="nom@example.com" data-ph-ar="nom@example.com">
+    <input type="hidden" name="site" value="Documents Tunisie">
+    <input type="hidden" name="page" value="">
+    <input type="hidden" name="_subject" value="Avis — Documents Tunisie">
+    <input type="text" name="_gotcha" class="avis-piege" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="avis-actions">
+      <button type="submit" class="avis-envoyer"><span data-l="fr">Envoyer</span><span data-l="ar">إرسال</span></button>
+      <span id="avis-status" role="status" aria-live="polite"></span>
+    </div>
+    <p class="avis-mention"><span data-l="fr">Votre avis est envoyé au créateur du site (service Formspree). Rien n'est envoyé sans clic sur « Envoyer ».</span><span data-l="ar">يُرسل رأيك إلى صاحب الموقع (خدمة ⁨Formspree⁩). لا يُرسل أي شيء دون الضغط على «إرسال».</span></p>
+  </form>
+</section>`;
+  const CSP = `default-src 'self'; script-src 'self' https://gc.zgo.at; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: ${COMPTEUR}; connect-src 'self' ${COMPTEUR} ${FORMSPREE}; object-src 'none'; base-uri 'self'; form-action 'self' ${FORMSPREE}; upgrade-insecure-requests`;
 
   function tete({ titre, desc, chemin, racine, scripts, jsonld }) {
     return `<!doctype html>
@@ -217,7 +248,7 @@ ${pied}`;
     const faq = { "@context": "https://schema.org", "@type": "WebSite", name: "Documents Tunisie", url: URL, inLanguage: ["fr", "ar"] };
     let s = tete({ titre: "Documents Tunisie — modèles gratuits à remplir (PDF, français et arabe) – نماذج وثائق تونسية",
       desc: "Modèles tunisiens gratuits à remplir sur téléphone : procuration, attestation de travail, demande de congé, autorisation de voyage… PDF en français et en arabe, avec les étapes officielles. نماذج مجانية بالعربية.",
-      chemin: "", racine: "", scripts: ["page.js"], jsonld: [faq] });
+      chemin: "", racine: "", scripts: ["page.js", "avis.js"], jsonld: [faq] });
     s += corpsDebut() + "\n";
     s += hero({ photo: "accueil", racine: "", h1: bi("Modèles de documents tunisiens, gratuits, à remplir sur téléphone", "نماذج وثائق تونسية مجانية، تُعمّر من الهاتف"),
       intro: bi("Remplissez, téléchargez le PDF en français ou en arabe, puis suivez les étapes officielles : municipalité, recette des finances, ATTT…",
@@ -250,6 +281,7 @@ ${pied}`;
   <ul class="sources" data-l="ar"><li>المراحل مأخوذة من <b>المصادر الرسمية</b> (الوزارات، الوكالة الفنية للنقل البري، الضمان الاجتماعي…)، ومذكورة في كل صفحة.</li><li>ما لم يتم تأكيده بعد يحمل عبارة <b>« يُتثبت منه »</b>، ولا نخترع أي معلومة.</li><li>يُصنع ملف ⁨PDF⁩ <b>في هاتفك</b>: لا يُرسل ولا يُحفظ أي شيء.</li></ul>
   <p class="note"><a href="a-propos/">${bi("Notre méthode, nos sources et nos limites →", "← منهجيتنا ومصادرنا وحدودنا")}</a></p>
 </section>
+${AVIS}
 <p class="avert">${bi("Site non officiel : les modèles sont indicatifs et ne remplacent pas un avocat.", "موقع غير رسمي: النماذج استرشادية ولا تعوض المحامي.")}</p>
 </main>
 ${pied}`;
@@ -278,8 +310,8 @@ ${pied}`;
   <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>العقود الهامة (بيع عربة، كراء، كراء تجاري) لن يكون لها نموذج إلا <b>بعد مراجعتها من قبل محام</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
-  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, jamais ce que vous écrivez.</p>
-  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها، ولا تحسب أبدًا ما تكتبه.</p>
+  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, jamais ce que vous écrivez. Seule exception, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer ».</p>
+  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها، ولا تحسب أبدًا ما تكتبه. الاستثناء الوحيد، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال».</p>
 </section>
 <section class="carte" id="credits">${h2("info", "Crédits photos", "مصادر الصور")}
   <ul class="sources">${Object.values(CREDITS).map(c => `<li>${esc(c.titre)} — ${esc(c.auteur)}, <a href="${esc(c.licence_url || c.source)}" rel="noopener noreferrer" target="_blank">${esc(c.licence)}</a>, <a href="${esc(c.source)}" rel="noopener noreferrer" target="_blank">Wikimedia Commons</a> (${bi("recadrée et compressée", "مقصوصة ومضغوطة")})</li>`).join("")}</ul>
