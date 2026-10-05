@@ -104,6 +104,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     document.getElementById("aucun").hidden = n > 0;
     document.querySelectorAll(".bloc-docs").forEach(b => b.hidden = !b.querySelector("[data-cherche]:not([hidden])"));
+    noterSiVide(n);
+  }
+  /* Recherche sans résultat : on note le mot cherché (anonyme, statistique GoatCounter), pour ajouter les documents
+     manquants. Seulement après 2 s sans frappe, une fois par mot ; les chiffres sont retirés (jamais de n° CIN/téléphone). */
+  const notes = new Set(); let minuteur;
+  function noterSiVide(n) {
+    clearTimeout(minuteur);
+    const mot = sansAccent(champ.value).replace(/[0-9]+/g, " ").replace(/[^\p{L} '-]+/gu, " ").replace(/\s+/g, " ").trim().slice(0, 40);
+    if (n > 0 || cat || mot.length < 3 || notes.has(mot)) return;
+    minuteur = setTimeout(() => {
+      notes.add(mot);
+      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "recherche-vide/" + mot.replace(/ /g, "-"), title: "Recherche sans résultat : " + mot, event: true }); } catch (e) {}
+    }, 2000);
   }
   champ.addEventListener("input", filtrer);
   document.querySelectorAll(".cat").forEach(b => b.addEventListener("click", () => {

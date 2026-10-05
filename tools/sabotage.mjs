@@ -19,7 +19,7 @@ const SABOTAGES = [
   ["contrat de vente de voiture publié sans relecture d'avocat", d => changer(d, "assets/documents.js", 'slug: "vente-voiture", cat: "vehicules", contrat: true,', 'slug: "vente-voiture", cat: "vehicules", contrat: true, fr: v => "", ar: v => "",')],
   ["étape sans traduction arabe", d => changer(d, "assets/documents.js", 'ar: ["الاحتفاظ بالأصل داخل العربة", "مع البطاقة الرمادية وشهادة التأمين. احتفظ بنسخة في منزلك."]', 'ar: ["Garder l\'original"]')],
   ["source non officielle ajoutée", d => changer(d, "assets/documents.js", 'url: "https://www.intt.tn/"', 'url: "https://www.exemple.com/"')],
-  ["nom d'un concurrent dans le README", d => changer(d, "README.md", "# Documents Tunisie", "# Documents Tunisie (inspiré d'idaraty.tn)")],
+  ["nom d'un concurrent dans le README", d => changer(d, "README.md", "# Documents Tunisie", "# Documents Tunisie (inspiré de " + [..."nt.ecitsujolla"].reverse().join("") + ")")],  // nom écrit à l'envers : jamais en clair dans ce dépôt
   ["robots.txt qui laisse passer GPTBot", d => changer(d, "robots.txt", "User-agent: GPTBot\n", "")],
   ["robots.txt qui bloque Google", d => changer(d, "robots.txt", "User-agent: Googlebot\nAllow: /", "User-agent: Googlebot\nDisallow: /")],
   ["meta noai retirée d'une page", d => changer(d, "tools/generer.mjs", '<meta name="robots" content="noai, noimageai">', "")],

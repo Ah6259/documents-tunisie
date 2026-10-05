@@ -192,9 +192,13 @@ if (existsSync(preuves)) {
 } else console.log("(preuves photos non disponibles sur cette machine : vérification ignorée)");
 
 // aucun concurrent cité (noms comparés par empreinte, pour ne pas les écrire dans ce dépôt public)
-const INTERDITS = new Set("307804f8a9e7bd48 8b30fe9b5db7797d 04dcb0d6d0e1cf09 41203aefbaa81d72 bcdb95fe1947c378 9637c0327a8cede8 bab1c2c81c93ac98 bcf950015754248a e4a62b35a8e5d6c2 261d1c911c05f428 a60b2df220c8f10e 7a7fa591155e1ddf 0d27b5e9a89a7130 91566e9abbb02832 05f0fa025a3b026b 87838d7d30f0653a".split(" "));
+const INTERDITS = new Set("307804f8a9e7bd48 8b30fe9b5db7797d 04dcb0d6d0e1cf09 41203aefbaa81d72 bcdb95fe1947c378 9637c0327a8cede8 bab1c2c81c93ac98 bcf950015754248a e4a62b35a8e5d6c2 261d1c911c05f428 a60b2df220c8f10e 7a7fa591155e1ddf 0d27b5e9a89a7130 91566e9abbb02832 05f0fa025a3b026b 87838d7d30f0653a 5415e774c52855a1 5835225ddbea8004 e2cbdee30c0107da e907a5ee176e59be".split(" "));
+// noms de domaine complets (un mot seul comme « diwan » est aussi un nom de rue de Tunis, présent dans un crédit photo)
+const INTERDITS_DOM = new Set("5d2ae528dda2bff3 e7d3434bfa09866c bac2e4bd95794e67 f8b6c6201a5d83e5 d0b96f4152cb3bef 89209bfe25390a67".split(" "));
+const empreinte = m => createHash("sha256").update(m).digest("hex").slice(0, 16);
 const publics = [...fichiers, "assets/documents.js", "assets/page.js", "assets/modele.js", "README.md", "CLAUDE.md", "GUIDE.md", "sitemap.xml", "robots.txt"].filter(f => existsSync(join(root, f)));
-const cites = publics.filter(f => (lire(f).toLowerCase().match(/[a-z0-9-]+/g) || []).some(m => INTERDITS.has(createHash("sha256").update(m).digest("hex").slice(0, 16))));
+const cites = publics.filter(f => { const s = lire(f).toLowerCase();
+  return (s.match(/[a-z0-9-]+/g) || []).some(m => INTERDITS.has(empreinte(m))) || (s.match(/[a-z0-9-]+\.[a-z]{2,4}/g) || []).some(m => INTERDITS_DOM.has(empreinte(m))); });
 check(`aucun nom de concurrent sur le site ni dans le dépôt${cites.length ? " — trouvé dans " + cites.join(", ") : ""}`, !cites.length);
 
 // robots.txt : Google oui, robots d'IA et aspirateurs non
