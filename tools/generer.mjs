@@ -155,8 +155,8 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
     const k = cat(d.cat), racine = "../";
     const titre = d.contrat
       ? `${d.titre.fr.replace(" : les étapes", "")} en Tunisie : les étapes (légalisation, enregistrement) – ${d.titre.ar.split(":")[0]}`
-      : `Modèle ${elision(d.titre.fr)} en Tunisie (PDF, français et arabe) – ${d.titre.ar}`;
-    const desc = `${d.bref.fr.length > 150 ? d.bref.fr.slice(0, d.bref.fr.lastIndexOf(" ", 147)) + "…" : d.bref.fr} ${d.titre.ar}.`;
+      : `Modèle gratuit ${elision(d.titre.fr)} en Tunisie (PDF, français et arabe) – ${d.titre.ar}`;
+    const desc = `${d.contrat ? "Guide gratuit" : "Modèle gratuit"}. ${d.bref.fr.length > 150 ? d.bref.fr.slice(0, d.bref.fr.lastIndexOf(" ", 147)) + "…" : d.bref.fr} ${d.titre.ar}.`;
     const faq = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: d.faq.flatMap(q => ["fr", "ar"].map(L => ({
       "@type": "Question", name: q[L][0], acceptedAnswer: { "@type": "Answer", text: q[L][1] } }))) };
     const fil = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
@@ -290,7 +290,7 @@ ${pied}`;
 
   /* ---------------- à propos ---------------- */
   {
-    let s = tete({ titre: "À propos et méthode — Documents Tunisie", desc: "Comment sont faits les modèles de Documents Tunisie : sources officielles, vérification, limites, données personnelles, crédits photos.",
+    let s = tete({ titre: "À propos et méthode — Documents Tunisie", desc: "Comment sont faits les modèles gratuits de Documents Tunisie : sources officielles, vérification, limites, données personnelles, crédits photos.",
       chemin: "a-propos/", racine: "../", scripts: ["page.js"], jsonld: [] });
     s += corpsDebut() + "\n";
     s += hero({ photo: "administration", racine: "../", fil: `<a href="../">${bi("Accueil", "الرئيسية")}</a>`, h1: bi("À propos et méthode", "من نحن والمنهجية"),

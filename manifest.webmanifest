@@ -2,7 +2,7 @@
   "id": "/documents-tunisie/",
   "name": "Documents Tunisie",
   "short_name": "Documents TN",
-  "description": "Modèles de documents tunisiens prêts à remplir en PDF, en français et en arabe, et les étapes expliquées.",
+  "description": "Modèles gratuits de documents tunisiens prêts à remplir en PDF, en français et en arabe, et les étapes expliquées.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
