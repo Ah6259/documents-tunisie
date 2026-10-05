@@ -82,6 +82,9 @@ export function pages(root) {
 <link rel="icon" href="${racine}assets/logo.svg" type="image/svg+xml">
 <link rel="manifest" href="${racine}manifest.webmanifest">
 <link rel="apple-touch-icon" href="${racine}assets/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Documents TN">
 <meta name="theme-color" content="#8C2B3A">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&amp;family=Noto+Kufi+Arabic:wght@400;600;700;800&amp;family=Noto+Naskh+Arabic:wght@400;700&amp;display=swap" rel="stylesheet">

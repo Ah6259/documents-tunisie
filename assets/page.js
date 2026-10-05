@@ -121,3 +121,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const maj = () => a.href = lienWhatsApp(T(a.dataset.fr, a.dataset.ar));
   document.addEventListener("langue", maj); maj();
 });
+
+/* Installation sur le téléphone : service worker PRUDENT (sw.js : réseau d'abord pour les pages et les données).
+   Seulement en https (jamais en file: pendant les tests locaux). */
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    try { navigator.serviceWorker.register("/documents-tunisie/sw.js", { scope: "/documents-tunisie/" }).catch(() => {}); } catch (e) { /* rien : le site marche sans */ }
+  });
+}

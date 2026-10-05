@@ -32,6 +32,12 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Installation sur le téléphone : `manifest.webmanifest` avec `"id": "/documents-tunisie/"` (UNIQUE : tous les sites d'Ahmed
   partagent l'origine ah6259.github.io ; sans id, Chrome disait « déjà installée »), icônes `assets/icons/` (192, 512, maskable,
   apple-touch-icon 180) tirées de `assets/logo.svg`. Liens dans le gabarit ; vérifié par le test.
+- **Service worker** (05/10/2026, installation complète Chrome/Android + iPhone) : `sw.js` à la racine, portée `/documents-tunisie/`,
+  enregistré à la fin de `assets/page.js` (https seulement, try/catch). **Réseau d'abord** pour les pages HTML et les données (le cache ne sert
+  que hors connexion ; sinon page « Hors connexion » FR+AR) ; CSS/JS/images avec `?v=` : cache puis mise à jour en arrière-plan.
+  Jamais en cache : non-GET, autres origines, autres sites d'Ahmed. Caches `documents-tunisie-<CACHE_VERSION>` (on ne supprime QUE les nôtres).
+  Vieille version bloquée sur un téléphone → changer `CACHE_VERSION`. Meta iPhone (`apple-mobile-web-app-capable`, `-title`
+  « Documents TN ») dans le gabarit generer.mjs. Test : `node tools/test_sw.mjs` (faux navigateur ; accepte un dossier en argument).
 - CSP en balise meta (scripts du site + gc.zgo.at, polices Google ; envoi au compteur GoatCounter) : **aucun script en ligne, aucun `style="…"`, aucun `onclick`**.
 - Anti-copie légère (page.js + `.protege`) : modèles et étapes non sélectionnables, source ajoutée au texte copié ;
   les champs du formulaire restent libres. Anti-cadre (iframe d'un autre site).
@@ -39,6 +45,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 ## Tests (obligatoires avant toute publication)
 - `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 760 vérifications) → **TOUT PASSE**.
 - `node tools/sabotage.mjs` : 17 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
 - Captures : serveur `python -m http.server 8931 --bind 127.0.0.1` dans `site/`, puis `sh tools/captures.sh`.
 - jsdom : `npm install --no-save --no-package-lock jsdom` (une fois par PC).
 

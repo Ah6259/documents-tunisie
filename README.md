@@ -41,6 +41,10 @@ Tous droits réservés (voir LICENSE).
 | `tests.yml` : tous les tests | à chaque modification | email de GitHub en cas d'échec |
 | Alerte « fiche âgée » sur le site | si `MAJ` a plus de 12 mois (date du visiteur) | le visiteur voit « information à revérifier » |
 
+**Installation sur le téléphone** : `sw.js` (service worker) = **réseau d'abord** pour les pages et les données (le cache ne sert
+que hors connexion) ; CSS/JS/images versionnés (?v=) = cache puis mise à jour. Si un téléphone garde une vieille version :
+changer `CACHE_VERSION` dans `sw.js`. Test : `node tools/test_sw.mjs`.
+
 **Chaque janvier (loi de finances)** et en cas d'alerte : demander à Claude « revérifie les sources de Documents Tunisie »
 (droits d'enregistrement, timbre, légalisation, délais), corriger `assets/documents.js`, changer `MAJ`, générer, tester.
 **Points encore « à vérifier »** : ils sont marqués sur chaque page concernée (jamais inventés).

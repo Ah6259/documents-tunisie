@@ -24,3 +24,11 @@
 12. **Robots** GitHub : surveillance mensuelle des sources (+ battement de cœur), tests à chaque modification.
 13. **Publier** (avec l'accord d'Ahmed) : créer le dépôt public `Ah6259/documents-tunisie`, pousser `site/` à la racine,
     activer GitHub Pages (branche main), puis Search Console + sitemap.
+
+## 05/10/2026 — Installation complète sur le téléphone (service worker)
+- `sw.js` à la racine (portée `/documents-tunisie/`), enregistré par `assets/page.js` (https seulement, jamais en `file:`).
+- **Réseau d'abord** pour les pages et les données (dernière version toujours servie ; cache seulement hors connexion,
+  sinon page « Hors connexion » FR + AR) ; fichiers `?v=` : cache puis mise à jour.
+- Meta iPhone dans le gabarit `tools/generer.mjs` : `apple-mobile-web-app-capable`, `apple-mobile-web-app-title`.
+- Test `node tools/test_sw.mjs` (faux navigateur) ; sabotage vérifié (HTML en cache d'abord, POST intercepté, mauvaise portée).
+- Vieille version bloquée sur un téléphone : changer `CACHE_VERSION` dans `sw.js`.
