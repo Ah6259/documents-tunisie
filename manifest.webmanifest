@@ -1,0 +1,31 @@
+{
+  "id": "/documents-tunisie/",
+  "name": "Documents Tunisie",
+  "short_name": "Documents TN",
+  "description": "Modèles de documents tunisiens prêts à remplir en PDF, en français et en arabe, et les étapes expliquées.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "lang": "fr",
+  "dir": "auto",
+  "theme_color": "#8C2B3A",
+  "background_color": "#F7F4F4",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

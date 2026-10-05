@@ -218,6 +218,14 @@ const tailleJpeg = b => { for (let o = 2; o < b.length - 9;) { const m = b[o + 1
   if (m >= 0xC0 && m <= 0xC2) return [b.readUInt16BE(o + 7), b.readUInt16BE(o + 5)]; o += 2 + n; } return [0, 0]; };
 const ogJpg = existsSync(join(root, "assets/og-image-v2.jpg")) ? readFileSync(join(root, "assets/og-image-v2.jpg")) : Buffer.alloc(4);
 check("image d'aperçu 1200×630 présente", (([l, h]) => l === 1200 && h === 630)(tailleJpeg(ogJpg)));
+// manifeste : id UNIQUE = chemin du site (sinon Chrome croit le site « déjà installé » : tous les sites partagent ah6259.github.io)
+let man = {}; try { man = JSON.parse(lire("manifest.webmanifest")); } catch (e) {}
+check("manifeste présent, id unique = chemin du site, start_url/scope ./, icônes 192, 512 et maskable existantes",
+  man.id === "/documents-tunisie/" && man.start_url === "./" && man.scope === "./" && man.display === "standalone" && !!man.name && !!man.short_name
+  && ["192x192", "512x512"].every(t => man.icons?.some(i => i.sizes === t)) && man.icons?.some(i => i.purpose === "maskable")
+  && man.icons.every(i => existsSync(join(root, i.src))) && existsSync(join(root, "assets/icons/apple-touch-icon.png")));
+check("toutes les pages : lien vers le manifeste, icône iPhone et theme-color", fichiers.every(p => { const s = lire(p), r = p.includes("/") ? "../" : "";
+  return s.includes(`<link rel="manifest" href="${r}manifest.webmanifest">`) && s.includes(`<link rel="apple-touch-icon" href="${r}assets/icons/apple-touch-icon.png">`) && s.includes('<meta name="theme-color"'); }));
 check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vignette) : ${Math.round(ogJpg.length / 1024)} Ko`, ogJpg[0] === 0xFF && ogJpg[1] === 0xD8 && ogJpg.length < 250000);
 
 console.log(erreurs ? `\n${erreurs} PROBLÈME(S)` : "\nTOUT PASSE");
