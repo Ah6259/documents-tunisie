@@ -77,7 +77,8 @@ for (const d of DOCS) {
   }
   check(`${d.slug} : un champ obligatoire vide est signalé avant le PDF`, M.erreurs(d, Object.fromEntries(d.champs.filter(c => !c.groupe).map(c => [c.id, ""]))).length > 0);
   check(`${d.slug} : formulaire complet = aucune erreur`, M.erreurs(d, valeursEx(d)).length === 0);
-  check(`${d.slug} : mention « modèle indicatif / ne remplace pas un avocat » sur le PDF`, M.feuille(d, valeursEx(d), "fr").includes("ne remplace pas") && M.feuille(d, valeursEx(d), "ar").includes("لا تعوض"));
+  // le PDF est le document de la personne : aucune mention du site (l'avertissement est sur la page web)
+  check(`${d.slug} : aucune mention du site sur le PDF`, ["fr", "ar"].every(L => !/ah6259|Documents Tunisie|وثائق تونس|indicatif|استرشادي/.test(M.feuille(d, valeursEx(d), L))));
 }
 
 // ---- 4. Pages chargées comme dans un navigateur ------------------------------------

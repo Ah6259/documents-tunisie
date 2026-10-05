@@ -14,6 +14,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 ## Le site
 - Adresse prévue : https://ah6259.github.io/documents-tunisie/ — dépôt `Ah6259/documents-tunisie` (GitHub Pages, main).
 - Couleur principale bordeaux `#8C2B3A`. Français + arabe (bouton, ou `?lang=ar`). Mobile d'abord.
+- **Le PDF ne porte AUCUNE mention du site** (décision d'Ahmed 05/10/2026 : c'est le document de la personne, on aide seulement à l'écrire ; l'avertissement « modèle indicatif / relisez » reste sur la page web). Test + sabotage le vérifient.
 - 15 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**) + 4 grands contrats en « étapes seulement »
   (vente voiture, vente moto, location maison, bail commercial) : **modèle seulement après relecture par un avocat**.
 - Données : `assets/documents.js`. Pages fabriquées par `node tools/generer.mjs` (ne pas éditer les HTML à la main).

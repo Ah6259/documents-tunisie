@@ -27,7 +27,7 @@ const SABOTAGES = [
   ["anti-copie retiré", d => changer(d, "assets/page.js", 'document.addEventListener("copy"', 'document.addEventListener("copie"')],
   ["page non régénérée après une modification des données", d => changer(d, "assets/documents.js", "Autoriser une autre personne à conduire votre voiture.", "Autoriser quelqu'un à conduire votre voiture.")],
   ["crédit photo retiré d'une page", d => changer(d, "tools/generer.mjs", '<p class="credit-photo" dir="ltr">', '<p class="x">')],
-  ["avertissement « avocat » retiré du PDF", d => changer(d, "assets/modele.js", "Ce document ne remplace pas le conseil d'un avocat.", "")],
+  ["mention du site ajoutée en bas du PDF", d => changer(d, "assets/modele.js", "${doc[L](lecteur(doc, val, L))}</article>", "${doc[L](lecteur(doc, val, L))}<p>Documents Tunisie (ah6259.github.io/documents-tunisie)</p></article>")],
   ["clé secrète oubliée dans le code", d => changer(d, "assets/page.js", 'const SITE =', 'const api_key = "AIzaSyD-1234567890abcdefghijklmnopqrstu";\nconst SITE =')],
   ["formulaire qui lance le PDF même vide", d => changer(d, "assets/modele.js", "if (err.length) {", "if (false) {")],
 ];

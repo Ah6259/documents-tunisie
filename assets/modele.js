@@ -104,12 +104,9 @@
     v.lettres = id => { const x = brut(id); return x && nombre(x) > 0 ? lettres(nombre(x), L) : vide(id); };
     return v;
   }
-  const PIED = {
-    fr: "Modèle indicatif — Documents Tunisie (ah6259.github.io/documents-tunisie). Ce document ne remplace pas le conseil d'un avocat.",
-    ar: "نموذج استرشادي — وثائق تونس (ah6259.github.io/documents-tunisie). هذه الوثيقة لا تعوض استشارة محام."
-  };
+  // le PDF ne porte aucune mention du site : c'est le document de la personne
   function feuille(doc, val, L) {
-    return `<article class="feuille" lang="${L}" dir="${L === "ar" ? "rtl" : "ltr"}">${doc[L](lecteur(doc, val, L))}<p class="d-pied">${PIED[L]}</p></article>`;
+    return `<article class="feuille" lang="${L}" dir="${L === "ar" ? "rtl" : "ltr"}">${doc[L](lecteur(doc, val, L))}</article>`;
   }
 
   /* ---------- contrôle avant le PDF ---------- */
@@ -125,7 +122,7 @@
     return e;
   }
 
-  const api = { lettres, lettresFR, lettresAR, montant, dateFR, lecteur, feuille, erreurs, visible, PIED };
+  const api = { lettres, lettresFR, lettresAR, montant, dateFR, lecteur, feuille, erreurs, visible };
   if (typeof module !== "undefined") { module.exports = api; return; }
   window.Modele = api;
 
