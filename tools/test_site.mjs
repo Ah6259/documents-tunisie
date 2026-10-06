@@ -243,6 +243,7 @@ async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois =
   const vc = new VirtualConsole(); vc.on("jsdomError", e => { if (!/Not implemented/.test(e.message)) { console.log("   erreur JS :", chemin, e.message); erreurs++; } });
   const dom = new JSDOM(html, { url: `https://ah6259.github.io/documents-tunisie/${chemin.replace("index.html", "")}`, runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc,
     beforeParse(w) {
+      try { if (!w.localStorage.getItem("langue")) w.localStorage.setItem("langue", "fr"); } catch (e) {}  // ces scénarios lisent les textes français
       const Vraie = w.Date;
       w.Date = class extends Vraie { constructor(...a) { super(...(a.length ? a : [horloge.t])); } static now() { return horloge.t; } };
       Object.defineProperty(w, "crypto", { value: webcrypto, configurable: true });
@@ -487,5 +488,6 @@ check("toutes les pages : lien vers le manifeste, icône iPhone et theme-color",
   return s.includes(`<link rel="manifest" href="${r}manifest.webmanifest">`) && s.includes(`<link rel="apple-touch-icon" href="${r}assets/icons/apple-touch-icon.png">`) && s.includes('<meta name="theme-color"'); }));
 check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vignette) : ${Math.round(ogJpg.length / 1024)} Ko`, ogJpg[0] === 0xFF && ogJpg[1] === 0xD8 && ogJpg.length < 250000);
 
+check("langue par défaut = ARABE (décision d'Ahmed), le choix du visiteur reste gardé", /let langue = "ar";/.test(readFileSync(join(root, "assets/page.js"), "utf8")) && /localStorage\.getItem\("langue"\) \|\| "ar"/.test(readFileSync(join(root, "assets/page.js"), "utf8")));
 console.log(erreurs ? `\n${erreurs} PROBLÈME(S)` : "\nTOUT PASSE");
 process.exit(erreurs ? 1 : 0);

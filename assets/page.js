@@ -13,8 +13,9 @@ const SITE = "https://ah6259.github.io/documents-tunisie/";
 (function () {
   const html = document.documentElement;
   const racine = html.dataset.racine || "";
-  let langue = "fr";
-  try { langue = localStorage.getItem("langue") || ((navigator.language || "").startsWith("ar") ? "ar" : "fr"); } catch (e) {}
+  // ARABE par défaut (décision d'Ahmed : la plupart des documents se font en arabe en Tunisie) ; le choix du visiteur est gardé
+  let langue = "ar";
+  try { langue = localStorage.getItem("langue") || "ar"; } catch (e) {}
   const demande = new URLSearchParams(location.search).get("lang");
   if (demande === "ar" || demande === "fr") langue = demande;
   window.T = (fr, ar) => html.lang === "ar" ? ar : fr;
