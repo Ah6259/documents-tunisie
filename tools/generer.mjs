@@ -536,7 +536,7 @@ ${pied}`;
   }
 
   /* ---------------- plan du site ---------------- */
-  const urls = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), ...GUIDES.map(d => d.slug + "/"), "a-propos/", "pass/"];
+  const urls = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), ...GUIDES.map(d => d.slug + "/"), "a-propos/", "pass/", "video/"];   // video/ : page vidéo (tools/page_video.mjs)
   const [j, m, a] = MAJ.split("/");
   out["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -551,5 +551,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const root = join(dirname(fileURLToPath(import.meta.url)), "..");
   const p = pages(root);
   for (const [f, s] of Object.entries(p)) { mkdirSync(dirname(join(root, f)), { recursive: true }); writeFileSync(join(root, f), s); }
+  // pages vidéo (video/) tirées de la page À propos : mêmes en-tête, pied, CSP et ?v= (tools/page_video.mjs)
+  (await import("./page_video.mjs")).pagesVideo(root);
   console.log(Object.keys(p).length + " fichiers écrits");
 }

@@ -420,9 +420,11 @@ for (const p of ["index.html", DOCS[0].slug + "/index.html"]) {
   const b = doc.querySelector("#entete button.partager");
   check(`${p} : bouton « Partager » (aria-label « Partager cette page »)`, b && b.getAttribute("aria-label") === "Partager cette page" && !w.navigator.share);
   b?.click(); await new Promise(ok => setTimeout(ok, 0));
-  const adresse = "https://ah6259.github.io/documents-tunisie/" + p.replace("index.html", "");
-  check(`${p} : sans navigator.share, le clic ouvre wa.me avec l'adresse de la page`, ouverts.length === 1 && ouverts[0][0].startsWith("https://wa.me/?text=")
-    && decodeURIComponent(ouverts[0][0].slice(20)).endsWith(" " + adresse) && ouverts[0][1] === "_blank");
+  // partage par lien (demande d'Ahmed) : page vidéo du site + adresse du site, dans la langue de la page (arabe par défaut)
+  const lg = doc.documentElement.lang, q = lg === "ar" ? "" : "?lang=" + lg;
+  const adresse = "https://ah6259.github.io/documents-tunisie/video/" + q;
+  check(`${p} : sans navigator.share, le clic ouvre wa.me avec la page vidéo + l'adresse du site`, ouverts.length === 1 && ouverts[0][0].startsWith("https://wa.me/?text=")
+    && decodeURIComponent(ouverts[0][0].slice(20)).endsWith(" " + adresse) && decodeURIComponent(ouverts[0][0]).includes("https://ah6259.github.io/documents-tunisie/" + q) && ouverts[0][1] === "_blank");
 }
 check("même version ?v= sur toutes les pages", V.size === 1);
 // les pages publiées sont à jour par rapport aux données
@@ -430,7 +432,7 @@ const gen = await import("file://" + join(root, "tools/generer.mjs").replace(/\\
 const attendu = gen.pages(root);
 const perimees = Object.entries(attendu).filter(([f, s]) => !existsSync(join(root, f)) || lire(f).replace(/\r\n/g, "\n") !== s).map(([f]) => f);
 check(`pages à jour (sinon : node tools/generer.mjs)${perimees.length ? " — " + perimees.join(", ") : ""}`, !perimees.length);
-check("plan du site : 28 pages (dont pass/)", (lire("sitemap.xml").match(/<loc>/g) || []).length === 28 && lire("sitemap.xml").includes("/documents-tunisie/pass/</loc>"));
+check("plan du site : au moins 29 pages (dont pass/ et la page vidéo)", (lire("sitemap.xml").match(/<loc>/g) || []).length >= 29 && lire("sitemap.xml").includes("/documents-tunisie/pass/</loc>") && lire("sitemap.xml").includes("/documents-tunisie/video/</loc>"));
 
 // photos : licence libre, crédit, preuves
 const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
