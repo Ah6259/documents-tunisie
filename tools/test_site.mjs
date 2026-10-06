@@ -490,6 +490,6 @@ check("toutes les pages : lien vers le manifeste, icône iPhone et theme-color",
   return s.includes(`<link rel="manifest" href="${r}manifest.webmanifest">`) && s.includes(`<link rel="apple-touch-icon" href="${r}assets/icons/apple-touch-icon.png">`) && s.includes('<meta name="theme-color"'); }));
 check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vignette) : ${Math.round(ogJpg.length / 1024)} Ko`, ogJpg[0] === 0xFF && ogJpg[1] === 0xD8 && ogJpg.length < 250000);
 
-check("langue par défaut = ARABE (décision d'Ahmed), le choix du visiteur reste gardé", /let langue = "ar";/.test(readFileSync(join(root, "assets/page.js"), "utf8")) && /localStorage\.getItem\("langue"\) \|\| "ar"/.test(readFileSync(join(root, "assets/page.js"), "utf8")));
+check("langue par défaut = ARABE (décision d'Ahmed), seule une langue fr/ar enregistrée est reprise (mémoire partagée entre sites)", (() => { const js = readFileSync(join(root, "assets/page.js"), "utf8"); return /let langue = "ar";/.test(js) && js.includes("/^(fr|ar)$/.test(") && js.includes(': "") || "ar"'); })());
 console.log(erreurs ? `\n${erreurs} PROBLÈME(S)` : "\nTOUT PASSE");
 process.exit(erreurs ? 1 : 0);

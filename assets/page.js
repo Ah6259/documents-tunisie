@@ -3,6 +3,8 @@ const MAJ = "05/10/2026";   // date UNIQUE de la dernière vérification des fic
 const SITE = "https://ah6259.github.io/documents-tunisie/";
 
 /* --- anti-cadre : le site ne s'affiche pas dans la page d'un autre site --- */
+// La mémoire du navigateur est PARTAGÉE par tous les sites d'ah6259.github.io : n'accepter que « fr » ou « ar »
+// (le site des conférences gardait « en » → textes tous cachés)
 (function () {
   if (window.top === window.self) return;
   let memeSite = false;
@@ -15,7 +17,7 @@ const SITE = "https://ah6259.github.io/documents-tunisie/";
   const racine = html.dataset.racine || "";
   // ARABE par défaut (décision d'Ahmed : la plupart des documents se font en arabe en Tunisie) ; le choix du visiteur est gardé
   let langue = "ar";
-  try { langue = localStorage.getItem("langue") || "ar"; } catch (e) {}
+  try { langue = (/^(fr|ar)$/.test(localStorage.getItem("langue") || "") ? localStorage.getItem("langue") : "") || "ar"; } catch (e) {}
   const demande = new URLSearchParams(location.search).get("lang");
   if (demande === "ar" || demande === "fr") langue = demande;
   window.T = (fr, ar) => html.lang === "ar" ? ar : fr;
