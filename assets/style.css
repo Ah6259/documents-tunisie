@@ -341,3 +341,8 @@ html[dir="rtl"] .entete-annuaire{padding:4px 5px 4px 10px}
 @media (max-width:560px){.entete-annuaire span{display:none}.entete-annuaire,html[dir="rtl"] .entete-annuaire{padding:4px}}
 .paiement summary.btn-clair::after{content:none}
 .paiement summary.btn-clair{display:block}
+
+/* vidéo de présentation : message « Préparation de la vidéo… » et lien discret (outil vidéos) */
+.partage-msg{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9999;background:#14202e;color:#fff;padding:12px 20px;border-radius:999px;font-weight:600;font-size:.95rem;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100% - 32px);text-align:center}
+.partage-msg[hidden]{display:none}
+.lien-video{text-align:center;font-size:.9rem;margin:18px 0 6px}.lien-video a{color:inherit;text-decoration:underline}
