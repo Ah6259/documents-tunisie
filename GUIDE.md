@@ -41,3 +41,6 @@
 ## 05/10/2026 (nuit) — Liens vers les annuaires gratuits
 - 9 pages (grands contrats, divorce, CIVP, mariage) ont un encart vers l'annuaire Avocats et notaires (et Mariage pour la page mariage). Liste `ANNUAIRE` dans `tools/generer.mjs`.
 - L'encart n'est jamais dans le PDF (test + sabotage). Clics dans GoatCounter : filtrer sur `lien-avocats/` et `lien-mariage/`.
+
+## 06/10/2026 — Exemple du document avant le formulaire
+- Chaque page de modèle montre d'abord la lettre remplie avec des données FICTIVES (champ `exemple` de chaque modèle dans `assets/documents.js`, sinon l'exemple du champ), rendue par la même fonction que le PDF (`feuilleExemple` de `assets/modele.js`, appelée par `tools/generer.mjs`). Étiquette et filigrane « EXEMPLE » / « مثال », réduite à 60 % de l'écran avec « Agrandir l'exemple » (balise `<details>`, sans script). Jamais imprimée ni comptée dans GoatCounter (tests + 3 sabotages).

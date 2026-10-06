@@ -109,6 +109,24 @@
     return `<article class="feuille" lang="${L}" dir="${L === "ar" ? "rtl" : "ltr"}">${doc[L](lecteur(doc, val, L))}</article>`;
   }
 
+  /* ---------- exemple affiché avant le formulaire (données fictives, jamais dans le PDF) ----------
+     ordre : doc.exemple[id] (valeur ou [fr, ar]) -> c.ex du champ -> valeur générique tirée du libellé */
+  function valeursExemple(doc, L) {
+    const v = {}, ex = doc.exemple || {}, i = L === "ar" ? 1 : 0;
+    for (const c of doc.champs) {
+      if (c.groupe) continue;
+      let x = c.id in ex ? ex[c.id] : c.ex;
+      if (Array.isArray(x)) x = x[i];
+      if (x === undefined || x === null || x === "") {
+        x = c.type === "case" ? false : c.type === "select" ? c.options[0].v : c.type === "date" ? "2026-10-05"
+          : c.type === "montant" ? "1000" : c[L];
+      }
+      v[c.id] = x;
+    }
+    return v;
+  }
+  function feuilleExemple(doc, L) { return feuille(doc, valeursExemple(doc, L), L); }
+
   /* ---------- contrôle avant le PDF ---------- */
   function erreurs(doc, val) {
     const e = [];
@@ -122,7 +140,7 @@
     return e;
   }
 
-  const api = { lettres, lettresFR, lettresAR, montant, dateFR, lecteur, feuille, erreurs, visible };
+  const api = { lettres, lettresFR, lettresAR, montant, dateFR, lecteur, feuille, erreurs, visible, valeursExemple, feuilleExemple };
   if (typeof module !== "undefined") { module.exports = api; return; }
   window.Modele = api;
 

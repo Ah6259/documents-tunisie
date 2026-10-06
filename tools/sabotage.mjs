@@ -33,6 +33,9 @@ const SABOTAGES = [
   ["prêt d'honneur : avertissement « modèle indicatif, dépôt en ligne seulement » retiré", d => changer(d, "assets/documents.js", "  attention: { fr:", "  attention0: { fr:")],
   ["prêt d'honneur : mots-clés de recherche (قرض الشرف, pret d'honneur…) oubliés", d => changer(d, "tools/generer.mjs", "x.motscles ? x.motscles.fr", "x.motscles0 ? x.motscles.fr")],
   ["clé secrète oubliée dans le code", d => changer(d, "assets/page.js", 'const SITE =', 'const api_key = "AIzaSyD-1234567890abcdefghijklmnopqrstu";\nconst SITE =')],
+  ["exemple du document retiré des pages de modèle", d => changer(d, "tools/generer.mjs", '<section class="carte" id="exemple">', '<section class="carte" id="exemple-retire">')],
+  ["exemple vidé (plus de données d'exemple, que des « ……… »)", d => changer(d, "assets/modele.js", "function feuilleExemple(doc, L) { return feuille(doc, valeursExemple(doc, L), L); }", "function feuilleExemple(doc, L) { return feuille(doc, {}, L); }")],
+  ["étiquette « EXEMPLE » ajoutée dans le PDF", d => changer(d, "assets/modele.js", '<article class="feuille" lang="${L}"', '<article class="feuille" lang="${L}" data-x="EXEMPLE"')],
   ["formulaire qui lance le PDF même vide", d => changer(d, "assets/modele.js", "if (err.length) {", "if (false) {")],
 ];
 let rates = 0;

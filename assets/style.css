@@ -256,3 +256,20 @@ html[lang="fr"] [data-l="fr"],html[lang="ar"] [data-l="ar"]{display:revert}
 #avis-status.err{color:var(--avis-err);font-weight:700}
 .avis .avis-mention{font-size:12.5px;color:var(--doux);margin:2px 0 0}
 .avis{--avis-c:var(--p);--avis-c-clair:var(--p-clair);--avis-ok:var(--vert);--avis-err:var(--rouge)}
+
+/* ---- exemple du document (avant le formulaire) : réduit, « Agrandir » sans script, jamais imprimé ---- */
+.ex-zone{display:flex;flex-direction:column;gap:10px}
+.ex-agrandir{order:2;text-align:center;border:0;padding:0}
+.ex-agrandir summary{display:inline-flex;gap:8px;cursor:pointer;list-style:none;font-weight:700;color:var(--p);border:1.5px solid currentColor;border-radius:999px;padding:8px 18px}
+.ex-agrandir .ex-fermer,.ex-agrandir[open] .ex-ouvrir{display:none}
+.ex-agrandir[open] .ex-fermer{display:inline}
+.ex-boite{position:relative;background:#E9E3E4;border-radius:14px;padding:12px;max-height:min(60vh,560px);overflow:hidden}
+.ex-boite::after{content:"";position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(rgba(233,227,228,0),#E9E3E4);pointer-events:none}
+.ex-agrandir[open] ~ .ex-boite{max-height:none}
+.ex-agrandir[open] ~ .ex-boite::after{display:none}
+.ex-page{position:relative}
+.ex-page .feuille{font-size:13.5px;margin-bottom:0}
+.ex-etiquette{position:absolute;top:8px;inset-inline-end:8px;z-index:2;background:#8C2B3A;color:#fff;font:700 11px/1.4 Figtree,"Noto Kufi Arabic",sans-serif;letter-spacing:.06em;border-radius:6px;padding:3px 8px}
+.ex-filigrane{position:absolute;top:190px;left:50%;z-index:1;transform:translate(-50%,-50%) rotate(-28deg);pointer-events:none;white-space:nowrap;
+  font:800 76px/1 Figtree,"Noto Kufi Arabic",sans-serif;letter-spacing:.12em;color:rgba(140,43,58,.14)}
+@media print{#exemple{display:none!important}}

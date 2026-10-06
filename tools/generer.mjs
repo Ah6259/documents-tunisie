@@ -12,6 +12,9 @@ export function pages(root) {
   const req = createRequire(join(root, "tools", "x.js"));
   delete req.cache[req.resolve(join(root, "assets/documents.js"))];
   const { DOCS, CONTRATS, GUIDES, CATEGORIES, SOURCES, LEG_SUPPR } = req(join(root, "assets/documents.js"));
+  // même rendu que le PDF (assets/modele.js) pour l'exemple affiché avant le formulaire
+  delete req.cache[req.resolve(join(root, "assets/modele.js"))];
+  const { feuilleExemple } = req(join(root, "assets/modele.js"));
   const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
   const URL = "https://ah6259.github.io/documents-tunisie/";
@@ -238,6 +241,20 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   ${h2("alerte", "Important avant de remplir", "مهم قبل التعمير")}
   <p>${bi(d.attention.fr, d.attention.ar)}</p>
   ${d.guidePlus ? `<p><a href="../${d.guidePlus}/">${bi("Toutes les conditions et les étapes →", "كل الشروط والمراحل ←")}</a></p>` : ""}
+</section>
+`;
+      // exemple rempli avec des données fictives : même mise en page que le PDF, étiquette « EXEMPLE », jamais imprimé
+      // (l'impression ne garde que #impression) ni compté (pas d'événement GoatCounter). Réduit, avec « Agrandir » sans script.
+      s += `<section class="carte" id="exemple">
+  ${h2("liste", "Exemple du document", "مثال للوثيقة")}
+  <p class="conseil">${bi("Voici à quoi ressemblera votre document, rempli ici avec des données fictives. Vous mettrez les vôtres dans le formulaire « Remplir le modèle » ci-dessous.", "هكذا ستبدو وثيقتك، معمّرة هنا بمعطيات وهمية. ستكتب معطياتك في استمارة « تعمير النموذج » أسفله.")}</p>
+  <div class="ex-zone">
+    <details class="ex-agrandir"><summary><span class="ex-ouvrir">${bi("Agrandir l'exemple", "تكبير المثال")}</span><span class="ex-fermer">${bi("Réduire l'exemple", "تصغير المثال")}</span></summary></details>
+    <div class="ex-boite protege">
+      <div class="ex-page" data-l="fr"><span class="ex-etiquette">EXEMPLE · données fictives</span><span class="ex-filigrane" aria-hidden="true">EXEMPLE</span>${feuilleExemple(d, "fr")}</div>
+      <div class="ex-page" data-l="ar"><span class="ex-etiquette">مثال · معطيات وهمية</span><span class="ex-filigrane" aria-hidden="true">مثال</span>${feuilleExemple(d, "ar")}</div>
+    </div>
+  </div>
 </section>
 `;
       s += `<section class="carte" id="remplir">

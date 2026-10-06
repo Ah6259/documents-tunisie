@@ -38,6 +38,16 @@ for (const d of TOUS) {
 for (const d of CONTRATS) check(`${d.slug} : PAS de modèle à remplir (relecture d'un avocat d'abord)`, !d.champs && !d.fr && !d.ar);
 for (const d of CONTRATS) check(`${d.slug} : droits d'enregistrement non confirmés marqués « à vérifier »`, d.averifier.fr.length >= 1);
 for (const d of GUIDES) check(`${d.slug} : explication seulement (aucun modèle à remplir), points non confirmés « à vérifier »`, d.guide === true && !d.champs && !d.fr && !d.ar && d.averifier.fr.length >= 1);
+for (const d of DOCS) {
+  const ids = d.champs.filter(c => !c.groupe).map(c => c.id), ex = d.exemple || {};
+  check(`${d.slug} : données d'exemple (champ « exemple ») connues, choix valides, FR + AR`, d.exemple && Object.keys(ex).length >= 5 && Object.keys(ex).every(k => ids.includes(k))
+    && d.champs.filter(c => c.type === "select").every(c => ["fr", "ar"].every(L => c.options.some(o => o.v === M.valeursExemple(d, L)[c.id])))
+    && Object.values(ex).filter(Array.isArray).every(x => x.length === 2 && ARABE.test(x[1]) || /^[\d\s()]+$/.test(x[1])));
+  check(`${d.slug} : exemple complet (aucun champ obligatoire vide), sans trou, sans vraie CIN`, ["fr", "ar"].every(L => !M.erreurs(d, M.valeursExemple(d, L)).length && !/mark class="vide"|undefined|NaN|\[object/.test(M.feuilleExemple(d, L)))
+    && ["fr", "ar"].every(L => !/\b\d{8,}\b/.test(M.feuilleExemple(d, L).replace(/<[^>]+>/g, ""))));
+  check(`${d.slug} : le PDF ne contient jamais « EXEMPLE »`, ["fr", "ar"].every(L => !/EXEMPLE|ex-filigrane|ex-etiquette/.test(M.feuilleExemple(d, L))));
+}
+check("exemple jamais imprimé (CSS : impression = #impression seulement, #exemple caché)", /body > \*:not\(#impression\)\{display:none!important\}/.test(lire("assets/style.css")) && /@media print\{#exemple\{display:none!important\}\}/.test(lire("assets/style.css")));
 for (const d of DOCS) check(`${d.slug} : modèle français et arabe`, typeof d.fr === "function" && typeof d.ar === "function" && d.champs.length >= 5);
 check("toutes les sources sont des sites officiels (.gov.tn, organismes publics)", Object.values(SOURCES).every(s => /\.(gov\.tn|tn)\//.test(s.url)));
 
@@ -113,6 +123,20 @@ for (const d of DOCS) {
   const imp = doc.getElementById("impression");
   check(`${d.slug} : PDF lancé, document final sans champ vide`, w.__imprime === 1 && imp && imp.querySelectorAll(".feuille").length === 2 && !imp.querySelector("mark.vide") && doc.getElementById("erreurs").hidden);
   check(`${d.slug} : le PDF imprimé ne contient aucun lien d'annuaire ni avertissement de la page`, !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques|indicatif|Important avant/.test(imp.innerHTML));
+  check(`${d.slug} : le PDF imprimé ne contient pas l'exemple (ni « EXEMPLE », ni données fictives)`, !/EXEMPLE|مثال|fictive|وهمية|0XXXXXXX/.test(imp.innerHTML));
+  // exemple du document AVANT le formulaire « Remplir le modèle » (données fictives, même rendu que le PDF)
+  const ex = doc.getElementById("exemple"), nomEx = l => M.valeursExemple(d, l)[d.champs.find(c => c.id && /nom$/.test(c.id)).id];
+  check(`${d.slug} : exemple du document affiché AVANT le formulaire`, ex && (ex.compareDocumentPosition(f) & w.Node.DOCUMENT_POSITION_FOLLOWING) && !ex.contains(f)
+    && (ex.compareDocumentPosition(doc.getElementById("remplir")) & w.Node.DOCUMENT_POSITION_FOLLOWING));
+  check(`${d.slug} : exemple marqué « EXEMPLE » (FR) et « مثال » (AR), une page par langue`, ex && ex.querySelector('[data-l="fr"] .ex-etiquette')?.textContent.includes("EXEMPLE")
+    && ex.querySelector('[data-l="ar"] .ex-etiquette')?.textContent.includes("مثال") && ex.querySelectorAll(".ex-filigrane").length === 2
+    && ex.querySelector('[data-l="fr"] .feuille[lang="fr"]') && ex.querySelector('[data-l="ar"] .feuille[lang="ar"][dir="rtl"]'));
+  check(`${d.slug} : exemple rempli avec les données d'exemple (aucun « ……… » vide)`, ex && !ex.querySelector("mark.vide") && ex.querySelectorAll(".feuille").length === 2
+    && ex.querySelector('.feuille[lang="fr"]').textContent.includes(nomEx("fr")) && ex.querySelector('.feuille[lang="ar"]').textContent.includes(nomEx("ar"))
+    && (t => (t.innerHTML = M.feuilleExemple(d, "fr"), t.textContent))(doc.createElement("div")) === ex.querySelector('.feuille[lang="fr"]').textContent);
+  check(`${d.slug} : exemple réduit avec bouton « Agrandir l'exemple » (sans script), protégé, sans lien ni bouton PDF`, ex && ex.querySelector("details.ex-agrandir summary")?.textContent.includes("Agrandir l'exemple")
+    && ex.querySelector(".ex-boite.protege") && !ex.querySelector("a, button, form, [data-annuaire]"));
+  check(`${d.slug} : exemple inchangé après le PDF (pas de mélange avec le document de la personne)`, ex && ex.querySelector('.feuille[lang="fr"]').textContent.includes(nomEx("fr")) && !imp.contains(ex));
   check(`${d.slug} : sections étapes, pièces, où aller, FAQ, sources`, ["etapes", "pieces", "ou", "faq", "sources"].every(id => doc.getElementById(id)) && doc.querySelectorAll("#etapes .schema li").length === d.etapes.length);
   check(`${d.slug} : avertissement « non officiel, ne remplace pas un avocat »`, doc.querySelector(".avert").textContent.includes("ne remplace pas un avocat"));
   check(`${d.slug} : champs du formulaire sélectionnables (pas dans une zone protégée)`, !f.closest(".protege"));
@@ -121,6 +145,9 @@ for (const d of DOCS) {
   const w = await page(DOCS[0].slug + "/index.html", "ar"), doc = w.document;
   check("page en arabe : lang=ar, dir=rtl, bouton « Français »", doc.documentElement.lang === "ar" && doc.documentElement.dir === "rtl" && doc.querySelector(".langue").textContent === "Français");
   check("page en arabe : aperçu du document en arabe par défaut", doc.querySelector('#apercu .feuille[lang="ar"]') && !doc.querySelector('#apercu .feuille[lang="fr"]'));
+  // (jsdom ne charge pas la feuille de style : on vérifie la structure + la règle CSS qui cache l'autre langue)
+  check("page en arabe : exemple du document en arabe (bloc data-l=\"ar\", rendu arabe de droite à gauche)", doc.querySelector('#exemple .ex-page[data-l="ar"] .feuille[lang="ar"][dir="rtl"]')
+    && /\[data-l\]\{display:none\}/.test(lire("assets/style.css")));
   check("page en arabe : exemples des champs en arabe", ARABE.test(doc.querySelector("#formulaire input[type=text]").placeholder));
   const ar = [...doc.querySelectorAll('[data-l="ar"]')].map(x => x.innerHTML).join(" ").replace(/<[^>]+>/g, " ");
   check("textes arabes : mots latins et nombres isolés", !/[؀-ۿ][^<⁨⁩]*?[\s(،:]PDF[\s.،)]/.test(ar) && ar.includes("⁨"));

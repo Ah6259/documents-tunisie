@@ -192,6 +192,11 @@ const DOCS = [
   legal: { legalisation: "oui", enregistrement: "non",
            cout: { fr: "Modèle gratuit. Frais de légalisation éventuels : à vérifier à la municipalité.", ar: "النموذج مجاني. معاليم التعريف بالإمضاء إن وجدت: يُتثبت منها بالبلدية." },
            delai: { fr: "Aucun délai légal ; gardez l'original dans le véhicule.", ar: "لا أجل قانوني؛ احتفظ بالأصل داخل العربة." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { m_nom: ["Mohamed Ben Salah", "محمد بن صالح"], m_cin: "0XXXXXXX", m_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"],
+             d_nom: ["Sami Trabelsi", "سامي الطرابلسي"], d_cin: "1XXXXXXX", d_adresse: ["5 avenue Habib Bourguiba, Sousse", "5 شارع الحبيب بورقيبة، سوسة"],
+             marque: ["Peugeot", "بيجو"], modele: "208", immat: ["123 TU 4567", "123 تونس 4567"], chassis: "VF3XXXXXXXXXXXXXX", duree: "revocation",
+             lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Le propriétaire (celui qui donne la procuration)", "المالك (الموكِّل)"), nom("m_nom"), cin("m_cin"), adresse("m_adresse"),
     groupe("Le conducteur autorisé", "السائق المرخص له (الوكيل)"), nom("d_nom", ["Sami Trabelsi", "سامي الطرابلسي"]), cin("d_cin"), adresse("d_adresse", ["5 avenue Habib Bourguiba, Sousse", "5 شارع الحبيب بورقيبة، سوسة"]),
@@ -252,6 +257,10 @@ ${faitAR(v)}${signe("إمضاء الموكِّل (المالك)<br><small>معر
           ar: "وثيقة يمضيها المؤجر (مع ختمه) تثبت تشغيل أجير: للبنك أو القنصلية أو الكراء أو ملف إداري." },
   legal: { legalisation: "parfois", enregistrement: "non",
            cout: { fr: "Gratuit.", ar: "مجانية." }, delai: { fr: "Aucun ; certains organismes veulent une attestation de moins de 3 mois.", ar: "لا يوجد؛ بعض الجهات تطلب شهادة لا يتجاوز تاريخها 3 أشهر." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { e_nom: ["Société Al Amal SARL", "شركة الأمل ش.ذ.م.م"], e_mf: "XXXXXXX/X/M/000", e_adresse: ["Zone industrielle, Ben Arous", "المنطقة الصناعية، بن عروس"],
+             r_nom: ["Leila Mansour", "ليلى منصور"], r_qualite: "gerant", s_nom: ["Mohamed Ben Salah", "محمد بن صالح"], s_cin: "0XXXXXXX", s_poste: ["comptable", "محاسب"],
+             s_debut: "2020-03-01", statut: "poste", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("L'employeur", "المؤجر"),
     c("e_nom", "Nom de l'entreprise ou de l'employeur", "اسم المؤسسة أو المؤجر", ["Société Al Amal SARL", "شركة الأمل ش.ذ.م.م"]),
@@ -310,6 +319,10 @@ ${faitAR(v)}${signe("المؤجر<br><small>الإمضاء والختم</small>"
           ar: "رسالة توجهها إلى مؤجرك لطلب عطلة في تواريخ محددة. سلّمها مقابل نسخة ممضاة (وصل استلام)." },
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." },
            delai: { fr: "Déposez-la assez tôt, selon le règlement de votre employeur.", ar: "قدّمه مبكرا، حسب تراتيب مؤجرك." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], poste: ["technicien", "تقني"], matricule: "4521", service: ["Service maintenance", "مصلحة الصيانة"], dest: "dir",
+             etab: ["Société Al Amal", "شركة الأمل"], type: "annuel", debut: "2026-11-02", fin: "2026-11-13", motif: ["raisons familiales", "أسباب عائلية"],
+             lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous", "أنت"), nom("nom"), c("poste", "Poste / fonction", "الخطة / الوظيفة", ["technicien", "تقني"]),
     c("matricule", "Matricule", "المعرف (رقم التسجيل)", "4521", { opt: true }), c("service", "Service", "المصلحة", ["Service maintenance", "مصلحة الصيانة"], { opt: true }),
@@ -358,6 +371,10 @@ ${salutAR}${signe("الإمضاء", "رأي المسؤول<br><small>☐ موا�
           ar: "رسالة يُعلم بها الأجير مؤجره بمغادرة عمله. سلّمها مقابل وصل أو أرسلها برسالة مضمونة الوصول مع الإعلام بالبلوغ." },
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit (recommandé : tarif de la Poste).", ar: "مجاني (الرسالة المضمونة: تعريفة البريد)." },
            delai: { fr: "Préavis prévu par votre contrat ou votre convention collective.", ar: "أجل الإعلام المسبق المنصوص عليه بعقدك أو بالاتفاقية المشتركة." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], poste: ["commercial", "مكلف بالمبيعات"], embauche: "2021-09-01", dest: "dir",
+             etab: ["Société Al Amal", "شركة الأمل"], e_adresse: ["Zone industrielle, Ben Arous", "المنطقة الصناعية، بن عروس"], dernier: "2026-11-05",
+             lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous", "أنت"), nom("nom"), adresse("adresse"), c("poste", "Poste occupé", "الخطة", ["commercial", "مكلف بالمبيعات"]),
     date("embauche", "Date d'embauche", "تاريخ الانتداب", { opt: true, ex: "2021-09-01" }),
@@ -405,6 +422,10 @@ ${salutAR}${signe("الإمضاء")}`,
   bref: { fr: "Lettre courte qui accompagne votre CV pour demander un emploi. À envoyer ou déposer avec vos diplômes.",
           ar: "رسالة قصيرة ترافق سيرتك الذاتية لطلب شغل. تُرسل أو تُودع مع شهائدك." },
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." }, delai: { fr: "Selon l'offre d'emploi.", ar: "حسب عرض الشغل." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], tel: "XX XXX XXX", email: "nom@exemple.tn", org: ["Société Al Amal", "شركة الأمل"],
+             poste: ["technicien en informatique", "تقني في الإعلامية"], diplome: ["une licence en informatique", "إجازة في الإعلامية"],
+             experience: ["deux ans de stage en maintenance", "سنتان من التربص في الصيانة"], lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous", "أنت"), nom("nom"), adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
     c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true, mode: "email" }),
@@ -452,6 +473,10 @@ ${salutFR("Madame, Monsieur")}${signe("Signature")}`,
           ar: "يرخص الأب أو الأم أو الولي لطفل قاصر في السفر. منذ القانون الأساسي عدد 46 لسنة 2015 المؤرخ في 23 نوفمبر 2015، يمكن للأم أيضا منح هذا الترخيص. يُعرَّف بالإمضاء بالبلدية." },
   legal: { legalisation: "oui", enregistrement: "non", cout: { fr: "Modèle gratuit. Frais de légalisation éventuels : à vérifier à la municipalité.", ar: "النموذج مجاني. معاليم التعريف بالإمضاء إن وجدت: يُتثبت منها بالبلدية." },
            delai: { fr: "À préparer avant le voyage ; indiquez les dates.", ar: "يُعدّ قبل السفر مع ذكر التواريخ." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { p_nom: ["Mohamed Ben Salah", "محمد بن صالح"], p_qualite: "pere", p_cin: "0XXXXXXX", p_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], e_nom: ["Yasmine Ben Salah", "ياسمين بن صالح"],
+             e_naissance: "2014-04-12", e_doc: "NXXXXXXX", accomp: "avec", a_nom: ["Sonia Gharbi", "سنية الغربي"], a_doc: "1XXXXXXX",
+             destination: ["Paris (France)", "باريس (فرنسا)"], depart: "2026-12-20", retour: "2027-01-03", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Le parent ou tuteur", "الولي"), nom("p_nom"), choix("p_qualite", "Vous êtes", "صفتك", QUALITE_PARENT), cin("p_cin"), adresse("p_adresse"),
     groupe("L'enfant", "الطفل"), nom("e_nom", ["Yasmine Ben Salah", "ياسمين بن صالح"]), date("e_naissance", "Date de naissance", "تاريخ الولادة", { ex: "2014-04-12" }),
@@ -501,6 +526,9 @@ ${faitAR(v)}${signe("إمضاء الولي<br><small>معرف به</small>")}`,
           ar: "تصرح كتابيا بصحة أمر: عدم الشغل (يطلبه غالبا الصندوق الوطني للضمان الاجتماعي)، الوضعية العائلية، إلخ. يُعرَّف بالإمضاء غالبا." },
   legal: { legalisation: "parfois", enregistrement: "non", cout: { fr: "Modèle gratuit. Légalisation éventuelle : à vérifier à la municipalité.", ar: "النموذج مجاني. التعريف بالإمضاء إن طُلب: يُتثبت من معاليمه بالبلدية." },
            delai: { fr: "Selon l'organisme qui la demande.", ar: "حسب الجهة الطالبة." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], cin: "0XXXXXXX", naissance: "1990-05-17", adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], objet: "nonemploi", pour: ["la CNSS", "الصندوق الوطني للضمان الاجتماعي"],
+             lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous", "أنت"), nom("nom"), cin("cin"), date("naissance", "Date de naissance", "تاريخ الولادة", { opt: true, ex: "1990-05-17" }), adresse("adresse"),
     groupe("Ce que vous déclarez", "موضوع التصريح"),
@@ -544,6 +572,11 @@ ${faitAR(v)}${signe("الإمضاء")}`,
           ar: "رسالة من الولي إلى المندوب الجهوي للتربية لنقل التلميذ إلى مؤسسة أخرى، مع وثيقة مؤيدة." },
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." },
            delai: { fr: "Période fixée chaque année par le ministère (souvent en été) : à vérifier.", ar: "فترة تحددها الوزارة كل سنة (غالبا في الصيف): يُتثبت منها." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { p_nom: ["Mohamed Ben Salah", "محمد بن صالح"], p_qualite: "pere", p_cin: "0XXXXXXX", p_adresse: ["8 rue des Roses, Ariana", "8 نهج الورود، أريانة"], tel: "XX XXX XXX",
+             e_nom: ["Youssef Ben Salah", "يوسف بن صالح"], e_naissance: "2013-02-08", niveau: "7", annee: "2026/2027",
+             actuel: ["École primaire Ibn Khaldoun, Sfax", "المدرسة الابتدائية ابن خلدون، صفاقس"], demande: ["Collège Ennour, Ariana", "المدرسة الإعدادية النور، أريانة"],
+             delegation: "Ariana", motif: "domicile", lieu: ["Ariana", "أريانة"], date: "2026-10-05" },
   champs: [
     groupe("Le parent ou tuteur", "الولي"), nom("p_nom"), choix("p_qualite", "Vous êtes", "صفتك", QUALITE_PARENT), cin("p_cin"), adresse("p_adresse"),
     c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
@@ -596,6 +629,11 @@ ${salutAR}${signe("إمضاء الولي")}`,
   bref: { fr: "Lettre adressée à une administration ou un service public pour signaler un problème et demander une réponse. Déposez-la au bureau d'ordre contre un numéro d'enregistrement.",
           ar: "رسالة توجه إلى إدارة أو مرفق عمومي للإبلاغ عن مشكل وطلب رد. أودعها بمكتب الضبط مقابل رقم تسجيل." },
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." }, delai: { fr: "Aucun ; gardez la preuve du dépôt.", ar: "لا يوجد؛ احتفظ بما يثبت الإيداع." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], cin: "0XXXXXXX", adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], tel: "XX XXX XXX", org: ["Municipalité de l'Ariana", "بلدية أريانة"],
+             objet: ["retard de traitement de mon dossier", "التأخير في معالجة ملفي"], ref: "2026/1458",
+             faits: ["J'ai déposé ma demande le 3 juin 2026 et je n'ai reçu aucune réponse malgré deux relances.", "أودعت مطلبي يوم 3 جوان 2026 ولم أتلق أي رد رغم تذكيرين."],
+             souhait: ["traiter mon dossier et m'informer de la décision.", "معالجة ملفي وإعلامي بالقرار."], lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous", "أنت"), nom("nom"), cin("cin"), adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
     groupe("L'administration", "الإدارة"), c("org", "Administration ou service", "الإدارة أو المصلحة", ["Municipalité de l'Ariana", "بلدية أريانة"]),
@@ -645,6 +683,9 @@ ${salutAR}${signe("الإمضاء")}`,
           ar: "رسالة يُنهي بها المتسوغ عقد الكراء مع احترام أجل الإعلام المسبق المنصوص عليه بالعقد. أرسلها برسالة مضمونة الوصول مع الإعلام بالبلوغ أو بواسطة عدل منفذ." },
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Recommandé : tarif de la Poste. Huissier : honoraires à demander.", ar: "الرسالة المضمونة: تعريفة البريد. العدل المنفذ: أجرة يُسأل عنها." },
            delai: { fr: "Préavis prévu par votre contrat.", ar: "أجل الإعلام المسبق المنصوص عليه بالعقد." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { l_nom: ["Mohamed Ben Salah", "محمد بن صالح"], l_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], b_nom: ["Hédi Karoui", "الهادي القروي"], b_adresse: ["8 rue de Rome, Tunis", "8 نهج روما، تونس"],
+             logement: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], date_bail: "2023-09-01", depart: "2026-12-31", envoi: "rar", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous (le locataire)", "أنت (المتسوغ)"), nom("l_nom"), adresse("l_adresse"),
     groupe("Le propriétaire", "المالك (المسوّغ)"), nom("b_nom", ["Hédi Karoui", "الهادي القروي"]), adresse("b_adresse", ["8 rue de Rome, Tunis", "8 نهج روما، تونس"]),
@@ -697,6 +738,10 @@ ${salutAR}${signe("إمضاء المتسوغ")}`,
           ar: "وثيقة يعترف فيها شخص (المدين) بأنه مدين لشخص آخر (الدائن) بمبلغ مالي ويلتزم بإرجاعه. يُعرَّف بإمضاء المدين بالبلدية، في نظيرين." },
   legal: { legalisation: "oui", enregistrement: "possible", cout: { fr: "Modèle gratuit. Légalisation et enregistrement éventuel : frais à vérifier.", ar: "النموذج مجاني. التعريف بالإمضاء والتسجيل إن وجد: معاليم يُتثبت منها." },
            delai: { fr: "Aucun délai légal pour la rédiger.", ar: "لا أجل قانوني لتحريره." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { d_nom: ["Mohamed Ben Salah", "محمد بن صالح"], d_cin: "0XXXXXXX", d_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], c_nom: ["Karim Jaziri", "كريم الجزيري"], c_cin: "1XXXXXXX",
+             c_adresse: ["3 rue Ibn Khaldoun, Sfax", "3 نهج ابن خلدون، صفاقس"], montant: "2500", remise: "2026-10-01", rembourse: "2027-03-31",
+             modalites: ["5 versements mensuels de 500 DT", "5 أقساط شهرية بـ 500 د"], lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Celui qui doit l'argent (débiteur)", "المدين"), nom("d_nom"), cin("d_cin"), adresse("d_adresse"),
     groupe("Celui qui a prêté (créancier)", "الدائن"), nom("c_nom", ["Karim Jaziri", "كريم الجزيري"]), cin("c_cin"), adresse("c_adresse", ["3 rue Ibn Khaldoun, Sfax", "3 نهج ابن خلدون، صفاقس"]),
@@ -744,6 +789,10 @@ ${faitAR(v)}${signe("المدين<br><small>إمضاء معرف به</small>", "
           ar: "ترخص لشخص تثق فيه (الوكيل) في القيام بإجراء محدد نيابة عنك: سحب وثيقة أو طرد، إيداع ملف. يُعرَّف بالإمضاء بالبلدية." },
   legal: { legalisation: "oui", enregistrement: "non", cout: { fr: "Modèle gratuit. Frais de légalisation éventuels : à vérifier.", ar: "النموذج مجاني. معاليم التعريف بالإمضاء إن وجدت: يُتثبت منها." },
            delai: { fr: "Valable pour la durée que vous indiquez.", ar: "صالح للمدة التي تحددها." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { m_nom: ["Mohamed Ben Salah", "محمد بن صالح"], m_cin: "0XXXXXXX", m_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], d_nom: ["Sami Trabelsi", "سامي الطرابلسي"], d_cin: "1XXXXXXX",
+             d_adresse: ["5 avenue Habib Bourguiba, Sousse", "5 شارع الحبيب بورقيبة، سوسة"], objet: "passeport",
+             aupres: ["Bureau de poste de l'Ariana", "مكتب بريد أريانة"], validite: "2026-12-31", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous (le mandant)", "أنت (الموكِّل)"), nom("m_nom"), cin("m_cin"), adresse("m_adresse"),
     groupe("La personne de confiance (mandataire)", "الوكيل"), nom("d_nom", ["Sami Trabelsi", "سامي الطرابلسي"]), cin("d_cin"), adresse("d_adresse", ["5 avenue Habib Bourguiba, Sousse", "5 شارع الحبيب بورقيبة، سوسة"]),
@@ -791,6 +840,9 @@ ${faitAR(v)}${signe("الموكِّل<br><small>إمضاء معرف به</small>
           ar: "تشهد بأن شخصا يقيم بمنزلك (ملف إداري، بنك، ترسيم). يُعرَّف عادة بإمضاء المُؤوي." },
   legal: { legalisation: "oui", enregistrement: "non", cout: { fr: "Modèle gratuit. Frais de légalisation éventuels : à vérifier.", ar: "النموذج مجاني. معاليم التعريف بالإمضاء إن وجدت: يُتثبت منها." },
            delai: { fr: "Certains organismes la veulent récente (moins de 3 mois).", ar: "بعض الجهات تطلبها حديثة (أقل من 3 أشهر)." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { h_nom: ["Mohamed Ben Salah", "محمد بن صالح"], h_cin: "0XXXXXXX", h_naissance: "1975-01-20", h_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], q_nom: ["Amine Ben Salah", "أمين بن صالح"],
+             q_doc: "1XXXXXXX", q_naissance: "2001-07-09", depuis: "2025-09-01", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous (qui hébergez)", "أنت (المُؤوي)"), nom("h_nom"), cin("h_cin"), date("h_naissance", "Date de naissance", "تاريخ الولادة", { opt: true, ex: "1975-01-20" }), adresse("h_adresse"),
     groupe("La personne hébergée", "الشخص المُقيم"), nom("q_nom", ["Amine Ben Salah", "أمين بن صالح"]), c("q_doc", "N° de CIN ou de passeport", "عدد بطاقة التعريف أو جواز السفر", "09876543"),
@@ -829,6 +881,9 @@ ${faitAR(v)}${signe("إمضاء المُؤوي<br><small>معرف به</small>")
   bref: { fr: "Reçu signé par la personne qui reçoit l'argent : loyer d'un mois (quittance) ou toute autre somme. Gardez-en une copie.",
           ar: "وصل يمضيه من تسلم المبلغ: معين كراء شهر أو أي مبلغ آخر. احتفظ بنسخة." },
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." }, delai: { fr: "À chaque paiement.", ar: "عند كل خلاص." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { type: "loyer", p_nom: ["Hédi Karoui", "الهادي القروي"], l_nom: ["Mohamed Ben Salah", "محمد بن صالح"], montant: "650", logement: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], mois: "10", annee: "2026",
+             mode: "especes", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Le reçu", "الوصل"),
     choix("type", "Il s'agit", "النوع", [{ v: "loyer", fr: "d'un loyer", ar: "معين كراء" }, { v: "especes", fr: "d'une autre somme", ar: "مبلغ آخر" }]),
@@ -874,6 +929,9 @@ ${faitAR(v)}${signe("إمضاء المتسلم")}`,
           ar: "رسالة إلى مشغلك لفسخ اشتراك (انترنت قار، موزع، خط قار أو جوال). أرسلها برسالة مضمونة أو أودعها بالوكالة مقابل وصل." },
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit (recommandé : tarif de la Poste).", ar: "مجاني (الرسالة المضمونة: تعريفة البريد)." },
            delai: { fr: "Préavis et durée d'engagement prévus par votre contrat.", ar: "أجل الإعلام ومدة الالتزام المنصوص عليها بعقدك." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], cin: "0XXXXXXX", adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], tel: "XX XXX XXX", operateur: "Tunisie Telecom", service: "fixe",
+             contrat: "C-XXXXXXXX", ligne: "71 XXX XXX", fin: "2026-11-01", equipement: true, lieu: ["Tunis", "تونس"], date: "2026-10-05" },
   champs: [
     groupe("Vous (l'abonné)", "أنت (المشترك)"), nom("nom"), cin("cin"), adresse("adresse"), c("tel", "Téléphone de contact", "هاتف الاتصال", "20 123 456", { mode: "tel" }),
     groupe("L'abonnement", "الاشتراك"),
@@ -929,6 +987,11 @@ ${salutAR}${signe("إمضاء المشترك")}`,
   motscles: HONNEUR_MOTS,
   legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit : ni intérêts, ni frais d'étude, ni garantie.", ar: "مجاني: دون فوائد ولا معاليم دراسة ولا ضمان." },
            delai: { fr: "Réponse de la banque en 10 jours ouvrables au plus après le dépôt en ligne.", ar: "رد البنك في أجل أقصاه 10 أيام عمل بعد الإيداع عن بعد." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], cin: "0XXXXXXX", adresse: ["15 rue de la Liberté, Sfax", "15 نهج الحرية، صفاقس"], tel: "XX XXX XXX", email: "nom@exemple.tn",
+             situation: ["artisan indépendant", "حرفي مستقل"], gouv: "Sfax", categorie: "particulier", montant: "4000",
+             objet: ["l'achat d'une machine à coudre professionnelle", "شراء آلة خياطة مهنية"], banque: ["agence principale de Sfax", "الوكالة الرئيسية بصفاقس"], rib: "XXXXXXXXXXXXXXXXXXXX",
+             p_cin: true, p_situation: true, p_projet: true, lieu: ["Sfax", "صفاقس"], date: "2026-10-05" },
   champs: [
     groupe("Vous", "أنت"), nom("nom"), cin("cin"), adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
     c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true, mode: "email" }),

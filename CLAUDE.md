@@ -56,8 +56,8 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Formspree gratuit = 50 envois/mois pour TOUS les sites (même formulaire). Test : `node tools/test_avis.mjs` (accepte un dossier).
 
 ## Tests (obligatoires avant toute publication)
-- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 1040 vérifications) → **TOUT PASSE**.
-- `node tools/sabotage.mjs` : 21 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 1190 vérifications) → **TOUT PASSE**.
+- `node tools/sabotage.mjs` : 24 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
 - `node tools/test_avis.mjs` : Votre avis (section, lien du pied de page sur toutes les pages, CSP, envoi simulé, refus si vide).
 - Captures : serveur `python -m http.server 8931 --bind 127.0.0.1` dans `site/`, puis `sh tools/captures.sh`.
@@ -85,3 +85,6 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 
 ## Prêt d'honneur (06/10/2026)
 - Démarche `pret-d-honneur` + modèle `demande-pret-d-honneur` (textes communs `HONNEUR_*` dans documents.js ; champ `modele` d'un guide = lien vers un modèle, `attention` d'un modèle = encart « Important » avant le formulaire, `motscles` = mots de la recherche). Sources : décret n° 2026-148 (JORT, texte intégral non lu), **circulaire BCT n° 2026-08 lue** (dépôt UNIQUEMENT sur la plateforme en ligne de la banque depuis le 01/10/2026 : une lettre papier n'est pas prise en compte → la lettre sert à préparer), annonce BTS. Liens : annuaire des comptables + calculateur de crédit (événements `lien-comptables/…`, `lien-outils/…`). À revoir quand les banques publient leurs listes de pièces.
+
+## Exemple du document (06/10/2026, demande d'Ahmed)
+- Section `#exemple` AVANT « Remplir le modèle » : la lettre remplie avec des données **fictives** (champ `exemple` de chaque modèle : `{ id: valeur | [fr, ar] }` ; sinon `ex` du champ ; sinon libellé), même rendu que le PDF (`feuilleExemple` de modele.js, fabriquée par generer.mjs), FR ou AR selon la langue, étiquette + filigrane « EXEMPLE / مثال », réduite (60 % de l'écran) avec `<details>` « Agrandir l'exemple ». **Nouveau modèle → lui donner un `exemple`** (CIN « 0XXXXXXX », jamais de vraie personne). Jamais imprimée (seul `#impression` l'est), pas d'événement GoatCounter ; tests + 3 sabotages.
