@@ -22,7 +22,7 @@ const TOUS = [...DOCS, ...CONTRATS, ...GUIDES];
 const ARABE = /[؀-ۿ]/;
 
 // ---- 1. Données : chaque document est complet ---------------------------------
-check("16 documents à remplir, 4 grands contrats et 5 démarches expliquées", DOCS.length === 16 && CONTRATS.length === 4 && GUIDES.length === 5);
+check("au moins 16 documents à remplir, 4 grands contrats et 5 démarches expliquées (le robot de nuit peut en ajouter ; aucun ne doit disparaître)", DOCS.length >= 16 && CONTRATS.length >= 4 && GUIDES.length >= 5);
 check("adresses (slug) uniques", new Set(TOUS.map(d => d.slug)).size === TOUS.length);
 const bil = o => o && o.fr && o.ar && ARABE.test(JSON.stringify(o.ar)) && JSON.stringify(o.fr).length > 4;
 for (const d of TOUS) {
