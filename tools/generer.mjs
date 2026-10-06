@@ -21,7 +21,12 @@ export function pages(root) {
 
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   // dans un texte arabe, les mots latins et les nombres sont isolés (U+2068…U+2069) pour garder le bon ordre de lecture
-  const isoler = ar => String(ar).replace(/[A-Za-z0-9][A-Za-z0-9 .,'%/()+-]*[A-Za-z0-9)%]|[A-Za-z0-9]/g, m => "⁨" + m + "⁩");
+  // (une parenthèse fermante qui appartient au texte arabe reste dehors : « (… لسنة 2026) » et non « (2026 »)
+  const isoler = ar => String(ar).replace(/[A-Za-z0-9][A-Za-z0-9 .,'%/()+-]*[A-Za-z0-9)%]|[A-Za-z0-9]/g, m => {
+    let fin = "";
+    while (m.endsWith(")") && (m.match(/\(/g) || []).length < (m.match(/\)/g) || []).length) { fin += ")"; m = m.slice(0, -1); }
+    return "⁨" + m + "⁩" + fin;
+  });
   const bi = (fr, ar) => `<span data-l="fr">${esc(fr)}</span><span data-l="ar">${esc(isoler(ar))}</span>`;
   const svg = (d, cls = "") => `<svg viewBox="0 0 24 24" aria-hidden="true"${cls ? ` class="${cls}"` : ""}>${d}</svg>`;
   const ICONES = {
@@ -89,12 +94,16 @@ export function pages(root) {
   // (il est dans <main>, caché à l'impression). Profession réglementée : texte neutre, pas de « meilleur », pas de classement.
   // Clic compté anonymement par page.js (attribut data-annuaire → événement GoatCounter).
   const AVOCATS = "https://ah6259.github.io/avocats-notaires-tunisie/", MARIAGE = "https://ah6259.github.io/mariage-tunisie/";
+  const COMPTABLES = "https://ah6259.github.io/comptables-tunisie/", CREDIT = "https://ah6259.github.io/outils-pratiques-tunisie/credit/";
+  const AIDE_HONNEUR = ["Se faire aider pour le dossier : trouver un comptable près de chez vous (annuaire gratuit)", "المساعدة في إعداد الملف: إيجاد محاسب قريب منك (دليل مجاني)", COMPTABLES, "lien-comptables"];
+  const CALCUL_CREDIT = ["Comparer avec un crédit bancaire classique (calculateur gratuit)", "المقارنة مع قرض بنكي عادي (حاسبة مجانية)", CREDIT, "lien-outils"];
   const RELIRE = ["Faire relire ce contrat par un avocat ou un notaire près de chez vous (annuaire gratuit)", "مراجعة هذا العقد من قبل محام أو عدل إشهاد قريب منك (دليل مجاني)"];
   const ANNUAIRE = {
     "vente-voiture": [RELIRE], "vente-moto": [RELIRE], "location-maison": [RELIRE], "bail-commercial": [RELIRE], "contrat-de-travail": [RELIRE],
     "reconnaissance-de-dette": [["Faire relire ce document par un avocat ou un notaire près de chez vous (annuaire gratuit)", "مراجعة هذه الوثيقة من قبل محام أو عدل إشهاد قريب منك (دليل مجاني)"]],
     "divorce": [["Trouver un avocat près de chez vous (annuaire gratuit)", "إيجاد محام قريب منك (دليل مجاني)"]],
     "civp-karama-service-civil": [["Une question sur votre contrat ? Trouver un avocat près de chez vous (annuaire gratuit)", "سؤال حول عقدك؟ إيجاد محام قريب منك (دليل مجاني)"]],
+    "pret-d-honneur": [AIDE_HONNEUR, CALCUL_CREDIT], "demande-pret-d-honneur": [AIDE_HONNEUR, CALCUL_CREDIT],
     "mariage": [["Trouver un notaire (عدل إشهاد) près de chez vous (annuaire gratuit)", "إيجاد عدل إشهاد قريب منك (دليل مجاني)"],
                 ["Prestataires de mariage (annuaire gratuit)", "مزودو خدمات الأعراس (دليل مجاني)", MARIAGE, "lien-mariage"]]
   };
@@ -210,8 +219,10 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
     if (d.guide) {
       s += `<section class="carte contrat-bientot" id="explication-seulement">
   ${h2("info", "Explication seulement", "شرح فقط")}
-  <p>${bi("Cette page explique les règles et les étapes à partir des textes officiels. Il n'y a pas de modèle à remplir : pour votre cas personnel, adressez-vous à l'administration concernée ou à un avocat.",
-           "تشرح هذه الصفحة القواعد والمراحل انطلاقا من النصوص الرسمية. لا يوجد نموذج للتعمير: لوضعيتك الخاصة، توجه إلى الإدارة المعنية أو إلى محام.")}</p>
+  ${d.modele ? (m => `<p>${bi("Cette page explique les règles et les étapes à partir des textes officiels. Le dépôt se fait auprès de l'organisme concerné ; pour préparer votre demande :", "تشرح هذه الصفحة القواعد والمراحل انطلاقا من النصوص الرسمية. يتم الإيداع لدى الجهة المعنية؛ ولإعداد مطلبك:")}</p>
+  <p class="annuaire-lien"><a href="../${m.slug}/">${bi("Modèle gratuit : " + m.titre.fr.charAt(0).toLowerCase() + m.titre.fr.slice(1) + " (PDF, français et arabe) →", "نموذج مجاني: " + m.titre.ar + " ←")}</a></p>`)(DOCS.find(x => x.slug === d.modele))
+    : `<p>${bi("Cette page explique les règles et les étapes à partir des textes officiels. Il n'y a pas de modèle à remplir : pour votre cas personnel, adressez-vous à l'administration concernée ou à un avocat.",
+           "تشرح هذه الصفحة القواعد والمراحل انطلاقا من النصوص الرسمية. لا يوجد نموذج للتعمير: لوضعيتك الخاصة، توجه إلى الإدارة المعنية أو إلى محام.")}</p>`}
 </section>
 `;
     } else if (d.contrat) {
@@ -223,6 +234,12 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   ${utiles.length ? `<p>${bi("Documents utiles déjà disponibles :", "وثائق مفيدة متوفرة الآن:")}</p><ul class="liste">${utiles.map(x => `<li><a href="../${x.slug}/">${bi(x.titre.fr, x.titre.ar)}</a></li>`).join("")}</ul>` : ""}
 </section>\n`;
     } else {
+      if (d.attention) s += `<section class="carte averifier" id="attention">
+  ${h2("alerte", "Important avant de remplir", "مهم قبل التعمير")}
+  <p>${bi(d.attention.fr, d.attention.ar)}</p>
+  ${d.guidePlus ? `<p><a href="../${d.guidePlus}/">${bi("Toutes les conditions et les étapes →", "كل الشروط والمراحل ←")}</a></p>` : ""}
+</section>
+`;
       s += `<section class="carte" id="remplir">
   ${h2("remplir", "Remplir le modèle", "تعمير النموذج")}
   <p class="conseil">${bi("Langue du document :", "لغة الوثيقة:")}</p>
@@ -270,7 +287,7 @@ ${pied}`;
 
   function carteDoc(x, racine) {
     const k = cat(x.cat);
-    return `<a class="carte doc" href="${racine}${x.slug}/" data-cat="${x.cat}" data-cherche="${esc([x.titre.fr, x.titre.ar, x.court.fr, x.court.ar, k.fr, k.ar].join(" "))}"><span class="ic">${svg(k.svg)}</span><span><h3>${bi(x.titre.fr, x.titre.ar)}</h3><p>${bi(x.court.fr, x.court.ar)}</p></span></a>`;
+    return `<a class="carte doc" href="${racine}${x.slug}/" data-cat="${x.cat}" data-cherche="${esc([x.titre.fr, x.titre.ar, x.court.fr, x.court.ar, k.fr, k.ar, x.motscles ? x.motscles.fr + " " + x.motscles.ar : ""].join(" "))}"><span class="ic">${svg(k.svg)}</span><span><h3>${bi(x.titre.fr, x.titre.ar)}</h3><p>${bi(x.court.fr, x.court.ar)}</p></span></a>`;
   }
 
   /* ---------------- accueil ---------------- */
@@ -343,8 +360,8 @@ ${pied}`;
   <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>العقود الهامة (بيع عربة، كراء، كراء تجاري) لن يكون لها نموذج إلا <b>بعد مراجعتها من قبل محام</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
-  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) et les clics vers les annuaires gratuits d'avocats et de notaires, jamais ce que vous écrivez dans les formulaires. Seule exception, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer ».</p>
-  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية للمحامين وعدول الإشهاد، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناء الوحيد، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال».</p>
+  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) et les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, jamais ce que vous écrivez dans les formulaires. Seule exception, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer ».</p>
+  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية (المحامون، عدول الإشهاد، المحاسبون) وحاسبة القروض، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناء الوحيد، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال».</p>
 </section>
 <section class="carte" id="credits">${h2("info", "Crédits photos", "مصادر الصور")}
   <ul class="sources">${Object.values(CREDITS).map(c => `<li>${esc(c.titre)} — ${esc(c.auteur)}, <a href="${esc(c.licence_url || c.source)}" rel="noopener noreferrer" target="_blank">${esc(c.licence)}</a>, <a href="${esc(c.source)}" rel="noopener noreferrer" target="_blank">Wikimedia Commons</a> (${bi("recadrée et compressée", "مقصوصة ومضغوطة")})</li>`).join("")}</ul>

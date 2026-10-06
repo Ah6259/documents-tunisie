@@ -221,6 +221,10 @@ html[lang="fr"] [data-l="fr"],html[lang="ar"] [data-l="ar"]{display:revert}
   #impression .d-titre{margin:4mm 0 12mm!important}
   #impression .d-signe{min-height:45mm}
   #impression .feuille:last-child{break-after:auto;page-break-after:auto}
+  /* lettre longue (demande de prêt d'honneur) : un peu plus serrée pour tenir sur une page avec la place de signer */
+  #impression .d-serre{line-height:1.5}
+  #impression .d-serre p{margin:0 0 .55em}
+  #impression .d-serre .d-signe{min-height:32mm}
   mark.vide{background:none}
 }
 

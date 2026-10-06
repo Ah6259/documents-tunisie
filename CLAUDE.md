@@ -15,10 +15,10 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Adresse prévue : https://ah6259.github.io/documents-tunisie/ — dépôt `Ah6259/documents-tunisie` (GitHub Pages, main).
 - Couleur principale bordeaux `#8C2B3A`. Français + arabe (bouton, ou `?lang=ar`). Mobile d'abord.
 - **Le PDF ne porte AUCUNE mention du site** (décision d'Ahmed 05/10/2026 : c'est le document de la personne, on aide seulement à l'écrire ; l'avertissement « modèle indicatif / relisez » reste sur la page web). Test + sabotage le vérifient.
-- 15 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**) + 4 grands contrats en « étapes seulement »
+- 16 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**) + 4 grands contrats en « étapes seulement »
   (vente voiture, vente moto, location maison, bail commercial) : **modèle seulement après relecture par un avocat**
-  + 4 « démarches expliquées » (`GUIDES`, explication seulement, jamais de modèle, 05/10/2026) : divorce, mariage,
-  contrat de travail CDI/CDD (loi n° 2025-9), CIVP/Karama/Service civil (décret n° 2019-542, ANETI).
+  + 5 « démarches expliquées » (`GUIDES`, explication seulement, jamais de modèle, 05/10/2026) : divorce, mariage,
+  contrat de travail CDI/CDD (loi n° 2025-9), CIVP/Karama/Service civil (décret n° 2019-542, ANETI), prêt d'honneur (06/10/2026).
 - Données : `assets/documents.js`. Pages fabriquées par `node tools/generer.mjs` (ne pas éditer les HTML à la main).
 - Date unique « vérifié le » : `MAJ` dans `assets/page.js`. Ne la changer qu'après une vraie relecture des sources.
 - Ce qui n'est pas confirmé par un texte officiel va dans `averifier` (affiché « À vérifier »), jamais inventé.
@@ -56,8 +56,8 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Formspree gratuit = 50 envois/mois pour TOUS les sites (même formulaire). Test : `node tools/test_avis.mjs` (accepte un dossier).
 
 ## Tests (obligatoires avant toute publication)
-- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 965 vérifications) → **TOUT PASSE**.
-- `node tools/sabotage.mjs` : 19 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 1040 vérifications) → **TOUT PASSE**.
+- `node tools/sabotage.mjs` : 21 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
 - `node tools/test_avis.mjs` : Votre avis (section, lien du pied de page sur toutes les pages, CSP, envoi simulé, refus si vide).
 - Captures : serveur `python -m http.server 8931 --bind 127.0.0.1` dans `site/`, puis `sh tools/captures.sh`.
@@ -82,3 +82,6 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - **Tâche Claude dans le cloud** `documents-tunisie-nuit` (créée par Ahmed via /schedule, 2h chaque nuit, https://claude.ai/code/routines/trig_01PPNDm6h4qk7N2mtKHJ7tHq) : une nouveauté au plus par nuit ; documents simples publiés seulement si tous les tests passent ; contrats et documents à risque en brouillon (`brouillons/` du dépôt privé) ; compte rendu dans `journal de nuit.md`.
 - Contrôle des concurrents étendu (empreintes de mots et de noms de domaine complets ; un nom de rue de Tunis présent dans un crédit photo reste autorisé).
 - **Lien vers l'annuaire gratuit « Avocats et notaires Tunisie »** (constante `ANNUAIRE` de generer.mjs, encart `#annuaire` avant les étapes) : 4 grands contrats, 4 démarches expliquées et reconnaissance de dette ; mariage = notaires (عدول الإشهاد) + annuaire des prestataires de mariage. Texte neutre (profession réglementée : jamais « meilleur », pas de classement), jamais dans le PDF (test + 2 sabotages), clic compté par page.js (événements `lien-avocats/<slug>` et `lien-mariage/mariage`).
+
+## Prêt d'honneur (06/10/2026)
+- Démarche `pret-d-honneur` + modèle `demande-pret-d-honneur` (textes communs `HONNEUR_*` dans documents.js ; champ `modele` d'un guide = lien vers un modèle, `attention` d'un modèle = encart « Important » avant le formulaire, `motscles` = mots de la recherche). Sources : décret n° 2026-148 (JORT, texte intégral non lu), **circulaire BCT n° 2026-08 lue** (dépôt UNIQUEMENT sur la plateforme en ligne de la banque depuis le 01/10/2026 : une lettre papier n'est pas prise en compte → la lettre sert à préparer), annonce BTS. Liens : annuaire des comptables + calculateur de crédit (événements `lien-comptables/…`, `lien-outils/…`). À revoir quand les banques publient leurs listes de pièces.

@@ -30,6 +30,8 @@ const SABOTAGES = [
   ["mention du site ajoutée en bas du PDF", d => changer(d, "assets/modele.js", "${doc[L](lecteur(doc, val, L))}</article>", "${doc[L](lecteur(doc, val, L))}<p>Documents Tunisie (ah6259.github.io/documents-tunisie)</p></article>")],
   ["lien de l'annuaire des avocats ajouté dans le PDF", d => changer(d, "assets/modele.js", "${doc[L](lecteur(doc, val, L))}</article>", "${doc[L](lecteur(doc, val, L))}<p>https://ah6259.github.io/avocats-notaires-tunisie/</p></article>")],
   ["encart de l'annuaire des avocats retiré des pages", d => changer(d, "tools/generer.mjs", "s += encartAnnuaire(d);", "")],
+  ["prêt d'honneur : avertissement « modèle indicatif, dépôt en ligne seulement » retiré", d => changer(d, "assets/documents.js", "  attention: { fr:", "  attention0: { fr:")],
+  ["prêt d'honneur : mots-clés de recherche (قرض الشرف, pret d'honneur…) oubliés", d => changer(d, "tools/generer.mjs", "x.motscles ? x.motscles.fr", "x.motscles0 ? x.motscles.fr")],
   ["clé secrète oubliée dans le code", d => changer(d, "assets/page.js", 'const SITE =', 'const api_key = "AIzaSyD-1234567890abcdefghijklmnopqrstu";\nconst SITE =')],
   ["formulaire qui lance le PDF même vide", d => changer(d, "assets/modele.js", "if (err.length) {", "if (false) {")],
 ];

@@ -17,7 +17,10 @@ const SOURCES = {
   rne: { fr: "Registre national des entreprises (RNE)", ar: "السجل الوطني للمؤسسات", url: "https://www.registre-entreprises.tn/" },
   justice: { fr: "Ministère de la Justice (tribunaux)", ar: "وزارة العدل (المحاكم)", url: "https://www.justice.gov.tn/" },
   arp: { fr: "Assemblée des représentants du peuple (lois adoptées, texte publié au JORT)", ar: "مجلس نواب الشعب (القوانين المصادق عليها، النص المنشور بالرائد الرسمي)", url: "https://www.arp.tn/" },
-  aneti_prog: { fr: "ANETI : programmes d'encouragement à l'emploi (décret n° 2019-542)", ar: "الوكالة الوطنية للتشغيل: برامج التشجيع على التشغيل (الأمر الحكومي عدد 542 لسنة 2019)", url: "https://www.emploi.nat.tn/fo/Fr/global.php?menu1=160" }
+  aneti_prog: { fr: "ANETI : programmes d'encouragement à l'emploi (décret n° 2019-542)", ar: "الوكالة الوطنية للتشغيل: برامج التشجيع على التشغيل (الأمر الحكومي عدد 542 لسنة 2019)", url: "https://www.emploi.nat.tn/fo/Fr/global.php?menu1=160" },
+  bct_honneur: { fr: "Banque centrale de Tunisie : circulaire aux banques n° 2026-08 du 1er septembre 2026 sur les crédits sur l'honneur (texte en arabe)", ar: "البنك المركزي التونسي: منشور إلى البنوك عدد 8 لسنة 2026 المؤرخ في 1 سبتمبر 2026 المتعلق بالقروض والتمويلات الصغرى على الشرف", url: "https://www.bct.gov.tn/bct/siteprod/documents/Cir_2026_08_ar.pdf" },
+  jort: { fr: "Imprimerie officielle (JORT) : décret n° 2026-148 du 23 juillet 2026 (crédits sur l'honneur)", ar: "المطبعة الرسمية (الرائد الرسمي): الأمر عدد 148 لسنة 2026 المؤرخ في 23 جويلية 2026 (التمويلات الصغرى على الشرف)", url: "http://www.iort.gov.tn/WD120AWP/WD120Awp.exe/CONNECT/SITEIORT" },
+  bts: { fr: "Banque tunisienne de solidarité (BTS) : lancement du crédit sur l'honneur", ar: "البنك التونسي للتضامن: انطلاق القرض على الشرف", url: "https://www.bts.com.tn/actualites/la-bts-lance-le-dispositif-du-credit-sur-lhonneur-MTA" }
 };
 
 const CATEGORIES = [
@@ -52,6 +55,11 @@ const QUALITE_PARENT = [
 const MOIS = ["janvier|جانفي", "février|فيفري", "mars|مارس", "avril|أفريل", "mai|ماي", "juin|جوان", "juillet|جويلية",
   "août|أوت", "septembre|سبتمبر", "octobre|أكتوبر", "novembre|نوفمبر", "décembre|ديسمبر"]
   .map((m, i) => ({ v: String(i + 1), fr: m.split("|")[0], ar: m.split("|")[1] }));
+const GOUVERNORATS = ["Ariana|أريانة", "Béja|باجة", "Ben Arous|بن عروس", "Bizerte|بنزرت", "Gabès|قابس", "Gafsa|قفصة",
+  "Jendouba|جندوبة", "Kairouan|القيروان", "Kasserine|القصرين", "Kébili|قبلي", "Le Kef|الكاف", "Mahdia|المهدية",
+  "La Manouba|منوبة", "Médenine|مدنين", "Monastir|المنستير", "Nabeul|نابل", "Sfax|صفاقس", "Sidi Bouzid|سيدي بوزيد",
+  "Siliana|سليانة", "Sousse|سوسة", "Tataouine|تطاوين", "Tozeur|توزر", "Tunis|تونس", "Zaghouan|زغوان"]
+  .map(d => ({ v: d.split("|")[0], fr: d.split("|")[0], ar: d.split("|")[1] }));
 const DELEGATIONS = ["Ariana|أريانة", "Béja|باجة", "Ben Arous|بن عروس", "Bizerte|بنزرت", "Gabès|قابس", "Gafsa|قفصة",
   "Jendouba|جندوبة", "Kairouan|القيروان", "Kasserine|القصرين", "Kébili|قبلي", "Le Kef|الكاف", "Mahdia|المهدية",
   "La Manouba|منوبة", "Médenine|مدنين", "Monastir|المنستير", "Nabeul|نابل", "Sfax 1|صفاقس 1", "Sfax 2|صفاقس 2",
@@ -116,6 +124,62 @@ const LEG_OU = {
   fr: "Municipalité (ou arrondissement municipal) : bureau de légalisation des signatures.",
   ar: "البلدية (أو الدائرة البلدية): مكتب التعريف بالإمضاء."
 };
+
+/* ---- Crédit (prêt) sur l'honneur : textes communs à la page « démarche expliquée » et au modèle de lettre ----
+   Vérifié le 06/10/2026 : circulaire BCT n° 2026-08 du 1er septembre 2026 (texte officiel lu : art. 2, 3, 4, 6, 7 et annexes) ;
+   décret n° 2026-148 du 23 juillet 2026 (texte intégral non consulté sur le site du JORT : plafonds, durée, différé, délai
+   et gratuité repris de plusieurs articles concordants et de l'annonce officielle de la BTS) ; Code de commerce, art. 412 ter. */
+const HONNEUR_MOTS = {
+  fr: "prêt d'honneur pret d'honneur prêt sur l'honneur crédit d'honneur crédit sur l'honneur credit d'honneur prêt sans intérêts crédit sans intérêts taux zéro sans garantie microcrédit financement BTS banque décret 148 décret 2026-148 circulaire BCT jeunes promoteurs petit projet société communautaire PME demande de prêt",
+  ar: "قرض الشرف قرض على الشرف قروض على الشرف قروض بدون فوائد قرض بدون فائدة تمويل على الشرف تمويلات صغرى دون ضمان البنك التونسي للتضامن الأمر 148 الباعثين الشبان مشروع صغير شركة أهلية مطلب قرض"
+};
+const HONNEUR_DEPOT = {
+  fr: "Depuis le 1er octobre 2026, la demande se dépose uniquement sur la plateforme en ligne de la banque, qui enregistre la date et l'heure et envoie un accusé de réception. Une demande remise par un autre moyen (papier, e-mail…) n'est pas prise en compte (circulaire BCT n° 2026-08, art. 3).",
+  ar: "منذ 1 أكتوبر 2026، يُودع المطلب فقط عبر المنصة الإلكترونية للبنك، التي تثبت تاريخ الإيداع وتوقيته وتوجه وصلا بالاستلام. ولا يُعتد بأي مطلب يُقدم بوسيلة أخرى (ورقيا، بالبريد الإلكتروني…) (منشور البنك المركزي عدد 8 لسنة 2026، الفصل 3)."
+};
+const HONNEUR_CATS = [
+  { v: "particulier", fr: "particulier (besoins de consommation, 5 000 DT au plus)", ar: "فرد (حاجيات الاستهلاك، 5000 دينار على الأكثر)" },
+  { v: "projet", fr: "porteur d'un petit projet (10 000 DT au plus)", ar: "صاحب مشروع صغير (10000 دينار على الأكثر)" },
+  { v: "pme", fr: "petite ou moyenne entreprise (25 000 DT au plus)", ar: "مؤسسة اقتصادية صغرى أو متوسطة (25000 دينار على الأكثر)" },
+  { v: "communautaire", fr: "société communautaire (25 000 DT au plus)", ar: "شركة أهلية (25000 دينار على الأكثر)" }
+];
+const HONNEUR_PIECES = {
+  fr: ["Carte d'identité (CIN) en cours de validité", "RIB d'un compte bancaire à votre nom (ou au nom de l'entreprise)", "Particulier : justificatif de votre situation (travail, revenus…), si la banque le demande",
+       "Petit projet : courte présentation du projet (activité, coût, besoins) et, s'il existe, l'identifiant fiscal ou l'inscription au RNE", "Entreprise ou société communautaire : extrait du RNE, identifiant fiscal, statuts, derniers états financiers",
+       "Liste exacte : celle affichée sur la plateforme de votre banque"],
+  ar: ["بطاقة التعريف الوطنية سارية المفعول", "بطاقة التعريف البنكية (RIB) لحساب باسمك (أو باسم المؤسسة)", "بالنسبة إلى الفرد: ما يثبت وضعيتك (العمل، المداخيل…)، إن طلبه البنك",
+       "بالنسبة إلى المشروع الصغير: تقديم مختصر للمشروع (النشاط، الكلفة، الحاجيات) والمعرف الجبائي أو الترسيم بالسجل الوطني للمؤسسات إن وُجد", "بالنسبة إلى المؤسسة أو الشركة الأهلية: مضمون من السجل الوطني للمؤسسات، المعرف الجبائي، العقد التأسيسي، آخر القوائم المالية",
+       "القائمة الدقيقة: تلك المعروضة على منصة بنكك"]
+};
+const HONNEUR_OU = {
+  fr: ["Plateforme en ligne de votre banque : la seule voie de dépôt depuis le 1er octobre 2026", "Votre agence bancaire : adresse de la plateforme, pièces demandées, catégories proposées", "BTS (Banque tunisienne de solidarité) : a annoncé le crédit sur l'honneur pour les micro-projets (10 000 DT) et les PME et sociétés communautaires (25 000 DT)"],
+  ar: ["المنصة الإلكترونية لبنكك: الطريقة الوحيدة للإيداع منذ 1 أكتوبر 2026", "وكالتك البنكية: عنوان المنصة، الوثائق المطلوبة، الأصناف المقترحة", "البنك التونسي للتضامن: أعلن عن القرض على الشرف للمشاريع الصغرى (10000 دينار) وللمؤسسات الصغرى والمتوسطة والشركات الأهلية (25000 دينار)"]
+};
+const HONNEUR_PIEGES = {
+  fr: ["Une demande sur papier, par e-mail ou par un intermédiaire n'est pas prise en compte : seule la plateforme de la banque compte.",
+       "Le dossier est gratuit : ni frais d'étude, ni garantie, ni garant ne peuvent être exigés. Méfiez-vous des intermédiaires payants et ne donnez jamais vos codes bancaires.",
+       "Les demandes sont traitées dans l'ordre d'arrivée et l'enveloppe de chaque banque est limitée : déposez un dossier complet sans attendre.",
+       "Pas de nouveau crédit sur l'honneur tant qu'un précédent crédit de la même catégorie n'est pas entièrement remboursé : la banque le vérifie à la Banque centrale (circulaire, art. 4).",
+       "Sans intérêts ne veut pas dire sans obligation : il faut rembourser, et les impayés sont déclarés à la Banque centrale."],
+  ar: ["المطلب الورقي أو عبر البريد الإلكتروني أو عن طريق وسيط لا يُعتد به: المنصة البنكية وحدها هي المعتمدة.",
+       "الملف مجاني: لا يمكن اشتراط معاليم دراسة ولا ضمان ولا ضامن. احذر الوسطاء بمقابل ولا تعط أبدا رموزك البنكية.",
+       "تُعالج المطالب حسب أسبقية الإيداع والاعتمادات المخصصة لكل بنك محدودة: أودع ملفا كاملا دون تأخير.",
+       "لا قرض جديد على الشرف ما دام قرض سابق من نفس الصنف لم يُسدد بالكامل: يتثبت البنك من ذلك لدى البنك المركزي (المنشور، الفصل 4).",
+       "دون فوائد لا يعني دون التزام: يجب الخلاص، ويُصرح بالمبالغ غير المستخلصة لدى البنك المركزي."]
+};
+const HONNEUR_AVERIFIER = {
+  fr: ["Situation au 06/10/2026 : la liste officielle des pièces n'est fixée ni par le décret ni par la circulaire de la BCT ; chaque banque la donne sur sa plateforme.",
+       "Adresse de la plateforme de chaque banque, et catégories proposées par chacune (l'annonce de la BTS cite les micro-projets et les PME/sociétés communautaires, pas les particuliers).",
+       "Âge, revenus, ancienneté du compte : aucune condition dans les textes que nous avons lus, mais la banque applique aussi ses règles internes (circulaire, art. 2). Demandez si vous devez déjà être client.",
+       "Durée exacte, différé et échéances de remboursement : lisez le contrat de la banque (texte intégral du décret non consulté sur le site du JORT ; chiffres repris des annonces officielles et concordantes).",
+       "Le « modèle de demande » qui a circulé en août 2026 n'est pas un formulaire officiel."],
+  ar: ["الوضعية في 06/10/2026: القائمة الرسمية للوثائق غير محددة لا في الأمر ولا في منشور البنك المركزي؛ يحددها كل بنك على منصته.",
+       "عنوان منصة كل بنك والأصناف التي يقترحها (يذكر إعلان البنك التونسي للتضامن المشاريع الصغرى والمؤسسات الصغرى والمتوسطة والشركات الأهلية، ولا يذكر الأفراد).",
+       "السن، المداخيل، أقدمية الحساب: لا شروط في النصوص التي اطلعنا عليها، لكن البنك يطبق أيضا سياساته الداخلية (المنشور، الفصل 2). اسأل إن كان يجب أن تكون حريفا للبنك.",
+       "المدة الدقيقة وفترة الإمهال وأقساط الخلاص: اقرأ عقد البنك (لم نطلع على النص الكامل للأمر بموقع الرائد الرسمي؛ الأرقام مأخوذة من إعلانات رسمية ومتطابقة).",
+       "«نموذج المطلب» الذي تم تداوله في أوت 2026 ليس مطبوعة رسمية."]
+};
+const HONNEUR_SOURCES = ["bct_honneur", "jort", "bts", "legislation"];
 
 const DOCS = [
 /* ======================================================================= 1 */
@@ -852,6 +916,84 @@ ${salutAR}${signe("إمضاء المشترك")}`,
     { fr: ["Que faire si l'opérateur continue à facturer ?", "Envoyez une réclamation écrite avec la preuve de votre demande ; si le litige continue, saisissez l'Instance nationale des télécommunications."], ar: ["ماذا أفعل إذا واصل المشغل الفوترة؟", "أرسل شكاية كتابية مع ما يثبت مطلبك؛ وإذا تواصل النزاع، اتصل بالهيئة الوطنية للاتصالات."] }
   ],
   sources: ["intt", "portail"]
+},
+/* ======================================================================= 16 */
+{
+  slug: "demande-pret-d-honneur", cat: "argent", rang: 16, guidePlus: "pret-d-honneur",
+  titre: { fr: "Demande de prêt d'honneur", ar: "مطلب قرض على الشرف" },
+  court: { fr: "Préparer sa demande de crédit sur l'honneur sans intérêts (décret n° 2026-148).", ar: "إعداد مطلب القرض على الشرف دون فوائد (الأمر عدد 148 لسنة 2026)." },
+  bref: { fr: "Lettre de demande d'un crédit sur l'honneur, sans intérêts ni garantie : particulier (5 000 DT au plus), petit projet (10 000 DT), PME ou société communautaire (25 000 DT). Elle vous aide à rassembler vos informations ; le dépôt officiel se fait sur la plateforme en ligne de votre banque.",
+          ar: "رسالة لطلب قرض على الشرف دون فوائد ولا ضمانات: فرد (5000 دينار على الأكثر)، مشروع صغير (10000 دينار)، مؤسسة صغرى أو متوسطة أو شركة أهلية (25000 دينار). تساعدك على جمع معطياتك؛ والإيداع الرسمي يتم عبر المنصة الإلكترونية لبنكك." },
+  attention: { fr: "Modèle indicatif : si votre banque propose un formulaire officiel, utilisez-le. " + HONNEUR_DEPOT.fr + " Servez-vous de cette lettre pour préparer ce que vous allez saisir, et joignez-la seulement si la plateforme accepte un document.",
+               ar: "نموذج استرشادي: إذا وفّر بنكك مطبوعة رسمية، فاستعملها. " + HONNEUR_DEPOT.ar + " استعمل هذه الرسالة لإعداد ما ستعمّره، ولا ترفقها إلا إذا كانت المنصة تقبل وثيقة." },
+  motscles: HONNEUR_MOTS,
+  legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit : ni intérêts, ni frais d'étude, ni garantie.", ar: "مجاني: دون فوائد ولا معاليم دراسة ولا ضمان." },
+           delai: { fr: "Réponse de la banque en 10 jours ouvrables au plus après le dépôt en ligne.", ar: "رد البنك في أجل أقصاه 10 أيام عمل بعد الإيداع عن بعد." } },
+  champs: [
+    groupe("Vous", "أنت"), nom("nom"), cin("cin"), adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
+    c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true, mode: "email" }),
+    c("situation", "Situation professionnelle", "الوضعية المهنية", ["artisan indépendant", "حرفي مستقل"]),
+    choix("gouv", "Gouvernorat", "الولاية", GOUVERNORATS),
+    groupe("La demande", "المطلب"),
+    choix("categorie", "Catégorie", "الصنف", HONNEUR_CATS),
+    c("structure", "Nom du projet ou de l'entreprise (si concerné)", "اسم المشروع أو المؤسسة (عند الاقتضاء)", ["Atelier de couture Al Amal", "ورشة خياطة الأمل"], { opt: true }),
+    c("idfiscal", "Identifiant fiscal ou n° RNE (si concerné)", "المعرف الجبائي أو عدد السجل الوطني للمؤسسات (عند الاقتضاء)", "1234567A", { opt: true, max: 30 }),
+    c("montant", "Montant demandé (DT)", "المبلغ المطلوب (د.ت)", "4000", { type: "montant" }),
+    c("objet", "Objet du financement", "موضوع التمويل", ["l'achat d'une machine à coudre professionnelle", "شراء آلة خياطة مهنية"], { type: "textarea" }),
+    c("banque", "Banque et agence", "البنك والوكالة", ["agence principale de Sfax", "الوكالة الرئيسية بصفاقس"]),
+    c("rib", "RIB du compte à créditer (20 chiffres)", "عدد الحساب البنكي RIB (20 رقما)", "01234012345678901234", { opt: true, mode: "numeric", max: 30 }),
+    groupe("Pièces jointes (cochez)", "الوثائق المصاحبة (اختر)"),
+    c("p_cin", "Copie de la CIN", "نسخة من بطاقة التعريف الوطنية", "", { type: "case", opt: true }),
+    c("p_rib", "RIB", "بطاقة التعريف البنكية (RIB)", "", { type: "case", opt: true }),
+    c("p_situation", "Justificatif de situation ou de revenus", "ما يثبت الوضعية أو المداخيل", "", { type: "case", opt: true }),
+    c("p_projet", "Présentation du projet", "تقديم المشروع", "", { type: "case", opt: true }),
+    c("p_rne", "Extrait du RNE / identifiant fiscal", "مضمون من السجل الوطني للمؤسسات / المعرف الجبائي", "", { type: "case", opt: true }),
+    c("p_statuts", "Statuts et états financiers de l'entreprise", "العقد التأسيسي والقوائم المالية للمؤسسة", "", { type: "case", opt: true }),
+    c("p_autre", "Autre pièce", "وثيقة أخرى", ["devis du fournisseur", "فاتورة تقديرية من المزود"], { opt: true }),
+    ...fin()
+  ],
+  fr: v => {
+    const pj = [["p_cin", "copie de la carte d'identité nationale"], ["p_rib", "relevé d'identité bancaire (RIB)"], ["p_situation", "justificatif de situation ou de revenus"],
+      ["p_projet", "présentation du projet"], ["p_rne", "extrait du RNE / identifiant fiscal"], ["p_statuts", "statuts et états financiers de l'entreprise"]].filter(([id]) => v.has(id)).map(([, t]) => t);
+    if (v.has("p_autre")) pj.push(v("p_autre"));
+    return `<div class="d-serre">${expediteur(v, [v("nom"), "CIN n° " + v("cin"), v("adresse"), "Tél. : " + v("tel"), v.has("email") && v("email")])}
+<p class="d-dest">À l'attention du directeur de l'agence<br>${v("banque")}</p><p class="d-lieu-date">${v("lieu")}, le ${v("date")}</p>
+<p class="d-objet"><b>Objet :</b> demande de crédit sur l'honneur (décret n° 2026-148 du 23 juillet 2026)</p>
+<p>Madame, Monsieur,</p>
+<p>Je soussigné(e) ${v("nom")}, titulaire de la carte d'identité nationale n° ${v("cin")}, demeurant à ${v("adresse")}, gouvernorat de ${v("gouv")}, situation professionnelle : ${v("situation")}, ai l'honneur de solliciter un crédit sur l'honneur sans intérêts, au titre de la catégorie : ${v("categorie")}${v.has("structure") ? `, pour : ${v("structure")}` : ""}${v.has("idfiscal") ? ` (identifiant fiscal / RNE : ${v("idfiscal")})` : ""}.</p>
+<p>Le montant demandé est de <b>${v("montant")}</b> (${v.lettres("montant")}). Ce financement est destiné à ${v("objet")}.${v.has("rib") ? ` Compte à créditer (RIB) : ${v("rib")}.` : ""}</p>
+<p>Je certifie sur l'honneur l'exactitude des informations ci-dessus et ne pas avoir de crédit sur l'honneur de la même catégorie en cours de remboursement.</p>
+${pj.length ? `<p><b>Pièces jointes :</b> ${pj.join(" ; ")}.</p>` : ""}
+${salutFR("Madame, Monsieur")}${signe("Signature")}</div>`;
+  },
+  ar: v => {
+    const pj = [["p_cin", "نسخة من بطاقة التعريف الوطنية"], ["p_rib", "بطاقة التعريف البنكية (RIB)"], ["p_situation", "ما يثبت الوضعية أو المداخيل"],
+      ["p_projet", "تقديم المشروع"], ["p_rne", "مضمون من السجل الوطني للمؤسسات / المعرف الجبائي"], ["p_statuts", "العقد التأسيسي والقوائم المالية للمؤسسة"]].filter(([id]) => v.has(id)).map(([, t]) => t);
+    if (v.has("p_autre")) pj.push(v("p_autre"));
+    return `<div class="d-serre">${expediteur(v, [v("nom"), "بطاقة التعريف عدد " + v("cin"), v("adresse"), "الهاتف: " + v("tel"), v.has("email") && v("email")])}
+<p class="d-dest">إلى السيد(ة) مدير(ة) الوكالة<br>${v("banque")}</p><p class="d-lieu-date">${v("lieu")} في ${v("date")}</p>
+<p class="d-objet"><b>الموضوع:</b> مطلب قرض على الشرف (الأمر عدد 148 لسنة 2026 المؤرخ في 23 جويلية 2026)</p>
+<p>تحية طيبة وبعد،</p>
+<p>أنا الممضي(ة) أسفله ${v("nom")}، صاحب(ة) بطاقة التعريف الوطنية عدد ${v("cin")}، القاطن(ة) بـ${v("adresse")}، ولاية ${v("gouv")}، الوضعية المهنية: ${v("situation")}، يشرفني أن أتقدم إليكم بمطلب للحصول على قرض على الشرف دون فوائد، بعنوان صنف: ${v("categorie")}${v.has("structure") ? `، لفائدة: ${v("structure")}` : ""}${v.has("idfiscal") ? ` (المعرف الجبائي / السجل الوطني للمؤسسات: ${v("idfiscal")})` : ""}.</p>
+<p>المبلغ المطلوب: <b>${v("montant")}</b> (${v.lettres("montant")}). ويُخصص هذا التمويل لـ${v("objet")}.${v.has("rib") ? ` الحساب المراد تحويل المبلغ إليه (RIB): ${v("rib")}.` : ""}</p>
+<p>وأشهد على الشرف بصحة المعطيات المذكورة أعلاه وبعدم وجود قرض على الشرف من نفس الصنف بذمتي لم يتم خلاصه.</p>
+${pj.length ? `<p><b>الوثائق المصاحبة:</b> ${pj.join("؛ ")}.</p>` : ""}
+<p>وفي انتظار ردكم، تقبلوا مني فائق عبارات الاحترام والتقدير.</p>${signe("الإمضاء")}</div>`;
+  },
+  etapes: [ETAPE_REMPLIR,
+    { ic: "liste", fr: ["Rassembler les pièces", "CIN, RIB et, selon votre cas, présentation du projet, extrait du RNE, statuts. La liste exacte est sur la plateforme de votre banque."], ar: ["جمع الوثائق", "بطاقة التعريف، RIB، وحسب وضعيتك: تقديم المشروع، مضمون السجل الوطني للمؤسسات، العقد التأسيسي. القائمة الدقيقة على منصة بنكك."] },
+    { ic: "remettre", fr: ["Déposer en ligne", HONNEUR_DEPOT.fr], ar: ["الإيداع عن بعد", HONNEUR_DEPOT.ar] },
+    { ic: "horloge", fr: ["Attendre la réponse", "La banque répond dans un délai de 10 jours ouvrables au plus ; un refus doit être motivé. Gardez votre accusé de réception."], ar: ["انتظار الرد", "يرد البنك في أجل أقصاه 10 أيام عمل؛ ويجب أن يكون الرفض معللا. احتفظ بوصل الاستلام."] }],
+  pieces: HONNEUR_PIECES,
+  ou: HONNEUR_OU,
+  pieges: HONNEUR_PIEGES,
+  averifier: HONNEUR_AVERIFIER,
+  faq: [
+    { fr: ["Peut-on déposer cette lettre à l'agence ?", "Non : depuis le 1er octobre 2026, seule la demande déposée sur la plateforme en ligne de la banque est prise en compte (circulaire BCT n° 2026-08). La lettre sert à préparer vos informations, ou à être jointe si la plateforme le permet."], ar: ["هل يمكن إيداع هذه الرسالة بالوكالة؟", "لا: منذ 1 أكتوبر 2026 لا يُعتد إلا بالمطلب المودع عبر المنصة الإلكترونية للبنك (منشور البنك المركزي عدد 8 لسنة 2026). تُستعمل الرسالة لإعداد معطياتك، أو تُرفق إذا سمحت المنصة بذلك."] },
+    { fr: ["Faut-il payer des frais ou donner une garantie ?", "Non. Le crédit sur l'honneur est sans intérêts, sans frais d'étude et sans garantie ni caution."], ar: ["هل يجب دفع معاليم أو تقديم ضمان؟", "لا. القرض على الشرف دون فوائد ودون معاليم دراسة ودون ضمان أو كفيل."] },
+    { fr: ["Faut-il légaliser la demande ?", "Non."], ar: ["هل يجب التعريف بالإمضاء؟", "لا."] }
+  ],
+  sources: HONNEUR_SOURCES
 }
 ];
 
@@ -1076,6 +1218,34 @@ const GUIDES = [
     { fr: ["Pourquoi n'y a-t-il pas de modèle ?", "Les contrats de ces programmes sont fournis par l'ANETI : cette page explique seulement les conditions et les étapes."], ar: ["لماذا لا يوجد نموذج؟", "عقود هذه البرامج توفرها الوكالة: هذه الصفحة تشرح الشروط والمراحل فقط."] }
   ],
   sources: ["aneti_prog", "aneti", "legislation"]
+},
+{
+  slug: "pret-d-honneur", cat: "argent", guide: true, modele: "demande-pret-d-honneur",
+  titre: { fr: "Prêt d'honneur sans intérêts en Tunisie : conditions, montants, pièces à fournir, démarches", ar: "القرض على الشرف دون فوائد: الشروط، المبالغ، الوثائق، الإجراءات" },
+  court: { fr: "Jusqu'à 5 000, 10 000 ou 25 000 DT, sans intérêts ni garantie ; demande en ligne à la banque.", ar: "إلى حدود 5000 أو 10000 أو 25000 دينار، دون فوائد ولا ضمان؛ المطلب عن بعد لدى البنك." },
+  bref: { fr: "Le décret n° 2026-148 du 23 juillet 2026 (Code de commerce, art. 412 ter) crée le crédit (ou prêt) sur l'honneur : sans intérêts, sans garantie ni caution, sans frais d'étude. Plafonds : 5 000 DT pour un particulier, 10 000 DT pour un petit projet, 25 000 DT pour une PME ou une société communautaire. Depuis le 1er octobre 2026, la demande se fait uniquement en ligne, sur la plateforme de la banque (circulaire BCT n° 2026-08).",
+          ar: "أحدث الأمر عدد 148 لسنة 2026 المؤرخ في 23 جويلية 2026 (المجلة التجارية، الفصل 412 ثالثا) القرض على الشرف: دون فوائد، دون ضمان ولا كفيل، دون معاليم دراسة. الأسقف: 5000 دينار للفرد، 10000 دينار للمشروع الصغير، 25000 دينار للمؤسسة الصغرى أو المتوسطة أو الشركة الأهلية. منذ 1 أكتوبر 2026، يُقدم المطلب عن بعد فقط، عبر منصة البنك (منشور البنك المركزي عدد 8 لسنة 2026)." },
+  motscles: HONNEUR_MOTS,
+  legal: { legalisation: "non", enregistrement: "non", cout: AV("Sans intérêts, sans frais d'étude, sans garantie ni caution.", "دون فوائد، دون معاليم دراسة، دون ضمان ولا كفيل."),
+           delai: AV("Réponse en 10 jours ouvrables au plus ; remboursement en 2 ans au plus, avec un différé possible de 6 mois au plus.", "الرد في أجل أقصاه 10 أيام عمل؛ الخلاص في سنتين على الأكثر، مع إمكانية إمهال لا يتجاوز 6 أشهر.") },
+  etapes: [
+    { ic: "info", fr: ["Trouver votre catégorie", "Particulier : 5 000 DT au plus, pour des besoins de consommation. Petit projet (investissement de 150 000 DT au plus) : 10 000 DT. PME (investissement de 150 000 DT à 15 millions de DT) ou société communautaire : 25 000 DT (définitions : circulaire BCT n° 2026-08, annexe 2)."], ar: ["تحديد صنفك", "الفرد: 5000 دينار على الأكثر لتمويل حاجيات الاستهلاك. المشروع الصغير (استثمار لا يتجاوز 150 ألف دينار): 10000 دينار. المؤسسة الصغرى أو المتوسطة (استثمار بين 150 ألف دينار و15 مليون دينار) أو الشركة الأهلية: 25000 دينار (التعريفات: منشور البنك المركزي عدد 8 لسنة 2026، الملحق 2)."] },
+    { ic: "liste", fr: ["Préparer le dossier", "CIN, RIB et, selon votre cas, présentation du projet, extrait du RNE, statuts. Le modèle de lettre de ce site vous aide à tout rassembler avant de remplir la demande en ligne."], ar: ["إعداد الملف", "بطاقة التعريف، RIB، وحسب وضعيتك: تقديم المشروع، مضمون السجل الوطني للمؤسسات، العقد التأسيسي. يساعدك نموذج الرسالة في هذا الموقع على جمع كل شيء قبل تعمير المطلب عن بعد."] },
+    { ic: "remettre", fr: ["Déposer la demande en ligne", HONNEUR_DEPOT.fr], ar: ["إيداع المطلب عن بعد", HONNEUR_DEPOT.ar] },
+    { ic: "horloge", fr: ["Réponse de la banque", "Les demandes sont classées par ordre d'arrivée. La banque répond dans un délai de 10 jours ouvrables au plus ; un refus doit être motivé."], ar: ["رد البنك", "تُرتب المطالب حسب أسبقية الإيداع. ويرد البنك في أجل أقصاه 10 أيام عمل؛ ويجب أن يكون الرفض معللا."] },
+    { ic: "verifier", fr: ["Vérification puis versement", "Avant de verser l'argent, la banque vérifie à la Banque centrale que vous n'avez pas un crédit sur l'honneur de la même catégorie non remboursé (circulaire, art. 4)."], ar: ["التثبت ثم الصرف", "قبل صرف المبلغ، يتثبت البنك لدى البنك المركزي من عدم حصولك على قرض على الشرف من نفس الصنف لم يتم خلاصه بالكامل (المنشور، الفصل 4)."] },
+    { ic: "recette", fr: ["Rembourser", "Sans intérêts, sur 2 ans au plus, avec un différé possible de 6 mois au plus. Les échéances exactes sont dans le contrat de la banque."], ar: ["الخلاص", "دون فوائد، على سنتين على الأكثر، مع إمكانية إمهال لا يتجاوز 6 أشهر. الأقساط الدقيقة مضبوطة في عقد البنك."] }],
+  pieces: HONNEUR_PIECES,
+  ou: HONNEUR_OU,
+  pieges: HONNEUR_PIEGES,
+  averifier: HONNEUR_AVERIFIER,
+  faq: [
+    { fr: ["Qui peut obtenir un prêt d'honneur en Tunisie ?", "Quatre catégories : les particuliers (5 000 DT au plus, besoins de consommation), les porteurs de petits projets (10 000 DT), les petites et moyennes entreprises et les sociétés communautaires (25 000 DT). La banque applique aussi ses règles internes."], ar: ["من يمكنه الحصول على قرض على الشرف في تونس؟", "أربعة أصناف: الأفراد (5000 دينار على الأكثر لحاجيات الاستهلاك)، أصحاب المشاريع الصغرى (10000 دينار)، المؤسسات الاقتصادية الصغرى والمتوسطة والشركات الأهلية (25000 دينار). ويطبق البنك أيضا سياساته الداخلية."] },
+    { fr: ["Où déposer la demande de crédit sur l'honneur ?", "Uniquement sur la plateforme en ligne de votre banque, depuis le 1er octobre 2026. Une demande remise autrement n'est pas prise en compte (circulaire BCT n° 2026-08, art. 3)."], ar: ["أين أودع مطلب القرض على الشرف؟", "فقط عبر المنصة الإلكترونية لبنكك، منذ 1 أكتوبر 2026. ولا يُعتد بالمطلب المقدم بطريقة أخرى (منشور البنك المركزي عدد 8 لسنة 2026، الفصل 3)."] },
+    { fr: ["Faut-il une garantie, un garant ou payer des frais ?", "Non : ni intérêts, ni garantie, ni caution, ni frais d'étude du dossier."], ar: ["هل يجب تقديم ضمان أو كفيل أو دفع معاليم؟", "لا: لا فوائد ولا ضمان ولا كفيل ولا معاليم دراسة الملف."] },
+    { fr: ["Peut-on avoir deux prêts d'honneur ?", "Pas tant qu'un précédent crédit sur l'honneur de la même catégorie n'est pas entièrement remboursé : la banque le vérifie à la Banque centrale."], ar: ["هل يمكن الحصول على قرضين على الشرف؟", "لا، ما دام قرض سابق على الشرف من نفس الصنف لم يُسدد بالكامل: يتثبت البنك من ذلك لدى البنك المركزي."] }
+  ],
+  sources: HONNEUR_SOURCES
 }
 ];
 

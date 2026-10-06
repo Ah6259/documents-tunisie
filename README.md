@@ -4,12 +4,13 @@ Modèles de documents tunisiens **gratuits**, à remplir sur téléphone, en **f
 officielles** après la signature (légalisation, recette des finances, ATTT…).
 Adresse prévue : https://ah6259.github.io/documents-tunisie/ (GitHub Pages, branche `main`).
 
-- **15 modèles à remplir** : formulaire → aperçu → PDF fabriqué **dans le téléphone** (impression du navigateur,
+- **16 modèles à remplir** : formulaire → aperçu → PDF fabriqué **dans le téléphone** (impression du navigateur,
   « Enregistrer au format PDF »). Rien n'est envoyé, aucun compte, aucune bibliothèque externe.
 - **4 grands contrats** (vente de voiture, de moto, location de maison, bail commercial) : pages « étapes » seulement ;
   le modèle sera publié **après relecture par un avocat**.
-- **4 démarches expliquées** (divorce, mariage, contrat de travail CDI/CDD depuis la loi n° 2025-9, CIVP/Karama/Service civil) :
-  explication seulement à partir des textes officiels, **aucun modèle** (`GUIDES` dans `assets/documents.js`).
+- **5 démarches expliquées** (divorce, mariage, contrat de travail CDI/CDD depuis la loi n° 2025-9, CIVP/Karama/Service civil,
+  prêt d'honneur sans intérêts) : explication à partir des textes officiels (`GUIDES` dans `assets/documents.js`) ; seul le prêt
+  d'honneur renvoie vers un modèle de lettre (« demande de prêt d'honneur », marqué « modèle indicatif »).
 - Toutes les données (textes, champs, étapes, sources) sont dans `assets/documents.js`.
   Les pages HTML sont **fabriquées** par `node tools/generer.mjs` (ne pas les modifier à la main).
 
@@ -22,9 +23,9 @@ Adresse prévue : https://ah6259.github.io/documents-tunisie/ (GitHub Pages, bra
 | `assets/style.css` | présentation (couleur bordeaux), impression A4 |
 | `assets/photos/` | photos des bandeaux (Wikimedia Commons, licences libres, `credits.json`) |
 | `tools/generer.mjs` | fabrique les pages, le plan du site et le `?v=` (empreinte des fichiers) |
-| `tools/test_site.mjs` | test complet (≈ 965 vérifications) — **à lancer après chaque modification** |
+| `tools/test_site.mjs` | test complet (≈ 1040 vérifications) — **à lancer après chaque modification** |
 | `assets/avis.js`, `tools/test_avis.mjs` | section « Votre avis » de l'accueil (`#avis`, lien dans le pied de page) : envoi **au clic** à Formspree (formulaire `mwlpakqj`, commun à tous les sites d'Ahmed) avec les champs cachés `site` = « Documents Tunisie » et `page` ; son test (envoi simulé) |
-| `tools/sabotage.mjs` | prouve que le test attrape les erreurs (19 sabotages) |
+| `tools/sabotage.mjs` | prouve que le test attrape les erreurs (21 sabotages) |
 | `tools/surveiller_sources.mjs` + `test_robot.mjs` | robot de surveillance des sources officielles et ses scénarios de panne |
 | `tools/captures.sh` | captures téléphone 340/390 px, français et arabe (dans `captures/`, ignoré) |
 

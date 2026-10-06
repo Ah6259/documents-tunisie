@@ -22,7 +22,7 @@ const TOUS = [...DOCS, ...CONTRATS, ...GUIDES];
 const ARABE = /[؀-ۿ]/;
 
 // ---- 1. Données : chaque document est complet ---------------------------------
-check("15 documents à remplir, 4 grands contrats et 4 démarches expliquées", DOCS.length === 15 && CONTRATS.length === 4 && GUIDES.length === 4);
+check("16 documents à remplir, 4 grands contrats et 5 démarches expliquées", DOCS.length === 16 && CONTRATS.length === 4 && GUIDES.length === 5);
 check("adresses (slug) uniques", new Set(TOUS.map(d => d.slug)).size === TOUS.length);
 const bil = o => o && o.fr && o.ar && ARABE.test(JSON.stringify(o.ar)) && JSON.stringify(o.fr).length > 4;
 for (const d of TOUS) {
@@ -79,7 +79,7 @@ for (const d of DOCS) {
   check(`${d.slug} : un champ obligatoire vide est signalé avant le PDF`, M.erreurs(d, Object.fromEntries(d.champs.filter(c => !c.groupe).map(c => [c.id, ""]))).length > 0);
   check(`${d.slug} : formulaire complet = aucune erreur`, M.erreurs(d, valeursEx(d)).length === 0);
   // le PDF est le document de la personne : aucune mention du site (l'avertissement est sur la page web)
-  check(`${d.slug} : aucune mention du site sur le PDF`, ["fr", "ar"].every(L => !/ah6259|Documents Tunisie|وثائق تونس|indicatif|استرشادي/.test(M.feuille(d, valeursEx(d), L))));
+  check(`${d.slug} : aucune mention du site sur le PDF`, ["fr", "ar"].every(L => !/ah6259|Documents Tunisie|وثائق تونس|indicatif|استرشادي|github/.test(M.feuille(d, valeursEx(d), L))));
 }
 
 // ---- 4. Pages chargées comme dans un navigateur ------------------------------------
@@ -112,7 +112,7 @@ for (const d of DOCS) {
   doc.getElementById("telecharger").click();
   const imp = doc.getElementById("impression");
   check(`${d.slug} : PDF lancé, document final sans champ vide`, w.__imprime === 1 && imp && imp.querySelectorAll(".feuille").length === 2 && !imp.querySelector("mark.vide") && doc.getElementById("erreurs").hidden);
-  check(`${d.slug} : le PDF imprimé ne contient aucun lien d'annuaire`, !/avocats-notaires-tunisie|mariage-tunisie/.test(imp.innerHTML));
+  check(`${d.slug} : le PDF imprimé ne contient aucun lien d'annuaire ni avertissement de la page`, !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques|indicatif|Important avant/.test(imp.innerHTML));
   check(`${d.slug} : sections étapes, pièces, où aller, FAQ, sources`, ["etapes", "pieces", "ou", "faq", "sources"].every(id => doc.getElementById(id)) && doc.querySelectorAll("#etapes .schema li").length === d.etapes.length);
   check(`${d.slug} : avertissement « non officiel, ne remplace pas un avocat »`, doc.querySelector(".avert").textContent.includes("ne remplace pas un avocat"));
   check(`${d.slug} : champs du formulaire sélectionnables (pas dans une zone protégée)`, !f.closest(".protege"));
@@ -135,7 +135,8 @@ for (const d of GUIDES) {
   check(`${d.slug} : pas de formulaire, encart « explication seulement », sections « À vérifier » et sources`, !doc.getElementById("formulaire") && !!doc.getElementById("explication-seulement") && !!doc.getElementById("a-verifier") && doc.querySelectorAll("#sources a").length === d.sources.length);
 }
 // Annuaire gratuit des avocats et notaires : grands contrats, démarches expliquées et documents à risque
-const AVEC_ANNUAIRE = [...CONTRATS, ...GUIDES].map(d => d.slug).concat("reconnaissance-de-dette");
+const HONNEUR = ["pret-d-honneur", "demande-pret-d-honneur"];   // prêt d'honneur : annuaire des comptables + calculateur de crédit
+const AVEC_ANNUAIRE = [...CONTRATS, ...GUIDES].map(d => d.slug).filter(s => !HONNEUR.includes(s)).concat("reconnaissance-de-dette");
 for (const slug of AVEC_ANNUAIRE) {
   const w = await page(slug + "/index.html"), doc = w.document;
   const liens = [...doc.querySelectorAll('#annuaire a[href^="https://ah6259.github.io/avocats-notaires-tunisie/"]')];
@@ -146,11 +147,27 @@ for (const slug of AVEC_ANNUAIRE) {
   liens[0].addEventListener("click", e => e.preventDefault()); liens[0].click();
   check(`${slug} : clic sur l'annuaire compté anonymement (lien-avocats/${slug})`, compte && compte.path === "lien-avocats/" + slug && compte.event === true);
 }
+for (const slug of HONNEUR) {
+  const w = await page(slug + "/index.html"), doc = w.document;
+  const compta = [...doc.querySelectorAll('#annuaire a[href^="https://ah6259.github.io/comptables-tunisie/"]')];
+  const calc = [...doc.querySelectorAll('#annuaire a[href^="https://ah6259.github.io/outils-pratiques-tunisie/credit/"]')];
+  check(`${slug} : liens vers l'annuaire des comptables et le calculateur de crédit (FR + AR, clic compté, noopener)`, compta.length === 2 && calc.length === 2
+    && compta.every(a => a.dataset.annuaire === "lien-comptables/" + slug && /noopener/.test(a.rel)) && calc.every(a => a.dataset.annuaire === "lien-outils/" + slug));
+  check(`${slug} : dépôt en ligne seulement (circulaire BCT n° 2026-08) et « À vérifier » daté`, /uniquement sur la plateforme en ligne/.test(doc.body.textContent) && /Situation au \d{2}\/\d{2}\/2026/.test(doc.getElementById("a-verifier").textContent)
+    && doc.querySelector('#sources a[href="https://www.bct.gov.tn/bct/siteprod/documents/Cir_2026_08_ar.pdf"]'));
+}
+{
+  const doc = (await page("demande-pret-d-honneur/index.html")).document;
+  check("demande de prêt d'honneur : encart « modèle indicatif, formulaire officiel d'abord » avant le formulaire, hors du PDF", /formulaire officiel, utilisez-le/.test(doc.getElementById("attention")?.textContent || "")
+    && doc.getElementById("attention").compareDocumentPosition(doc.getElementById("remplir")) === 4 && !doc.getElementById("attention").closest(".protege"));
+  const g = (await page("pret-d-honneur/index.html")).document;
+  check("prêt d'honneur : la page explicative mène au modèle de lettre", !!g.querySelector('#explication-seulement a[href="../demande-pret-d-honneur/"]'));
+}
 check("mariage : second lien vers l'annuaire des prestataires de mariage", /href="https:\/\/ah6259\.github\.io\/mariage-tunisie\/"[^>]*data-annuaire="lien-mariage\/mariage"/.test(lire("mariage/index.html")));
-check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "ar"].every(L => !/avocats-notaires-tunisie|mariage-tunisie/.test(M.feuille(d, valeursEx(d), L)))));
+check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "ar"].every(L => !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques/.test(M.feuille(d, valeursEx(d), L)))));
 {
   const w = await page("index.html"), doc = w.document;
-  check("accueil : 23 cartes de documents", doc.querySelectorAll("[data-cherche]").length === 23);
+  check("accueil : 25 cartes de documents", doc.querySelectorAll("[data-cherche]").length === 25);
   check("accueil : 6 catégories avec icône", doc.querySelectorAll(".cat svg").length === 6);
   check("accueil : 3 badges de confiance", doc.querySelectorAll(".badge-c").length === 3);
   const r = doc.getElementById("recherche");
@@ -158,6 +175,11 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   check("accueil : la recherche « procuration » filtre", doc.querySelectorAll("[data-cherche]:not([hidden])").length === 2);
   r.value = "توكيل"; r.dispatchEvent(new w.Event("input"));
   check("accueil : la recherche en arabe « توكيل » fonctionne", doc.querySelectorAll("[data-cherche]:not([hidden])").length >= 2);
+  for (const mot of ["pret d'honneur", "crédit sans intérêts", "قرض الشرف", "قروض بدون فوائد", "décret 148", "BTS"]) {
+    r.value = mot; r.dispatchEvent(new w.Event("input"));
+    const vus = [...doc.querySelectorAll("[data-cherche]:not([hidden])")].map(x => x.getAttribute("href"));
+    check(`accueil : la recherche « ${mot} » trouve le prêt d'honneur et son modèle`, vus.includes("pret-d-honneur/") && vus.includes("demande-pret-d-honneur/"));
+  }
   r.value = "zzzz"; r.dispatchEvent(new w.Event("input"));
   check("accueil : « aucun document » si rien ne correspond", !doc.getElementById("aucun").hidden);
   r.value = ""; r.dispatchEvent(new w.Event("input"));
@@ -195,7 +217,7 @@ const gen = await import("file://" + join(root, "tools/generer.mjs").replace(/\\
 const attendu = gen.pages(root);
 const perimees = Object.entries(attendu).filter(([f, s]) => !existsSync(join(root, f)) || lire(f).replace(/\r\n/g, "\n") !== s).map(([f]) => f);
 check(`pages à jour (sinon : node tools/generer.mjs)${perimees.length ? " — " + perimees.join(", ") : ""}`, !perimees.length);
-check("plan du site : 25 pages", (lire("sitemap.xml").match(/<loc>/g) || []).length === 25);
+check("plan du site : 27 pages", (lire("sitemap.xml").match(/<loc>/g) || []).length === 27);
 
 // photos : licence libre, crédit, preuves
 const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
