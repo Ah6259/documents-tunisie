@@ -207,6 +207,9 @@
     // téléchargement : contrôle, puis impression « Enregistrer en PDF »
     const boite = document.getElementById("erreurs");
     document.getElementById("telecharger").addEventListener("click", () => {
+      // Pass Journée (assets/pass.js) : 1 PDF gratuit par jour ; un autre modèle le même jour = écran de blocage
+      const P = window.PassJour;
+      if (P && P.acces(doc.slug) === "bloque") { P.bloquer(doc.slug); return; }
       const v = valeurs(), err = erreurs(doc, v);
       form.querySelectorAll(".f-err").forEach(p => { p.hidden = true; p.textContent = ""; });
       form.querySelectorAll(".invalide").forEach(x => x.classList.remove("invalide"));
@@ -234,6 +237,7 @@
       window.addEventListener("afterprint", () => { document.title = titre; }, { once: true });
       // statistique anonyme : seulement le nom du modèle (documents les plus demandés), jamais ce qui est écrit
       try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "pdf-" + doc.slug, title: "PDF : " + doc.slug, event: true }); } catch (e) {}
+      if (P) P.noter(doc.slug);             // ce modèle devient le document gratuit du jour (sauf avec le Pass)
       window.print();
       setTimeout(() => { document.title = titre; }, 1500);
     });

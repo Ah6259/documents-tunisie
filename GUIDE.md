@@ -44,3 +44,11 @@
 
 ## 06/10/2026 — Exemple du document avant le formulaire
 - Chaque page de modèle montre d'abord la lettre remplie avec des données FICTIVES (champ `exemple` de chaque modèle dans `assets/documents.js`, sinon l'exemple du champ), rendue par la même fonction que le PDF (`feuilleExemple` de `assets/modele.js`, appelée par `tools/generer.mjs`). Étiquette et filigrane « EXEMPLE » / « مثال », réduite à 60 % de l'écran avec « Agrandir l'exemple » (balise `<details>`, sans script). Jamais imprimée ni comptée dans GoatCounter (tests + 3 sabotages).
+
+## 06/10/2026 — Pass Journée (partie payante, copie du Pass Examen du Code de la route)
+- Site public : `assets/pass.js` (compteur « 1 PDF gratuit par jour » dans le téléphone, écran de blocage, vérification du code par
+  empreinte PBKDF2 dans le navigateur), pages `pass/` et `pass/conditions/` fabriquées par `tools/generer.mjs`, `donnees/pass.json`.
+- Dépôt PRIVÉ `documents-pass` : `tools/pass_documents.py` + bouton `pass` (workflow_dispatch) lancé depuis l'application GitHub ;
+  le résumé donne le CODE et un lien WhatsApp prêt. Publication sur le site par une clé de déploiement (secret `CLE_SITE`).
+- Tests jsdom avec horloge réglable, crypto de Node et pass.json simulé ; sabotages dédiés.
+- Bouton doré « Avocats et notaires » (accueil + en-tête) vers l'annuaire gratuit, clic compté `lien-site/avocats`.

@@ -1,6 +1,6 @@
 # Documents Tunisie
 
-Modèles de documents tunisiens **gratuits**, à remplir sur téléphone, en **français et en arabe**, avec les **étapes
+Modèles de documents tunisiens à remplir (**1 PDF gratuit par jour**, étapes gratuites ; **Pass Journée 7 DT** = tous les documents pendant 24 heures), sur téléphone, en **français et en arabe**, avec les **étapes
 officielles** après la signature (légalisation, recette des finances, ATTT…).
 Adresse prévue : https://ah6259.github.io/documents-tunisie/ (GitHub Pages, branche `main`).
 
@@ -26,7 +26,8 @@ Adresse prévue : https://ah6259.github.io/documents-tunisie/ (GitHub Pages, bra
 | `tools/generer.mjs` | fabrique les pages, le plan du site et le `?v=` (empreinte des fichiers) |
 | `tools/test_site.mjs` | test complet (≈ 1190 vérifications) — **à lancer après chaque modification** |
 | `assets/avis.js`, `tools/test_avis.mjs` | section « Votre avis » de l'accueil (`#avis`, lien dans le pied de page) : envoi **au clic** à Formspree (formulaire `mwlpakqj`, commun à tous les sites d'Ahmed) avec les champs cachés `site` = « Documents Tunisie » et `page` ; son test (envoi simulé) |
-| `tools/sabotage.mjs` | prouve que le test attrape les erreurs (24 sabotages) |
+| `assets/pass.js`, `pass/`, `donnees/pass.json` | Pass Journée : 1 PDF gratuit par jour, écran de blocage, code d'accès (empreintes seulement ; clients dans le dépôt PRIVÉ `documents-pass`) |
+| `tools/sabotage.mjs` | prouve que le test attrape les erreurs (37 sabotages) |
 | `tools/surveiller_sources.mjs` + `test_robot.mjs` | robot de surveillance des sources officielles et ses scénarios de panne |
 | `tools/captures.sh` | captures téléphone 340/390 px, français et arabe (dans `captures/`, ignoré) |
 
@@ -55,4 +56,5 @@ changer `CACHE_VERSION` dans `sw.js`. Test : `node tools/test_sw.mjs`.
 **Points encore « à vérifier »** : ils sont marqués sur chaque page concernée (jamais inventés).
 
 ## Nouveautés
+- 06/10/2026 : Pass Journée (7 DT, 24 heures) ; 1 document PDF gratuit par jour ; bouton « Avocats et notaires » vers l'annuaire.
 - 05/10/2026 : nouvelle icône ; PDF sans mention du site et mise en page de lettre ; recherches sans résultat notées pour ajouter les documents demandés ; robot de nuit privé.

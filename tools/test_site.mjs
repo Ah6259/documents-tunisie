@@ -7,7 +7,7 @@ import { readFileSync, existsSync, statSync, readdirSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join, resolve } from "path";
 import { createRequire } from "module";
-import { createHash } from "crypto";
+import { createHash, webcrypto } from "crypto";
 
 const ici = dirname(fileURLToPath(import.meta.url));
 const root = resolve(process.argv[2] || join(ici, ".."));
@@ -106,7 +106,7 @@ async function page(chemin, lang = "fr") {
   await new Promise(ok => dom.window.addEventListener("load", ok));
   return dom.window;
 }
-const fichiers = ["index.html", "a-propos/index.html", ...TOUS.map(d => d.slug + "/index.html")];
+const fichiers = ["index.html", "a-propos/index.html", "pass/index.html", "pass/conditions/index.html", ...TOUS.map(d => d.slug + "/index.html")];
 for (const d of DOCS) {
   const w = await page(d.slug + "/index.html"), doc = w.document, f = doc.getElementById("formulaire");
   check(`${d.slug} : formulaire construit (${d.champs.filter(c => !c.groupe).length} champs)`, f && d.champs.filter(c => !c.groupe).every(c => f.elements[c.id]));
@@ -197,7 +197,18 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   const w = await page("index.html"), doc = w.document;
   check("accueil : 25 cartes de documents", doc.querySelectorAll("[data-cherche]").length === 25);
   check("accueil : 6 catégories avec icône", doc.querySelectorAll(".cat svg").length === 6);
-  check("accueil : plus de badges sans lien ; « Gratuit, sans inscription » dans l'intro (FR + AR)", !doc.querySelector(".confiance, .badge-c") && /Gratuit, sans inscription/.test(doc.querySelector(".hero").textContent) && /مجاني، دون تسجيل/.test(doc.querySelector(".hero").textContent));
+  check("accueil : plus de badges sans lien ; « 1 document gratuit par jour, étapes gratuites, sans inscription » dans l'intro (FR + AR)", !doc.querySelector(".confiance, .badge-c") && /1 document gratuit par jour, étapes gratuites, sans inscription/.test(doc.querySelector(".hero").textContent) && /وثيقة مجانية كل يوم، المراحل مجانية، دون تسجيل/.test(doc.querySelector(".hero").textContent));
+  check("accueil : PAS de bouton « Pass Journée » (décision d'Ahmed : le visiteur partirait), aucun lien vers pass/", !doc.querySelector('a[href^="pass/"], a[href*="/pass/"], .btn-pass, .btn-pro') && !/Pass Journée/.test(doc.body.textContent));
+  // bouton vers l'annuaire « Avocats et notaires » (demande d'Ahmed du 06/10/2026) : fin de la rangée des catégories, bordure dorée
+  const av = doc.querySelector(".cats > a.cat-annuaire");
+  check("accueil : bouton « Avocats et notaires » / « محامون وعدول » à la fin de la rangée des catégories, avec le logo de l'annuaire (copié dans le site)",
+    av && av === doc.querySelector(".cats").lastElementChild && av.getAttribute("href") === "https://ah6259.github.io/avocats-notaires-tunisie/" && /noopener/.test(av.rel)
+    && /Avocats et notaires/.test(av.textContent) && /محامون وعدول/.test(av.textContent) && av.querySelector('img[src="assets/logo-avocats-notaires.svg"]')
+    && existsSync(join(root, "assets/logo-avocats-notaires.svg")) && /\.cat-annuaire\{[^}]*border:2px solid #F2B33D/.test(lire("assets/style.css")));
+  { let c = null; w.goatcounter = { count: o => { c = o; } }; av.addEventListener("click", e => e.preventDefault()); av.click();
+    check("accueil : clic sur « Avocats et notaires » compté anonymement (lien-site/avocats), sans filtrer les catégories", c && c.path === "lien-site/avocats" && c.event === true && !doc.querySelector(".cat.on")); }
+  check("en-tête et pied de page : lien « Avocats et notaires » (logo, bordure dorée, clic compté)", !!doc.querySelector('#entete a.entete-annuaire[data-annuaire="lien-site/avocats"] img[src="assets/logo-avocats-notaires.svg"]')
+    && !!doc.querySelector('#pied a[data-annuaire="lien-site/avocats"]') && /\.entete-annuaire\{[^}]*border:2px solid #F2B33D/.test(lire("assets/style.css")));
   const r = doc.getElementById("recherche");
   r.value = "procuration"; r.dispatchEvent(new w.Event("input"));
   check("accueil : la recherche « procuration » filtre", doc.querySelectorAll("[data-cherche]:not([hidden])").length === 2);
@@ -213,6 +224,157 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   r.value = ""; r.dispatchEvent(new w.Event("input"));
   doc.querySelector('.cat[data-cat="logement"]').click();
   check("accueil : la catégorie Logement filtre", [...doc.querySelectorAll("[data-cherche]:not([hidden])")].every(x => x.dataset.cat === "logement"));
+}
+
+
+// ---- 4 bis. Pass Journée (1 PDF gratuit par jour ; Pass 7 DT = tous les documents pendant 24 h) ----------------
+// Faux navigateur : horloge réglable, crypto.subtle de Node, pass.json et Formspree simulés (aucun réseau).
+const EMPREINTE = async (code, sel, tours) => {
+  const k = await webcrypto.subtle.importKey("raw", new TextEncoder().encode(code), "PBKDF2", false, ["deriveBits"]);
+  const b = await webcrypto.subtle.deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: new TextEncoder().encode(sel), iterations: tours }, k, 256);
+  return Buffer.from(b).toString("hex");
+};
+check("vecteur commun avec le robot du dépôt privé (Python) : PBKDF2-SHA-256, 100 000 tours",
+  await EMPREINTE("ABCD2345", "sel-de-test", 100000) === "517bf9a9ea3ad38b3adcbeef5808d4efe420fbf10a2b7bd9179640f4d1c7c2dd");
+async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois = [] } = {}) {
+  const dossier = dirname(join(root, chemin));
+  const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
+    (_, a, src) => `<script>${readFileSync(join(dossier, src), "utf8")}</script>`);
+  const vc = new VirtualConsole(); vc.on("jsdomError", e => { if (!/Not implemented/.test(e.message)) { console.log("   erreur JS :", chemin, e.message); erreurs++; } });
+  const dom = new JSDOM(html, { url: `https://ah6259.github.io/documents-tunisie/${chemin.replace("index.html", "")}`, runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc,
+    beforeParse(w) {
+      const Vraie = w.Date;
+      w.Date = class extends Vraie { constructor(...a) { super(...(a.length ? a : [horloge.t])); } static now() { return horloge.t; } };
+      Object.defineProperty(w, "crypto", { value: webcrypto, configurable: true });
+      w.TextEncoder = TextEncoder;
+      w.fetch = async (url, o) => {
+        if (/formspree/.test(url)) { envois.push(o.body); return { ok: true, status: 200, json: async () => ({ ok: true }) }; }
+        if (!liste) throw new Error("hors connexion");
+        return { ok: true, status: 200, json: async () => JSON.parse(JSON.stringify(liste)) };
+      };
+      for (const [k, v] of Object.entries(stockage)) w.localStorage.setItem(k, v);
+      w.__imprime = 0; w.print = () => w.__imprime++;
+      w.__comptes = []; w.goatcounter = { count: o => w.__comptes.push(o) };
+    } });
+  await new Promise(ok => dom.window.addEventListener("load", ok));
+  return dom.window;
+}
+const stock = w => Object.fromEntries(Object.keys(w.localStorage).map(k => [k, w.localStorage.getItem(k)]));
+const remplir = (w, d) => { const f = w.document.getElementById("formulaire"), v = valeursEx(d);
+  for (const c of d.champs) if (!c.groupe) { const el = f.elements[c.id]; if (c.type === "case") el.checked = true; else el.value = v[c.id]; } };
+const attendre = async (cond, ms = 5000) => { const t0 = Date.now(); while (!cond() && Date.now() - t0 < ms) await new Promise(r => setTimeout(r, 20)); return cond(); };
+async function taperCode(w, code) {
+  const f = w.document.getElementById("code-modele") || w.document.getElementById("code-pass"), st = f.querySelector(".code-status");
+  f.querySelector("input[name=code]").value = code;
+  f.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+  await attendre(() => st.textContent && !/Vérification/.test(st.textContent));
+  return st;
+}
+{
+  const [A, B] = [DOCS[0], DOCS[1]];
+  const H = { t: new Date(2026, 9, 6, 10, 0).getTime() };              // 06/10/2026 à 10:00 (heure du téléphone)
+  let w = await pagePass(A.slug + "/index.html", { horloge: H }), doc = w.document;
+  const lien = doc.querySelector("#remplir a.btn-pass");
+  check("page de modèle : bouton « Pass Journée 7 DT : tous les documents pendant 24 heures » près du téléchargement (vers pass/, nouvel onglet)",
+    lien && lien.getAttribute("href") === "../pass/" && lien.target === "_blank" && /Pass Journée 7 DT : tous les documents pendant 24 heures/.test(lien.textContent)
+    && doc.getElementById("telecharger").compareDocumentPosition(lien) === 4 && /1 document PDF gratuit par jour/.test(doc.getElementById("pass-lien").textContent));
+  check("page de modèle : écran de blocage caché au départ, exemple et formulaire libres", doc.getElementById("pass-bloque").hidden && doc.getElementById("exemple") && doc.getElementById("formulaire").elements.length > 3);
+  remplir(w, A); doc.getElementById("telecharger").click();
+  check("Pass Journée : 1er PDF du jour autorisé (gratuit)", w.__imprime === 1 && doc.getElementById("pass-bloque").hidden);
+  check("le PDF ne parle ni du Pass ni du site", !/Pass|باقة|Documents Tunisie|ah6259/.test(doc.getElementById("impression").innerHTML));
+  doc.getElementById("telecharger").click();
+  check("Pass Journée : le MÊME modèle peut être retéléchargé le même jour (correction)", w.__imprime === 2);
+  const apresA = stock(w);
+  w = await pagePass(B.slug + "/index.html", { horloge: H, stockage: apresA }); doc = w.document;
+  remplir(w, B); doc.getElementById("telecharger").click();
+  const bl = doc.getElementById("pass-bloque");
+  check("Pass Journée : 2e document du même jour BLOQUÉ (pas de PDF), écran « Vous avez téléchargé votre document gratuit du jour »",
+    w.__imprime === 0 && !bl.hidden && /Vous avez téléchargé votre document gratuit du jour/.test(bl.textContent));
+  check("écran de blocage : Pass Journée 7 DT (24 heures), « Revenez demain », « J'ai déjà un code »", /Pass Journée 7 DT : tous les documents pendant 24 heures/.test(bl.textContent)
+    && /revenez demain : un nouveau document gratuit vous attend/i.test(bl.textContent) && /J'ai déjà un code/.test(bl.querySelector("summary").textContent)
+    && bl.querySelector('a.btn-pro[href="../pass/"]') && bl.querySelector("form.code-form input[name=code]"));
+  check("écran de blocage : compté anonymement (pass-bloque/<modèle>), sans rien de ce qui est écrit", w.__comptes.length === 1 && w.__comptes[0].path === "pass-bloque/" + B.slug && w.__comptes[0].event === true
+    && !JSON.stringify(w.__comptes).includes(String(valeursEx(B)[B.champs.find(c => c.id && /nom$/.test(c.id)).id])));
+  doc.getElementById("telecharger").click();
+  check("écran de blocage : compté une seule fois par page ouverte", w.__imprime === 0 && w.__comptes.filter(c => /^pass-bloque/.test(c.path)).length === 1);
+  check("le formulaire rempli n'est pas effacé par le blocage", doc.getElementById("formulaire").elements[B.champs.find(c => !c.groupe && c.type !== "case" && c.type !== "select").id].value !== "");
+  H.t += 24 * 36e5;                                                      // le lendemain
+  doc.getElementById("telecharger").click();
+  check("Pass Journée : autorisé le lendemain (nouveau document gratuit), écran de blocage refermé", w.__imprime === 1 && bl.hidden);
+  H.t -= 24 * 36e5;
+
+  // codes d'accès (pass.json simulé : empreintes seulement)
+  const sel = "sel-de-test-0123", tours = 1000, now = H.t;
+  const liste = { sel, tours, codes: [
+    { h: await EMPREINTE("ABCD2345", sel, tours), fin: new Date(now + 20 * 36e5).toISOString() },
+    { h: await EMPREINTE("PXRM2345", sel, tours), fin: new Date(now - 36e5).toISOString() }] };
+  w = await pagePass(B.slug + "/index.html", { horloge: H, stockage: apresA, liste }); doc = w.document;
+  remplir(w, B); doc.getElementById("telecharger").click();
+  let st = await taperCode(w, "zzzz-2222");
+  check("code faux : refusé (« Code non reconnu »), toujours bloqué", /Code non reconnu/.test(st.textContent) && !w.PassJour.actif() && (doc.getElementById("telecharger").click(), w.__imprime === 0));
+  st = await taperCode(w, "PXRM-2345");
+  check("code expiré (plus de 24 heures) : refusé (« Ce code a expiré »), toujours bloqué", /Ce code a expiré/.test(st.textContent) && !w.PassJour.actif() && (doc.getElementById("telecharger").click(), w.__imprime === 0));
+  st = await taperCode(w, "ABC");
+  check("code mal formé : message clair", /8 caractères/.test(st.textContent));
+  st = await taperCode(w, "abcd 2345");
+  check("code valide (tapé en minuscules avec espace) : accepté, Pass actif, écran de blocage fermé, heure de fin affichée",
+    /Code accepté/.test(st.textContent) && w.PassJour.actif() && doc.getElementById("pass-bloque").hidden && !doc.getElementById("pass-actif").hidden && /Code accepté/.test(doc.getElementById("pass-actif").textContent));
+  doc.getElementById("telecharger").click();
+  check("avec un code valide : PDF autorisé", w.__imprime === 1);
+  check("avec le Pass : le document gratuit du jour n'est pas consommé", JSON.parse(w.localStorage.getItem("dt-gratuit-v1")).doc === A.slug);
+  const avecPass = stock(w);
+  check("appareil : seul le code est gardé (aucun nom, aucun téléphone)", Object.keys(avecPass).every(k => ["dt-pass-v1", "dt-gratuit-v1", "langue"].includes(k)));
+  // 24 heures plus tard : le Pass ne marche plus, retour au gratuit
+  H.t = now + 21 * 36e5;
+  w = await pagePass(DOCS[2].slug + "/index.html", { horloge: H, stockage: { ...avecPass, "dt-gratuit-v1": JSON.stringify({ jour: "2026-10-07", doc: A.slug }) }, liste }); doc = w.document;
+  remplir(w, DOCS[2]); doc.getElementById("telecharger").click();
+  check("Pass expiré (après 24 heures) : refusé, retour au gratuit (bloqué si le document gratuit du jour est déjà pris)", !w.PassJour.actif() && w.__imprime === 0 && !doc.getElementById("pass-bloque").hidden);
+  // code arrêté par Ahmed (retiré de pass.json) : effacé de l'appareil à la revérification (au plus 1 fois par heure)
+  H.t = now + 2 * 36e5;
+  w = await pagePass(DOCS[2].slug + "/index.html", { horloge: H, stockage: avecPass, liste: { sel, tours, codes: [] } });
+  await attendre(() => !w.localStorage.getItem("dt-pass-v1"), 3000);
+  check("code arrêté (retiré du site) : effacé du téléphone à la revérification", !w.localStorage.getItem("dt-pass-v1") && !w.PassJour.actif());
+  // hors connexion : le code gardé reste valable jusqu'à son heure de fin
+  w = await pagePass(DOCS[2].slug + "/index.html", { horloge: H, stockage: avecPass, liste: null });
+  await new Promise(r => setTimeout(r, 100));
+  check("hors connexion : le Pass gardé marche jusqu'à son heure de fin", w.PassJour.actif() && !w.document.getElementById("pass-actif").hidden);
+
+  // page pass/ : prix, paiement, WhatsApp, formulaire, conditions
+  const envois = [];
+  w = await pagePass("pass/index.html", { horloge: H, envois }); doc = w.document;
+  const t = doc.body.textContent;
+  check("pass/ : prix 7 DT, tous les documents pendant 24 heures, valable 24 heures à partir de l'envoi du code", /7 DT/.test(doc.querySelector(".prix-pass").textContent) && /tous les documents pendant 24 heures/.test(t) && /Valable 24 heures à partir de l'envoi de votre code/.test(t));
+  check("pass/ : bouton « Paiement » (details) avec D17, IZI, Wafacash au 24 321 390, motif = nom + téléphone", doc.querySelector("details#paiement > summary")?.textContent.includes("Paiement")
+    && ["D17", "IZI", "Wafacash"].every(x => doc.querySelector("#paiement .paie").textContent.includes(x)) && /24 321 390/.test(doc.querySelector("#paiement .paie").textContent) && /votre nom et votre téléphone/.test(doc.querySelector("#paiement .paie").textContent));
+  const wa = doc.getElementById("pass-preuve");
+  check("pass/ : bouton vert WhatsApp vers wa.me/21624321390 avec texte prérempli, « vous recevrez votre code par WhatsApp »", wa && wa.href.startsWith("https://wa.me/21624321390?text=") && /Pass%20Journ/.test(wa.href) && /noopener/.test(wa.rel) && /vous recevrez votre code par WhatsApp/i.test(t));
+  check("pass/ : pas de renouvellement automatique, lien vers les conditions, « J'ai un code »", /Pas de renouvellement automatique/.test(t) && doc.querySelector('a[href="conditions/"]') && doc.querySelector("#code-acces form.code-form"));
+  const pf = doc.getElementById("pass-form");
+  check("pass/ : formulaire Formspree mwlpakqj (nom, téléphone, case conditions, champ piège)", pf.getAttribute("action") === "https://formspree.io/f/mwlpakqj" && pf.elements.nom && pf.elements.telephone && pf.elements.conditions?.type === "checkbox" && pf.elements._gotcha);
+  const soumettre = () => pf.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
+  pf.elements.nom.value = "Client Factice"; pf.elements.telephone.value = "123"; soumettre();
+  check("pass/ : téléphone faux refusé (8 chiffres), rien n'est envoyé", envois.length === 0 && /8 chiffres/.test(doc.getElementById("pass-status").textContent));
+  pf.elements.telephone.value = "+216 98 765 432"; soumettre();
+  check("pass/ : conditions non cochées refusées, rien n'est envoyé", envois.length === 0 && /conditions/.test(doc.getElementById("pass-status").textContent));
+  pf.elements.conditions.checked = true; soumettre();
+  await attendre(() => !doc.getElementById("apres-pass").hidden);
+  check("pass/ : demande envoyée à Formspree (site, ligne « pour_activer » prête pour le bouton GitHub), écran de paiement affiché",
+    envois.length === 1 && envois[0].get("site") === "Documents Tunisie" && envois[0].get("telephone") === "98765432" && envois[0].get("pour_activer") === "action: paye ; nom: Client Factice ; telephone: 98765432"
+    && !doc.getElementById("apres-pass").hidden && pf.hidden);
+  check("pass/ : message WhatsApp de la preuve complété avec le nom et le téléphone", decodeURIComponent(doc.getElementById("pass-preuve-apres").href).includes("Client Factice — 98765432"));
+  const cond = (await pagePass("pass/conditions/index.html", { horloge: H })).document.body.textContent;
+  check("conditions : vendeur « l'éditeur du site », pas de renouvellement automatique, aucune période payée remboursée, INPDP, 24 heures",
+    /vendu par l'éditeur du site/.test(cond) && /Aucun renouvellement automatique/.test(cond) && /Aucune période payée n'est remboursée/.test(cond) && /INPDP/.test(cond) && /24 heures à partir de l'envoi de votre code/.test(cond));
+  check("conditions : aucun nom de société, prix non annoncés TTC, aucun numéro de déclaration inventé", !/\b(SARL|SUARL|S\.A\.|société|TTC|déclaration n°)/i.test(cond));
+  // pass.json public : empreintes et heures de fin seulement
+  let pj = {}; try { pj = JSON.parse(lire("donnees/pass.json")); } catch (e) {}
+  check("donnees/pass.json : sel, tours, codes = empreinte (64 hex) + heure de fin UTC, aucune donnée personnelle",
+    typeof pj.sel === "string" && pj.sel.length >= 16 && pj.tours >= 100000 && Array.isArray(pj.codes)
+    && pj.codes.every(c => Object.keys(c).sort().join() === "fin,h" && /^[0-9a-f]{64}$/.test(c.h) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?Z$/.test(c.fin))
+    && Object.keys(pj).every(k => ["_lisez_moi", "maj", "sel", "tours", "codes"].includes(k)));
+  check("Pass Journée : chargé sur les 16 pages de modèle, jamais sur l'accueil, les guides ou les grands contrats",
+    DOCS.every(d => /assets\/pass\.js\?v=/.test(lire(d.slug + "/index.html")) && /id="pass-bloque"/.test(lire(d.slug + "/index.html")))
+    && ![...CONTRATS, ...GUIDES].some(d => /pass\.js|btn-pass/.test(lire(d.slug + "/index.html"))) && !/pass\.js|btn-pass/.test(lire("index.html")));
 }
 
 // ---- 5. Règles communes : SEO, mentions, photos, sécurité ---------------------------
@@ -236,7 +398,7 @@ for (const p of fichiers) {
     && /connect-src[^;]*https:\/\/prix-eaux-tunisie\.goatcounter\.com/.test(s) && /img-src[^;]*https:\/\/prix-eaux-tunisie\.goatcounter\.com/.test(s));
   check(`${p} : aucun script en ligne exécutable (CSP)`, [...s.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>/g)].every(m => /application\/ld\+json/.test(m[1])) && !/\son[a-z]+="/i.test(s) && !/\sstyle="/.test(s));
   check(`${p} : liens externes en rel="noopener"`, [...s.matchAll(/<a [^>]*href="https?:[^"]*"[^>]*>/g)].every(m => /rel="noopener/.test(m[0])));
-  check(`${p} : protection (page.js) chargée`, /src="(\.\.\/)?assets\/page\.js\?v=/.test(s));
+  check(`${p} : protection (page.js) chargée`, /src="(\.\.\/)*assets\/page\.js\?v=/.test(s));
   (s.match(/\?v=([0-9a-f]+)/g) || []).forEach(x => V.add(x));
   const m = s.match(/<img class="hero-photo" src="([^"]+)"/);
   check(`${p} : photo du bandeau présente (≤ 150 Ko) et créditée`, !!m && existsSync(join(root, dirname(p), m[1])) && statSync(join(root, dirname(p), m[1])).size <= 150000 && /class="credit-photo"[^]*Wikimedia Commons/.test(s));
@@ -244,10 +406,10 @@ for (const p of fichiers) {
   { const morts = tuilesSansLien(new JSDOM(s).window.document); check(`${p} : aucune carte avec une icône sans lien (pas de faux bouton)${morts.length ? " → " + morts.join(" | ") : ""}`, !morts.length); }
   const w = await page(p), doc = w.document, pied = doc.getElementById("pied").textContent;
   check(`${p} : translate="no" gardé par le JavaScript (français puis arabe)`, doc.documentElement.getAttribute("translate") === "no" && (doc.querySelector(".langue")?.click(), doc.documentElement.lang === "ar" && doc.documentElement.getAttribute("translate") === "no"));
-  check(`${p} : en-tête avec logo, pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
+  check(`${p} : en-tête avec logo et lien « Avocats et notaires », pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && !!doc.querySelector("#entete a.entete-annuaire[href^=\"https://ah6259.github.io/avocats-notaires-tunisie/\"] img") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
   check(`${p} : dates « vérifié le » = la constante MAJ`, [...doc.querySelectorAll("[data-maj]")].every(x => x.textContent === w.eval("MAJ")));
   const ld = [...s.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(x => JSON.parse(x[1]));
-  if (p !== "index.html" && p !== "a-propos/index.html") check(`${p} : FAQ Google (JSON-LD) en français et en arabe`, ld.some(j => j["@type"] === "FAQPage" && j.mainEntity.length >= 2 && j.mainEntity.some(q => ARABE.test(q.name))));
+  if (!/^(index\.html|a-propos\/|pass\/)/.test(p)) check(`${p} : FAQ Google (JSON-LD) en français et en arabe`, ld.some(j => j["@type"] === "FAQPage" && j.mainEntity.length >= 2 && j.mainEntity.some(q => ARABE.test(q.name))));
 }
 check("même version ?v= sur toutes les pages", V.size === 1);
 // les pages publiées sont à jour par rapport aux données
@@ -255,7 +417,7 @@ const gen = await import("file://" + join(root, "tools/generer.mjs").replace(/\\
 const attendu = gen.pages(root);
 const perimees = Object.entries(attendu).filter(([f, s]) => !existsSync(join(root, f)) || lire(f).replace(/\r\n/g, "\n") !== s).map(([f]) => f);
 check(`pages à jour (sinon : node tools/generer.mjs)${perimees.length ? " — " + perimees.join(", ") : ""}`, !perimees.length);
-check("plan du site : 27 pages", (lire("sitemap.xml").match(/<loc>/g) || []).length === 27);
+check("plan du site : 28 pages (dont pass/)", (lire("sitemap.xml").match(/<loc>/g) || []).length === 28 && lire("sitemap.xml").includes("/documents-tunisie/pass/</loc>"));
 
 // photos : licence libre, crédit, preuves
 const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
@@ -276,7 +438,7 @@ const INTERDITS = new Set("307804f8a9e7bd48 8b30fe9b5db7797d 04dcb0d6d0e1cf09 41
 // noms de domaine complets (un mot seul comme « diwan » est aussi un nom de rue de Tunis, présent dans un crédit photo)
 const INTERDITS_DOM = new Set("5d2ae528dda2bff3 e7d3434bfa09866c bac2e4bd95794e67 f8b6c6201a5d83e5 d0b96f4152cb3bef 89209bfe25390a67".split(" "));
 const empreinte = m => createHash("sha256").update(m).digest("hex").slice(0, 16);
-const publics = [...fichiers, "assets/documents.js", "assets/page.js", "assets/modele.js", "README.md", "CLAUDE.md", "GUIDE.md", "sitemap.xml", "robots.txt"].filter(f => existsSync(join(root, f)));
+const publics = [...fichiers, "assets/documents.js", "assets/page.js", "assets/modele.js", "assets/pass.js", "donnees/pass.json", "README.md", "CLAUDE.md", "GUIDE.md", "sitemap.xml", "robots.txt"].filter(f => existsSync(join(root, f)));
 const cites = publics.filter(f => { const s = lire(f).toLowerCase();
   return (s.match(/[a-z0-9-]+/g) || []).some(m => INTERDITS.has(empreinte(m))) || (s.match(/[a-z0-9-]+\.[a-z]{2,4}/g) || []).some(m => INTERDITS_DOM.has(empreinte(m))); });
 check(`aucun nom de concurrent sur le site ni dans le dépôt${cites.length ? " — trouvé dans " + cites.join(", ") : ""}`, !cites.length);
@@ -309,7 +471,7 @@ check("manifeste présent, id unique = chemin du site, start_url/scope ./, icôn
   man.id === "/documents-tunisie/" && man.start_url === "./" && man.scope === "./" && man.display === "standalone" && !!man.name && !!man.short_name
   && ["192x192", "512x512"].every(t => man.icons?.some(i => i.sizes === t)) && man.icons?.some(i => i.purpose === "maskable")
   && man.icons.every(i => existsSync(join(root, i.src))) && existsSync(join(root, "assets/icons/apple-touch-icon.png")));
-check("toutes les pages : lien vers le manifeste, icône iPhone et theme-color", fichiers.every(p => { const s = lire(p), r = p.includes("/") ? "../" : "";
+check("toutes les pages : lien vers le manifeste, icône iPhone et theme-color", fichiers.every(p => { const s = lire(p), r = "../".repeat(p.split("/").length - 1);
   return s.includes(`<link rel="manifest" href="${r}manifest.webmanifest">`) && s.includes(`<link rel="apple-touch-icon" href="${r}assets/icons/apple-touch-icon.png">`) && s.includes('<meta name="theme-color"'); }));
 check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vignette) : ${Math.round(ogJpg.length / 1024)} Ko`, ogJpg[0] === 0xFF && ogJpg[1] === 0xD8 && ogJpg.length < 250000);
 

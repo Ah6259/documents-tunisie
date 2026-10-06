@@ -269,3 +269,73 @@ html[lang="fr"] [data-l="fr"],html[lang="ar"] [data-l="ar"]{display:revert}
 .ex-filigrane{position:absolute;top:190px;left:50%;z-index:1;transform:translate(-50%,-50%) rotate(-28deg);pointer-events:none;white-space:nowrap;
   font:800 76px/1 Figtree,"Noto Kufi Arabic",sans-serif;letter-spacing:.12em;color:rgba(140,43,58,.14)}
 @media print{#exemple{display:none!important}}
+
+/* ---- Pass Journée (assets/pass.js) : bouton près du téléchargement, écran de blocage, page pass/ ---- */
+.pass-lien{margin:12px 0 0;text-align:center}
+.btn-pass{display:inline-block;background:#F2B33D;color:#3A2A00;text-decoration:none;font-weight:800;font-size:14.5px;border-radius:999px;padding:9px 16px;line-height:1.35}
+.btn-pass:hover{filter:brightness(1.05)}
+.pass-lien .petit{display:block}
+.pass-actif{margin:12px 0 0;background:var(--vert-clair);color:var(--vert);border-radius:12px;padding:10px 12px;font-weight:700;font-size:14px;text-align:center}
+.pass-bloque{margin:14px 0 0;background:var(--or-clair);border:2px solid #F2B33D;border-radius:16px;padding:16px;outline:0}
+.pass-bloque h3{margin:0 0 8px;font-size:17px}
+.pass-bloque p{margin:0 0 10px}
+.pass-bloque .demain{margin:12px 0 4px;font-weight:700}
+.pass-code{margin:12px 0 0;border-top:1px solid var(--ligne);padding-top:10px}
+.pass-code summary{cursor:pointer;font-weight:800;color:var(--p)}
+.pass-code form{margin-top:10px}
+.btn-pro{display:block;text-align:center;border:0;width:100%;text-decoration:none;font:inherit;font-weight:800;font-size:15.5px;color:#3A2A00;background:#F2B33D;border-radius:14px;padding:13px 16px;cursor:pointer;margin:6px 0 0}
+.btn-pro:hover{filter:brightness(1.05)}
+.btn-pro:disabled{opacity:.55;cursor:default}
+.btn-clair{display:block;text-align:center;font-weight:800;font-size:15px;color:var(--p);background:var(--carte);border:1.5px solid var(--p);border-radius:14px;padding:11px 16px;cursor:pointer;list-style:none}
+.btn-clair::-webkit-details-marker{display:none}
+.btn-wa{display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:800;font-size:15px;color:#fff;background:#1F9D55;border-radius:14px;padding:12px 14px;margin:8px 0 0;text-align:center}
+.btn-wa svg{width:20px;height:20px;flex:none;fill:#fff}
+.offre-pro{position:relative;background:var(--carte);border:2px solid #F2B33D;border-radius:var(--rayon);padding:22px 18px 18px;margin:0 0 14px;box-shadow:var(--ombre)}
+.offre-pro h2{font-size:19px;margin:0 0 10px}
+.offre-pro .ruban{position:absolute;top:-13px;inset-inline-end:14px;margin:0;background:#F2B33D;color:#3A2A00;font-weight:800;font-size:13px;border-radius:999px;padding:3px 12px}
+.prix-pass{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;background:var(--p-tres-clair);border:1.5px solid #F2B33D;border-radius:14px;padding:12px 14px;margin:0 0 12px}
+.prix-pass b{font-size:30px;color:var(--p);line-height:1.1}
+.prix-pass > span{font-weight:700;color:var(--doux)}
+.avantages{margin:0 0 10px;padding-inline-start:20px}
+.avantages li{margin:5px 0}
+.petit{font-size:13px;color:var(--doux);margin:6px 0 0}
+.paiement{margin:12px 0 0}
+.paiement[open] summary{margin-bottom:10px}
+.paie{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:8px 0;background:var(--p-tres-clair);border-radius:12px;padding:12px 14px}
+.paie dt{font-weight:800}
+.paie dd{margin:0;font-weight:700;min-width:0}
+.etapes{padding-inline-start:20px;margin:0}
+.etapes li{margin:0 0 8px}
+.abo form{display:flex;flex-direction:column;gap:8px}
+.abo .abo-etiquette{font-weight:700;font-size:14px;margin:4px 0 0}
+.abo input[type=text]{width:100%;font:inherit;font-size:16px;padding:11px 13px;border:1.5px solid var(--ligne);border-radius:12px;background:var(--carte);color:var(--texte);-webkit-user-select:text;user-select:text}
+.abo input[name=telephone],.abo input[name=code]{direction:ltr}
+html[dir="rtl"] .abo input[name=telephone],html[dir="rtl"] .abo input[name=code]{text-align:right}
+.abo input[name=code]{letter-spacing:.12em;text-transform:uppercase;font-weight:800}
+.abo input:focus{outline:0;border-color:var(--p);box-shadow:0 0 0 4px var(--p-clair)}
+.abo .case{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;min-width:0;cursor:pointer}
+.abo .case input{flex:none;width:18px;height:18px;margin:0;accent-color:var(--p)}
+.abo .case span{min-width:0;overflow-wrap:anywhere}
+.abo input.abo-piege{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);opacity:0;border:0;padding:0}
+#pass-status,.code-status{font-size:14px;color:var(--doux);margin:0}
+#pass-status.ok,.code-status.ok{color:var(--vert);font-weight:700}
+#pass-status.err,.code-status.err{color:var(--rouge);font-weight:700}
+.apres-abo{background:var(--vert-clair);border:1px solid var(--vert);border-radius:14px;padding:16px}
+.apres-abo h3{margin:0 0 8px;font-size:16.5px}
+.apres-abo p{margin:0 0 8px}
+.conditions h2{font-size:16.5px;margin:16px 0 6px}
+.conditions h2:first-child{margin-top:0}
+.conditions p{margin:0 0 8px}
+.pass-etat{border-top:4px solid var(--vert);color:var(--vert);font-weight:700}
+@media print{.pass-lien,.pass-actif,.pass-bloque{display:none!important}}
+
+/* ---- lien vers l'annuaire « Avocats et notaires » (rangée des catégories + en-tête), bordure dorée ---- */
+.cat-annuaire{display:inline-flex;align-items:center;gap:7px;border:2px solid #F2B33D;background:var(--carte);color:var(--texte);border-radius:999px;padding:6px 13px 6px 8px;font-size:14px;font-weight:700;text-decoration:none}
+html[dir="rtl"] .cat-annuaire{padding:6px 8px 6px 13px}
+.cat-annuaire img,.entete-annuaire img{border-radius:5px;flex:none}
+.cat-annuaire:hover,.entete-annuaire:hover{background:var(--or-clair)}
+.entete-annuaire{display:inline-flex;align-items:center;gap:6px;flex:none;margin-inline-start:auto;border:2px solid #F2B33D;border-radius:999px;padding:4px 10px 4px 5px;font-size:13px;font-weight:700;color:var(--texte);text-decoration:none;white-space:nowrap}
+html[dir="rtl"] .entete-annuaire{padding:4px 5px 4px 10px}
+@media (max-width:560px){.entete-annuaire span{display:none}.entete-annuaire,html[dir="rtl"] .entete-annuaire{padding:4px}}
+.paiement summary.btn-clair::after{content:none}
+.paiement summary.btn-clair{display:block}

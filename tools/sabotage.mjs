@@ -39,6 +39,19 @@ const SABOTAGES = [
   ["règle [hidden] retirée (les éléments cachés par le JS restent visibles)", d => changer(d, "assets/style.css", "[hidden]{display:none!important}", "")],
   ["carte avec icône sans lien remise sur l'accueil (faux bouton)", d => changer(d, "tools/generer.mjs", '<div class="cats">', '<div class="x">${svg(ICONES.bouclier)}Gratuit</div><div class="cats">')],
   ["formulaire qui lance le PDF même vide", d => changer(d, "assets/modele.js", "if (err.length) {", "if (false) {")],
+  // Pass Journée (06/10/2026)
+  ["Pass Journée : 2e PDF du même jour autorisé (contrôle retiré)", d => changer(d, "assets/modele.js", 'P.acces(doc.slug) === "bloque"', 'P.acces(doc.slug) === "bloquee"')],
+  ["Pass Journée : document gratuit du jour jamais noté (gratuit illimité)", d => changer(d, "assets/pass.js", "localStorage.setItem(PASS.cleGratuit,", "localStorage.setItem(\"autre-cle\",")],
+  ["Pass Journée : heure de fin non contrôlée (code expiré accepté)", d => changer(d, "assets/pass.js", "const encore = iso => Date.parse(iso) > Date.now();", "const encore = iso => Date.parse(iso) > 0;")],
+  ["Pass Journée : le Pass consomme aussi le document gratuit du jour", d => changer(d, "assets/pass.js", 'if (accesPdf(slug) !== "gratuit") return;', "")],
+  ["Pass Journée : écran de blocage non compté dans les statistiques", d => changer(d, "assets/pass.js", 'path: "pass-bloque/" + slug', 'path: "blocage/" + slug')],
+  ["Pass Journée : bouton mis sur l'accueil (décision d'Ahmed : jamais)", d => changer(d, "tools/generer.mjs", '<section class="carte" id="comment">', '<p><a class="btn-pass" href="pass/">Pass Journée 7 DT</a></p>\n<section class="carte" id="comment">')],
+  ["Pass Journée : nom du client publié dans pass.json (dépôt public)", d => changer(d, "donnees/pass.json", '"codes": []', '"codes": [{"h": "' + "a".repeat(64) + '", "fin": "2026-10-07T10:00:00Z", "nom": "Client"}]')],
+  ["Pass Journée : conditions qui annoncent des prix TTC", d => changer(d, "tools/generer.mjs", '"7 DT pour 24 heures, en dinars tunisiens.', '"7 DT TTC pour 24 heures, en dinars tunisiens.')],
+  ["Pass Journée : mention du Pass ajoutée dans le PDF", d => changer(d, "assets/modele.js", "${doc[L](lecteur(doc, val, L))}</article>", "${doc[L](lecteur(doc, val, L))}<p>Pass Journée</p></article>")],
+  // lien vers l'annuaire Avocats et notaires (06/10/2026)
+  ["bouton « Avocats et notaires » retiré de la rangée des catégories de l'accueil", d => changer(d, "tools/generer.mjs", "${LIEN_AVOCATS}</div>", "</div>")],
+  ["lien « Avocats et notaires » retiré de l'en-tête", d => changer(d, "assets/page.js", '<a class="entete-annuaire"', '<a class="x"')],
 ];
 let rates = 0;
 for (const [nom, saboter] of SABOTAGES) {

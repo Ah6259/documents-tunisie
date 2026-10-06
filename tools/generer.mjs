@@ -19,7 +19,7 @@ export function pages(root) {
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
   const URL = "https://ah6259.github.io/documents-tunisie/";
   // ?v= : empreinte des fichiers communs (fins de ligne normalisées, pour que Windows et GitHub soient d'accord)
-  const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js", "assets/avis.js"]
+  const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js", "assets/avis.js", "assets/pass.js"]
     .map(f => lire(f).replace(/\r\n/g, "\n")).join("\n")).digest("hex").slice(0, 10);
 
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -109,6 +109,9 @@ export function pages(root) {
     "mariage": [["Trouver un notaire (عدل إشهاد) près de chez vous (annuaire gratuit)", "إيجاد عدل إشهاد قريب منك (دليل مجاني)"],
                 ["Prestataires de mariage (annuaire gratuit)", "مزودو خدمات الأعراس (دليل مجاني)", MARIAGE, "lien-mariage"]]
   };
+  // Bouton vers l'annuaire « Avocats et notaires » (demande d'Ahmed du 06/10/2026 : liens entre site et moteur), à la fin
+  // de la rangée des catégories de l'accueil (+ en-tête et pied dessinés par page.js). Bordure dorée, logo copié dans le site (CSP).
+  const LIEN_AVOCATS = `<a class="cat-annuaire" href="${AVOCATS}" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats"><img src="assets/logo-avocats-notaires.svg" alt="" width="20" height="20">${bi("Avocats et notaires", "محامون وعدول")}</a>`;
   const lienAnnuaire = (slug, [fr, ar, url = AVOCATS, ev = "lien-avocats"], i) =>
     `<p class="${i ? "annuaire-second" : "annuaire-lien"}">${[["fr", fr, url], ["ar", ar, url + "?lang=ar"]].map(([L, t, u]) =>
       `<a data-l="${L}" href="${u}" rel="noopener noreferrer" target="_blank" data-annuaire="${ev}/${slug}">${esc(L === "ar" ? isoler(t) : t)}</a>`).join("")}</p>`;
@@ -178,6 +181,31 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   const h2 = (ic, fr, ar) => `<h2><span class="ic">${svg(ICONES[ic])}</span>${bi(fr, ar)}</h2>`;
   const elision = t => (/^[aeiouéèêh]/i.test(t) ? "d'" : "de ") + t.charAt(0).toLowerCase() + t.slice(1);
 
+  /* ---------------- Pass Journée (assets/pass.js ; accord écrit d'Ahmed du 06/10/2026) ----------------
+     1 PDF gratuit par jour et par appareil ; Pass Journée 7 DT = tous les documents pendant 24 heures.
+     Bouton « Pass Journée » seulement sur les pages de modèle (près du téléchargement) et sur pass/ : JAMAIS sur l'accueil. */
+  const PASS_WA = "Bonjour, voici la preuve de paiement de mon Pass Journée (7 DT, Documents Tunisie). Nom et téléphone : ";
+  const formCode = id => `<form class="code-form" id="${id}" novalidate>
+      <label class="abo-etiquette" for="${id}-saisie">${bi("Votre code d'accès (8 caractères)", "رمز الدخول (8 حروف وأرقام)")}</label>
+      <input type="text" id="${id}-saisie" name="code" required maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button type="submit" class="btn-pro">${bi("Activer mon Pass", "تفعيل الباقة")}</button>
+      <p class="code-status" role="status" aria-live="polite"></p>
+    </form>`;
+  const PASS_MODELE = `  <p class="pass-lien" id="pass-lien"><a class="btn-pass" href="../pass/" target="_blank" rel="noopener">${bi("Pass Journée 7 DT : tous les documents pendant 24 heures", "باقة اليوم 7 د: كل الوثائق طيلة 24 ساعة")}</a><span class="petit">${bi("1 document PDF gratuit par jour sur ce téléphone.", "وثيقة PDF واحدة مجانية كل يوم على هذا الهاتف.")}</span></p>
+  <p class="pass-actif" id="pass-actif" role="status" hidden></p>
+  <div class="pass-bloque abo" id="pass-bloque" tabindex="-1" hidden>
+    <h3>${bi("Vous avez téléchargé votre document gratuit du jour", "لقد حمّلت وثيقتك المجانية لهذا اليوم")}</h3>
+    <p>${bi("Chaque jour, 1 document PDF est gratuit sur ce téléphone. Pour télécharger celui-ci aujourd'hui :", "كل يوم، وثيقة PDF واحدة مجانية على هذا الهاتف. لتحميل هذه الوثيقة اليوم:")}</p>
+    <a class="btn-pro" href="../pass/" target="_blank" rel="noopener">${bi("Pass Journée 7 DT : tous les documents pendant 24 heures", "باقة اليوم 7 د: كل الوثائق طيلة 24 ساعة")}</a>
+    <p class="demain">${bi("Sinon, revenez demain : un nouveau document gratuit vous attend.", "وإلا، عد غدًا: وثيقة مجانية جديدة في انتظارك.")}</p>
+    <p class="petit">${bi("Ce que vous avez écrit reste sur cette page : le Pass s'ouvre dans un nouvel onglet.", "ما كتبته يبقى في هذه الصفحة: الباقة تُفتح في نافذة جديدة.")}</p>
+    <details class="pass-code"><summary>${bi("J'ai déjà un code", "لدي رمز")}</summary>
+    ${formCode("code-modele")}
+    </details>
+  </div>`;
+  const dlPaiement = `<dl class="paie"><dt>D17</dt><dd><bdi dir="ltr">24 321 390</bdi></dd><dt>IZI</dt><dd><bdi dir="ltr">24 321 390</bdi></dd><dt>Wafacash</dt><dd><bdi dir="ltr">24 321 390</bdi></dd><dt>${bi("Montant", "المبلغ")}</dt><dd>${bi("7 DT (Pass Journée, 24 heures)", "7 د (باقة اليوم، 24 ساعة)")}</dd><dt>${bi("Motif", "سبب الدفع")}</dt><dd>${bi("votre nom et votre téléphone", "اسمك ورقم هاتفك")}</dd></dl>`;
+  const btnWa = id => `<a class="btn-wa" id="${id}" href="https://wa.me/21624321390?text=${encodeURIComponent(PASS_WA)}" data-texte="${esc(PASS_WA)}" target="_blank" rel="noopener noreferrer">${WHATSAPP}${bi("Envoyer la preuve de paiement par WhatsApp", "أرسل إثبات الدفع عبر واتساب")}</a>`;
+
   const out = {};
   const tous = [...DOCS, ...CONTRATS, ...GUIDES];
 
@@ -200,8 +228,8 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
     const oui = x => `<span class="${OUI[x][2]}">${bi(OUI[x][0], OUI[x][1])}</span>`;
     const pastilles = d.guide ? [`<span class="pastille">${bi("Explication seulement", "شرح فقط")}</span>`] : [
       `<span class="pastille">${bi("Légalisation : ", "التعريف بالإمضاء: ")}${bi(OUI[L.legalisation][0], OUI[L.legalisation][1])}</span>`,
-      d.contrat ? `<span class="pastille">${bi("Enregistrement : oui", "التسجيل: نعم")}</span>` : `<span class="pastille">${bi("PDF gratuit", "PDF مجاني")}</span>`];
-    let s = tete({ titre, desc, chemin: d.slug + "/", racine, scripts: d.contrat || d.guide ? ["page.js"] : ["documents.js", "page.js", "modele.js"], jsonld: [faq, fil] });
+      d.contrat ? `<span class="pastille">${bi("Enregistrement : oui", "التسجيل: نعم")}</span>` : `<span class="pastille">${bi("1 PDF gratuit par jour", "PDF مجاني واحد كل يوم")}</span>`];
+    let s = tete({ titre, desc, chemin: d.slug + "/", racine, scripts: d.contrat || d.guide ? ["page.js"] : ["documents.js", "page.js", "modele.js", "pass.js"], jsonld: [faq, fil] });
     s += corpsDebut(d.guide ? ` data-guide="${d.slug}"` : d.contrat ? ` data-contrat="${d.slug}"` : ` data-doc="${d.slug}"`) + "\n";
     s += hero({ photo: k.photo, racine, fil: `<a href="../">${bi("Accueil", "الرئيسية")}</a> › ${bi(k.fr, k.ar)}`,
       h1: d.contrat || d.guide ? bi(d.titre.fr, d.titre.ar) : bi(`Modèle ${elision(d.titre.fr)}`, `نموذج ${d.titre.ar}`),
@@ -266,6 +294,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   <p class="erreurs" id="erreurs" role="alert" hidden></p>
   <button class="bouton" type="button" id="telecharger">${svg(ICONES.pdf)}${bi("Télécharger le PDF", "تحميل ملف PDF")}</button>
   <p class="aide-pdf">${bi("Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF ».", "في النافذة التي تظهر، اختر « حفظ بصيغة PDF ».")}</p>
+${PASS_MODELE}
 </section>
 <section class="carte" id="apercu-carte">
   ${h2("liste", "Aperçu du document", "معاينة الوثيقة")}
@@ -309,16 +338,16 @@ ${pied}`;
   /* ---------------- accueil ---------------- */
   {
     const faq = { "@context": "https://schema.org", "@type": "WebSite", name: "Documents Tunisie", url: URL, inLanguage: ["fr", "ar"] };
-    let s = tete({ titre: "Documents Tunisie — modèles gratuits à remplir (PDF, français et arabe) – نماذج وثائق تونسية",
-      desc: "Modèles tunisiens gratuits à remplir sur téléphone : procuration, attestation de travail, demande de congé, autorisation de voyage… PDF en français et en arabe, avec les étapes officielles. نماذج مجانية بالعربية.",
+    let s = tete({ titre: "Documents Tunisie — modèles à remplir, 1 PDF gratuit par jour (français et arabe) – نماذج وثائق تونسية",
+      desc: "Modèles tunisiens à remplir sur téléphone : procuration, attestation de travail, demande de congé, autorisation de voyage… 1 PDF gratuit par jour en français ou en arabe, et les étapes officielles gratuites. نماذج بالعربية.",
       chemin: "", racine: "", scripts: ["page.js", "avis.js"], jsonld: [faq] });
     s += corpsDebut() + "\n";
-    s += hero({ photo: "accueil", racine: "", h1: bi("Modèles de documents tunisiens, gratuits, à remplir sur téléphone", "نماذج وثائق تونسية مجانية، تُعمّر من الهاتف"),
-      intro: bi("Remplissez, téléchargez le PDF en français ou en arabe, puis suivez les étapes officielles : municipalité, recette des finances, ATTT… Gratuit, sans inscription, rien n'est envoyé.",
-                "عمّر النموذج، حمّل ملف PDF بالعربية أو بالفرنسية، ثم اتبع المراحل الرسمية: البلدية، القباضة المالية، الوكالة الفنية للنقل البري… مجاني، دون تسجيل، ولا يُرسل أي شيء.") });
+    s += hero({ photo: "accueil", racine: "", h1: bi("Modèles de documents tunisiens à remplir sur téléphone", "نماذج وثائق تونسية تُعمّر من الهاتف"),
+      intro: bi("Remplissez, téléchargez le PDF en français ou en arabe, puis suivez les étapes officielles : municipalité, recette des finances, ATTT… 1 document gratuit par jour, étapes gratuites, sans inscription, rien n'est envoyé.",
+                "عمّر النموذج، حمّل ملف PDF بالعربية أو بالفرنسية، ثم اتبع المراحل الرسمية: البلدية، القباضة المالية، الوكالة الفنية للنقل البري… وثيقة مجانية كل يوم، المراحل مجانية، دون تسجيل، ولا يُرسل أي شيء.") });
     s += `\n<main class="wrap chevauche">
 <div class="recherche">${svg(ICONES.loupe)}<input type="search" id="recherche" aria-label="Rechercher un document" autocomplete="off"></div>
-<div class="cats">${CATEGORIES.map(k => `<button type="button" class="cat" data-cat="${k.id}">${svg(k.svg)}${bi(k.fr, k.ar)}</button>`).join("")}</div>
+<div class="cats">${CATEGORIES.map(k => `<button type="button" class="cat" data-cat="${k.id}">${svg(k.svg)}${bi(k.fr, k.ar)}</button>`).join("")}${LIEN_AVOCATS}</div>
 <p class="vide-recherche" id="aucun" hidden>${bi("Aucun document trouvé. Essayez un autre mot. Votre recherche est notée : les documents les plus demandés sont ajoutés au site.", "لم يتم العثور على أي وثيقة. جرّب كلمة أخرى. تم تسجيل بحثك: نضيف إلى الموقع الوثائق الأكثر طلبًا.")}</p>
 <section class="bloc-docs"><h2 class="titre-section">${bi("Les documents les plus demandés", "الوثائق الأكثر طلبا")}</h2>
 <div class="docs">${[...DOCS].sort((a, b) => a.rang - b.rang).map(x => carteDoc(x, "")).join("")}</div></section>
@@ -358,8 +387,8 @@ ${pied}`;
       intro: bi("Ce que fait ce site, d'où viennent les informations et ce qu'il ne fait pas.", "ما يقدمه هذا الموقع، ومن أين تأتي المعلومات، وما لا يقوم به.") });
     s += `\n<main class="wrap chevauche">
 <section class="carte">${h2("info", "Ce que fait ce site", "ما يقدمه الموقع")}
-  <p data-l="fr">Documents Tunisie propose des <b>modèles gratuits</b> de documents courants (procurations, attestations, demandes, reçus…) à remplir sur téléphone, en <b>français et en arabe</b>, et explique <b>les étapes</b> après la signature : légalisation, enregistrement, administration à contacter, pièces à apporter.</p>
-  <p data-l="ar">يقدم موقع وثائق تونس <b>نماذج مجانية</b> لوثائق متداولة (توكيلات، شهائد، مطالب، وصولات…) تُعمّر من الهاتف، <b>بالعربية والفرنسية</b>، ويشرح <b>المراحل</b> بعد الإمضاء: التعريف بالإمضاء، التسجيل، الإدارة المعنية، الوثائق المطلوبة.</p>
+  <p data-l="fr">Documents Tunisie propose des <b>modèles</b> de documents courants (procurations, attestations, demandes, reçus…) à remplir sur téléphone, en <b>français et en arabe</b>, et explique gratuitement <b>les étapes</b> après la signature : légalisation, enregistrement, administration à contacter, pièces à apporter. <b>1 document PDF est gratuit chaque jour</b> sur chaque téléphone ; le <a href="../pass/">Pass Journée</a> (7 DT) donne tous les documents pendant 24 heures.</p>
+  <p data-l="ar">يقدم موقع وثائق تونس <b>نماذج</b> لوثائق متداولة (توكيلات، شهائد، مطالب، وصولات…) تُعمّر من الهاتف، <b>بالعربية والفرنسية</b>، ويشرح مجانًا <b>المراحل</b> بعد الإمضاء: التعريف بالإمضاء، التسجيل، الإدارة المعنية، الوثائق المطلوبة. <b>وثيقة ⁨PDF⁩ واحدة مجانية كل يوم</b> على كل هاتف؛ و<a href="../pass/">باقة اليوم</a> (⁨7⁩ د) تمنح كل الوثائق طيلة ⁨24⁩ ساعة.</p>
 </section>
 <section class="carte">${h2("livre", "Méthode et sources officielles", "المنهجية والمصادر الرسمية")}
   <p data-l="fr">Les textes des modèles sont <b>écrits par nous</b> à partir des textes de loi et des sites officiels ; ils ne sont copiés d'aucun autre site. Chaque page cite ses sources et sa date de vérification (<span data-maj>${MAJ}</span>). Un robot vérifie chaque mois que ces sources répondent toujours.</p>
@@ -371,8 +400,8 @@ ${pied}`;
   <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>العقود الهامة (بيع عربة، كراء، كراء تجاري) لن يكون لها نموذج إلا <b>بعد مراجعتها من قبل محام</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
-  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seul votre choix de langue est gardé dans votre navigateur. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) et les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, jamais ce que vous écrivez dans les formulaires. Seule exception, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer ».</p>
-  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة يُحفظ في متصفحك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية (المحامون، عدول الإشهاد، المحاسبون) وحاسبة القروض، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناء الوحيد، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال».</p>
+  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seuls votre choix de langue, le jour et le nom du document gratuit du jour (pour compter 1 document gratuit par jour) et, si vous en avez un, votre code de Pass Journée sont gardés dans votre navigateur ; le code est vérifié dans votre téléphone. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, et le nom des modèles dont le téléchargement attend un Pass Journée, jamais ce que vous écrivez dans les formulaires. Seules exceptions, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer » ; la demande de Pass Journée envoie votre nom et votre téléphone de la même façon, seulement pour vous envoyer votre code (voir les <a href="../pass/conditions/">conditions du Pass Journée</a>).</p>
+  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة، ويوم واسم الوثيقة المجانية لهذا اليوم (لحساب وثيقة مجانية واحدة كل يوم)، ورمز باقة اليوم إن كان لديك، تُحفظ في متصفحك؛ ويتم التثبت من الرمز داخل هاتفك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية (المحامون، عدول الإشهاد، المحاسبون) وحاسبة القروض، واسم النماذج التي ينتظر تحميلها باقة اليوم، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناءان الوحيدان، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال»؛ وطلب باقة اليوم يُرسل اسمك وهاتفك بنفس الطريقة، فقط لإرسال الرمز إليك (انظر <a href="../pass/conditions/">شروط باقة اليوم</a>).</p>
 </section>
 <section class="carte" id="credits">${h2("info", "Crédits photos", "مصادر الصور")}
   <ul class="sources">${Object.values(CREDITS).map(c => `<li>${esc(c.titre)} — ${esc(c.auteur)}, <a href="${esc(c.licence_url || c.source)}" rel="noopener noreferrer" target="_blank">${esc(c.licence)}</a>, <a href="${esc(c.source)}" rel="noopener noreferrer" target="_blank">Wikimedia Commons</a> (${bi("recadrée et compressée", "مقصوصة ومضغوطة")})</li>`).join("")}</ul>
@@ -386,8 +415,128 @@ ${pied}`;
     out["a-propos/index.html"] = s;
   }
 
+  /* ---------------- Pass Journée : page pass/ (prix, avantages, paiement, code, demande) ---------------- */
+  {
+    let s = tete({ titre: "Pass Journée — tous les documents en PDF pendant 24 heures – باقة اليوم",
+      desc: "Pass Journée de Documents Tunisie : 7 DT pour télécharger tous les modèles en PDF (français et arabe) pendant 24 heures. Sans Pass : 1 document gratuit par jour.",
+      chemin: "pass/", racine: "../", scripts: ["page.js", "pass.js"], jsonld: [] });
+    s += corpsDebut(' data-page="pass"') + "\n";
+    s += hero({ photo: "administration", racine: "../", fil: `<a href="../">${bi("Accueil", "الرئيسية")}</a>`, h1: bi("Pass Journée", "باقة اليوم"),
+      intro: bi("Tous les documents en PDF pendant 24 heures, pour 7 DT. Sans Pass, 1 document PDF reste gratuit chaque jour, et les pages, les exemples et les étapes restent gratuits.",
+                "كل الوثائق بصيغة PDF طيلة 24 ساعة، مقابل 7 د. دون باقة، تبقى وثيقة PDF واحدة مجانية كل يوم، وتبقى الصفحات والأمثلة والمراحل مجانية.") });
+    s += `\n<main class="wrap chevauche">
+<section class="carte pass-etat" id="pass-etat" role="status" hidden></section>
+<section class="offre-pro" id="offre">
+  <p class="ruban">${bi("Sans abonnement", "دون اشتراك")}</p>
+  <h2>${bi("Pass Journée", "باقة اليوم")}</h2>
+  <div class="prix-pass"><b>${bi("7 DT", "7 د")}</b><span>${bi("tous les documents pendant 24 heures", "كل الوثائق طيلة 24 ساعة")}</span></div>
+  <ul class="avantages" data-l="fr">
+    <li><b>Tous les modèles en PDF</b>, autant que vous voulez, pendant 24 heures</li>
+    <li>En <b>français, en arabe ou les deux</b></li>
+    <li><b>Valable 24 heures à partir de l'envoi de votre code</b></li>
+    <li>Pas de compte ni d'application : un code à taper une fois</li>
+    <li><strong>Pas de renouvellement automatique</strong> : après 24 heures, retour au gratuit (1 document par jour)</li>
+    <li>Vos documents sont toujours fabriqués dans votre téléphone : rien n'est envoyé</li>
+  </ul>
+  <ul class="avantages" data-l="ar">
+    <li><b>كل النماذج بصيغة ⁨PDF⁩</b>، بقدر ما تريد، طيلة ⁨24⁩ ساعة</li>
+    <li><b>بالعربية أو بالفرنسية أو بالاثنتين</b></li>
+    <li><b>صالحة ⁨24⁩ ساعة ابتداءً من إرسال رمزك</b></li>
+    <li>دون حساب ولا تطبيق: رمز تكتبه مرة واحدة</li>
+    <li><strong>لا تجديد آلي</strong>: بعد ⁨24⁩ ساعة تعود إلى المجاني (وثيقة واحدة كل يوم)</li>
+    <li>وثائقك تُصنع دائمًا في هاتفك: لا يُرسل أي شيء</li>
+  </ul>
+  <details class="paiement" id="paiement"><summary class="btn-clair">${bi("Paiement", "الدفع")}</summary>
+    ${dlPaiement}
+    ${btnWa("pass-preuve")}
+    <p class="petit">${bi("Payez avec pour motif votre nom et votre téléphone, puis envoyez la preuve par WhatsApp : vous recevrez votre code par WhatsApp.", "ادفع مع ذكر اسمك ورقم هاتفك كسبب للدفع، ثم أرسل الإثبات عبر واتساب: سيصلك رمزك عبر واتساب.")}</p>
+  </details>
+  <a class="btn-pro" href="#inscription">${bi("Je demande mon Pass Journée", "أطلب باقة اليوم")}</a>
+  <p class="petit">${bi("Prix en dinars tunisiens. Voir les", "الأسعار بالدينار التونسي. انظر")} <a href="conditions/">${bi("conditions du Pass Journée", "شروط باقة اليوم")}</a>.</p>
+</section>
+<section class="carte">
+  <h2>${bi("Comment ça marche ?", "كيف يعمل؟")}</h2>
+  <ol class="etapes" data-l="fr">
+    <li>Remplissez le formulaire ci-dessous (nom et téléphone WhatsApp).</li>
+    <li>Payez 7 DT par D17, IZI ou Wafacash au 24 321 390 et envoyez la preuve par WhatsApp.</li>
+    <li>Vous recevez votre <b>code d'accès</b> par WhatsApp. Le Pass dure 24 heures à partir de cet envoi.</li>
+    <li>Tapez ce code une seule fois dans « J'ai un code » (ou sur la page du document) : tous les documents se téléchargent.</li>
+  </ol>
+  <ol class="etapes" data-l="ar">
+    <li>املأ الاستمارة أسفله (الاسم وهاتف واتساب).</li>
+    <li>ادفع ⁨7⁩ د عبر ⁨D17⁩ أو ⁨IZI⁩ أو ⁨Wafacash⁩ على الرقم ⁨24 321 390⁩ وأرسل الإثبات عبر واتساب.</li>
+    <li>يصلك <b>رمز الدخول</b> عبر واتساب. تدوم الباقة ⁨24⁩ ساعة ابتداءً من هذا الإرسال.</li>
+    <li>اكتب الرمز مرة واحدة في «لدي رمز» (أو في صفحة الوثيقة): تُحمَّل كل الوثائق.</li>
+  </ol>
+</section>
+<section class="carte abo" id="code-acces">
+  <h2>${bi("J'ai un code", "لدي رمز")}</h2>
+  ${formCode("code-pass")}
+  <p class="petit">${bi("Le code est vérifié dans votre téléphone : il n'est envoyé à personne. Il reste gardé sur ce téléphone jusqu'à la fin du Pass.", "يتم التثبت من الرمز داخل هاتفك: لا يُرسل إلى أحد. ويبقى محفوظًا على هذا الهاتف إلى نهاية الباقة.")}</p>
+</section>
+<section class="carte abo" id="inscription" aria-labelledby="pass-titre">
+  <h2 id="pass-titre">${bi("Demander mon Pass Journée", "طلب باقة اليوم")}</h2>
+  <form id="pass-form" action="https://formspree.io/f/mwlpakqj" method="POST" novalidate>
+    <label class="abo-etiquette" for="pass-nom">${bi("Votre nom", "اسمك")}</label>
+    <input type="text" id="pass-nom" name="nom" required maxlength="100" autocomplete="name">
+    <label class="abo-etiquette" for="pass-tel">${bi("Téléphone WhatsApp (8 chiffres)", "هاتف واتساب (8 أرقام)")}</label>
+    <input type="text" id="pass-tel" name="telephone" required inputmode="tel" maxlength="14" autocomplete="tel">
+    <label class="case"><input type="checkbox" name="conditions" value="oui" required id="pass-conditions"> <span><span data-l="fr">J'accepte les <a href="conditions/">conditions du Pass Journée</a>.</span><span data-l="ar">أوافق على <a href="conditions/">شروط باقة اليوم</a>.</span></span></label>
+    <input type="hidden" name="site" value="Documents Tunisie">
+    <input type="hidden" name="formule" value="Pass Journée - 7 DT - 24 heures">
+    <input type="hidden" name="page" value="">
+    <input type="hidden" name="_subject" value="Pass Journée — Documents Tunisie">
+    <input type="text" name="_gotcha" class="abo-piege" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <button type="submit" class="btn-pro">${bi("Envoyer ma demande", "أرسل طلبي")}</button>
+    <p id="pass-status" role="status" aria-live="polite"></p>
+    <p class="petit">${bi("Votre nom et votre téléphone servent seulement à vous envoyer votre code : ils ne sont jamais publiés ni vendus (envoi par le service Formspree). Rien n'est envoyé sans clic sur « Envoyer ma demande ».", "يُستعمل اسمك وهاتفك فقط لإرسال الرمز إليك: لا يُنشران ولا يُباعان أبدًا (إرسال عبر خدمة Formspree). لا يُرسل أي شيء دون الضغط على «أرسل طلبي».")}</p>
+  </form>
+  <div class="apres-abo" id="apres-pass" hidden>
+    <h3>${bi("Merci, votre demande est bien reçue", "شكرًا، وصلنا طلبك")}</h3>
+    <p>${bi("Payez maintenant 7 DT par D17, IZI ou Wafacash, avec pour motif votre nom et votre téléphone, puis envoyez la preuve par WhatsApp. Vous recevrez votre code par WhatsApp : le Pass est valable 24 heures à partir de l'envoi de votre code.", "ادفع الآن 7 د عبر D17 أو IZI أو Wafacash مع ذكر اسمك ورقم هاتفك، ثم أرسل الإثبات عبر واتساب. سيصلك رمزك عبر واتساب: الباقة صالحة 24 ساعة ابتداءً من إرسال رمزك.")}</p>
+    ${dlPaiement}
+    ${btnWa("pass-preuve-apres")}
+    <p class="petit">${bi("Pas de renouvellement automatique. Quand vous avez le code, tapez-le plus haut dans « J'ai un code ».", "لا تجديد آلي. عندما يصلك الرمز، اكتبه أعلاه في «لدي رمز».")}</p>
+  </div>
+</section>
+<p class="avert">${bi("Sans Pass, le site reste utilisable : toutes les pages, les exemples, le remplissage, l'aperçu et les étapes sont gratuits, avec 1 document PDF gratuit par jour. Les modèles sont indicatifs et ne remplacent pas un avocat.", "دون باقة، يبقى الموقع قابلا للاستعمال: كل الصفحات والأمثلة والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم. النماذج استرشادية ولا تعوض المحامي.")}</p>
+</main>
+${pied}`;
+    out["pass/index.html"] = s;
+  }
+
+  /* ---------------- conditions du Pass Journée (vendeur = « l'éditeur du site », jamais un nom de société) ---------------- */
+  {
+    let s = tete({ titre: "Conditions du Pass Journée — Documents Tunisie – شروط باقة اليوم",
+      desc: "Conditions du Pass Journée de Documents Tunisie : prix de 7 DT, durée de 24 heures, paiement, code d'accès, pas de renouvellement automatique, données personnelles.",
+      chemin: "pass/conditions/", racine: "../../", scripts: ["page.js", "pass.js"], jsonld: [] });
+    s += corpsDebut(' data-page="pass-conditions"') + "\n";
+    s += hero({ photo: "administration", racine: "../../", fil: `<a href="../../">${bi("Accueil", "الرئيسية")}</a> › <a href="../">${bi("Pass Journée", "باقة اليوم")}</a>`,
+      h1: bi("Conditions du Pass Journée", "شروط باقة اليوم"), intro: bi("Prix, durée, paiement, code d'accès, arrêt, données personnelles.", "السعر، المدة، الدفع، رمز الدخول، الإيقاف، المعطيات الشخصية.") });
+    const art = (n, tFr, tAr, fr, ar) => `  <h2>${bi(n + ". " + tFr, n + ". " + tAr)}</h2>\n  <p>${bi(fr, ar)}</p>\n`;
+    s += `\n<main class="wrap chevauche">
+<section class="carte conditions">
+${art(1, "Le service", "الخدمة", "Le Pass Journée est vendu par l'éditeur du site « Documents Tunisie ». Pendant 24 heures, il permet de télécharger en PDF tous les modèles du site, en français, en arabe ou dans les deux langues. Sans Pass, les pages, les exemples, le remplissage, l'aperçu et les étapes restent gratuits, avec 1 document PDF gratuit par jour et par téléphone.",
+  "تُباع باقة اليوم من قبل ناشر موقع «وثائق تونس». وتمكّن، طيلة 24 ساعة، من تحميل كل نماذج الموقع بصيغة PDF، بالعربية أو بالفرنسية أو باللغتين. دون باقة، تبقى الصفحات والأمثلة والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم وعلى كل هاتف.")}
+${art(2, "Prix", "السعر", "7 DT pour 24 heures, en dinars tunisiens. Le prix affiché au moment de la demande s'applique.", "7 د مقابل 24 ساعة، بالدينار التونسي. يُطبَّق السعر المعروض عند الطلب.")}
+${art(3, "Durée", "المدة", "Le Pass est valable 24 heures à partir de l'envoi de votre code par WhatsApp. Le code marche quelques minutes après l'envoi (10 minutes au plus).", "الباقة صالحة 24 ساعة ابتداءً من إرسال رمزك عبر واتساب. يعمل الرمز بعد دقائق من إرساله (10 دقائق على الأكثر).")}
+${art(4, "Paiement", "الدفع", "Paiement par D17, IZI ou Wafacash au 24 321 390, avec pour motif le nom et le téléphone de l'acheteur, puis preuve envoyée par WhatsApp au même numéro. Le code est envoyé après réception du paiement.", "الدفع عبر D17 أو IZI أو Wafacash على الرقم 24 321 390 مع ذكر اسم المشتري ورقم هاتفه، ثم إرسال الإثبات عبر واتساب على نفس الرقم. يُرسل الرمز بعد وصول الدفع.")}
+${art(5, "Pas de renouvellement automatique", "لا تجديد آلي", "Aucun renouvellement automatique : après 24 heures, le Pass s'arrête simplement et le site revient à la version gratuite (1 document PDF par jour). Pour un nouveau Pass, il faut une nouvelle demande.", "لا يوجد أي تجديد آلي: بعد 24 ساعة تتوقف الباقة ببساطة ويعود الموقع إلى النسخة المجانية (وثيقة PDF واحدة كل يوم). لباقة جديدة يجب تقديم طلب جديد.")}
+${art(6, "Arrêt et remboursement", "الإيقاف والاسترجاع", "Aucune période payée n'est remboursée. Si votre code ne marche pas, écrivez-nous sur WhatsApp : nous vérifions et corrigeons.", "لا تُسترجع أي مدة مدفوعة. إذا لم يعمل رمزك، راسلنا عبر واتساب: نتثبت ونصلح.")}
+${art(7, "Code d'accès", "رمز الدخول", "Le code d'accès est personnel : ne le publiez pas. Il est vérifié dans le téléphone et gardé sur l'appareil où il a été tapé. Un code publié ou revendu peut être désactivé.", "رمز الدخول شخصي: لا تنشره. يتم التثبت منه داخل الهاتف ويبقى محفوظًا على الجهاز الذي كُتب فيه. ويمكن تعطيل رمز منشور أو مُعاد بيعه.")}
+${art(8, "Limites", "الحدود", "Les modèles sont indicatifs : ils ne remplacent pas un avocat, un notaire ou l'administration, et le Pass ne garantit pas qu'un document sera accepté. Le site n'est pas officiel. Relisez chaque document avant de le signer.", "النماذج استرشادية: لا تعوض المحامي أو عدل الإشهاد أو الإدارة، والباقة لا تضمن قبول أي وثيقة. الموقع غير رسمي. أعد قراءة كل وثيقة قبل إمضائها.")}
+${art(9, "Données personnelles", "المعطيات الشخصية", "Nous gardons seulement : nom, téléphone, dates du Pass et code d'accès, dans un espace privé. Ces données servent uniquement à envoyer le code, ne sont jamais publiées ni vendues, et sont supprimées sur simple demande (WhatsApp). Sur le site public, il n'y a que l'empreinte non réversible du code et son heure de fin. Le formulaire passe par le service Formspree. Ce que vous écrivez dans les modèles n'est jamais envoyé. Ce traitement a reçu l'accord de l'INPDP (Instance nationale de protection des données personnelles).",
+  "نحتفظ فقط بـ: الاسم، الهاتف، تواريخ الباقة ورمز الدخول، في فضاء خاص. تُستعمل هذه المعطيات فقط لإرسال الرمز، ولا تُنشر ولا تُباع أبدًا، وتُحذف بمجرد الطلب (واتساب). وعلى الموقع العمومي لا يوجد إلا بصمة غير قابلة للعكس للرمز وساعة نهايته. تمر الاستمارة عبر خدمة Formspree. ما تكتبه في النماذج لا يُرسل أبدًا. وقد تحصّلت هذه المعالجة على موافقة الهيئة الوطنية لحماية المعطيات الشخصية.")}
+${art(10, "Contact", "الاتصال", "WhatsApp : 24 321 390.", "واتساب: 24 321 390.")}
+  <p><a class="btn-pro" href="../#inscription">${bi("Retour au Pass Journée", "العودة إلى باقة اليوم")}</a></p>
+</section>
+</main>
+${pied}`;
+    out["pass/conditions/index.html"] = s;
+  }
+
   /* ---------------- plan du site ---------------- */
-  const urls = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), ...GUIDES.map(d => d.slug + "/"), "a-propos/"];
+  const urls = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), ...GUIDES.map(d => d.slug + "/"), "a-propos/", "pass/"];
   const [j, m, a] = MAJ.split("/");
   out["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

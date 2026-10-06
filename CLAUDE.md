@@ -56,8 +56,8 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Formspree gratuit = 50 envois/mois pour TOUS les sites (même formulaire). Test : `node tools/test_avis.mjs` (accepte un dossier).
 
 ## Tests (obligatoires avant toute publication)
-- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 1190 vérifications) → **TOUT PASSE**.
-- `node tools/sabotage.mjs` : 26 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 1290 vérifications) → **TOUT PASSE**.
+- `node tools/sabotage.mjs` : 37 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
 - **Pas de faux boutons** (Ahmed, 06/10/2026) : badges « Gratuit / Données / Français et arabe » de l'accueil supprimés (cartes avec icône qui ne menaient nulle part) ; « Gratuit, sans inscription, rien n'est envoyé » est dans l'intro. Test sur toutes les pages + sabotage : aucune carte avec icône sans lien.
 - CSS : `[hidden]{display:none!important}` obligatoire (sinon un `display:flex/grid` rend visibles les éléments cachés par le JS : recherche, « aucun résultat ») ; test + sabotage (06/10/2026).
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
@@ -75,7 +75,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 
 ## Mise à jour du 05/10/2026 (soir)
 - **Icône (famille commune des 5 sites)** : un seul symbole en aplats 2-3 tons, accent doré `#F2B33D`, sans texte ni brillance (règle d'Ahmed : jamais d'effet « image IA » ni de clip-art). Ce site : **plume de stylo**. Source = `assets/logo.svg` ; PNG 192/512 = dessin arrondi, maskable 512 et iPhone 180 = même dessin sur carré plein, symbole à 78 %. Générateur (hors dépôt) : `_claude code project/icones des sites - generateur.py`. Changer l'icône → renouveler `CACHE_VERSION` de `sw.js`.
-- **« Gratuit » mis en avant** (titres Google, descriptions, aperçus de partage, manifeste), seulement là où c'est vrai. La future partie payante n'est jamais annoncée à l'avance (décision d'Ahmed).
+- **« Gratuit » mis en avant** (titres Google, descriptions, aperçus de partage, manifeste), seulement là où c'est vrai. Partie payante (Pass Journée) en ligne depuis le 06/10/2026 : voir plus bas.
 - **Aperçus WhatsApp** : tous les sites sont réglés pareil (1200 × 630, JPEG léger). WhatsApp sur PC fait de petites vignettes : envoyer les liens depuis le téléphone (ou transférer un message préparé sur le téléphone).
 - **Règle d'Ahmed : tout tourne sur internet (GitHub), sans son PC ni son intervention, « même s'il meurt ».**
 - **PDF** : mise en page de lettre administrative (police à empattement, titre détaché, marges A4 25/22 mm, 45 mm pour signer et légaliser) ; aucune mention du site.
@@ -90,3 +90,26 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 
 ## Exemple du document (06/10/2026, demande d'Ahmed)
 - Section `#exemple` AVANT « Remplir le modèle » : la lettre remplie avec des données **fictives** (champ `exemple` de chaque modèle : `{ id: valeur | [fr, ar] }` ; sinon `ex` du champ ; sinon libellé), même rendu que le PDF (`feuilleExemple` de modele.js, fabriquée par generer.mjs), FR ou AR selon la langue, étiquette + filigrane « EXEMPLE / مثال », réduite (60 % de l'écran) avec `<details>` « Agrandir l'exemple ». **Nouveau modèle → lui donner un `exemple`** (CIN « 0XXXXXXX », jamais de vraie personne). Jamais imprimée (seul `#impression` l'est), pas d'événement GoatCounter ; tests + 3 sabotages.
+
+## Pass Journée — partie payante (accord écrit d'Ahmed, 06/10/2026, même logique que le Pass Examen du Code de la route)
+- **1 document PDF gratuit par jour et par appareil** (localStorage `dt-gratuit-v1` = { jour, doc }, dans un try). Retélécharger
+  le MÊME modèle le même jour reste permis (correction). Un AUTRE modèle le même jour → écran `#pass-bloque` (« Vous avez téléchargé
+  votre document gratuit du jour » → **Pass Journée 7 DT : tous les documents pendant 24 heures**, « Revenez demain », « J'ai déjà un code »
+  avec le formulaire du code sur place). Pages, exemple, formulaire et aperçu restent libres ; seul le téléchargement est bloqué.
+- `assets/pass.js` (chargé seulement par les 16 pages de modèle et pass/) ; `modele.js` appelle `PassJour.acces/bloquer/noter`.
+  Statistique anonyme `pass-bloque/<slug>` (une fois par page ouverte) = mesure de la demande.
+- Bouton « Pass Journée » : **jamais sur l'accueil** (décision d'Ahmed) ; seulement près de « Télécharger le PDF » (nouvel onglet,
+  la saisie reste) et sur `pass/` (prix, avantages, « Paiement » D17/IZI/Wafacash 24 321 390, WhatsApp vert, formulaire Formspree
+  `mwlpakqj` avec ligne `pour_activer`, « J'ai un code ») + `pass/conditions/` (vendeur « l'éditeur du site », jamais de nom de société,
+  pas de TTC, pas de renouvellement automatique, aucune période payée remboursée, INPDP sans numéro). Pages fabriquées par generer.mjs.
+- Codes : dépôt **PRIVÉ** `Ah6259/documents-pass` (dossier `../pass (prive)`), bouton `pass` (paye / arret / liste) depuis
+  l'application GitHub, nettoyage toutes les 6 h. Le site ne reçoit que `donnees/pass.json` : empreinte PBKDF2-SHA-256 salée (100 000 tours)
+  + heure de fin UTC (24 h après « paye »). Clé de déploiement « robot-pass » (écriture sur ce dépôt seulement) dans le secret `CLE_SITE`.
+- « Gratuit » seulement là où c'est vrai : « 1 PDF gratuit par jour », « étapes gratuites » (accueil, en-tête, pastilles, manifeste, À propos).
+- Tests : partie « 4 bis » de test_site (1er PDF permis, 2e bloqué, lendemain permis, code valide/expiré/faux/arrêté, hors connexion,
+  formulaire, conditions, pass.json) + 9 sabotages. Vecteur PBKDF2 commun avec le test Python du dépôt privé.
+
+## Lien vers l'annuaire « Avocats et notaires » (06/10/2026, demande d'Ahmed : liens entre site et moteur)
+- Bouton à bordure dorée `.cat-annuaire` à la fin de la rangée des catégories de l'accueil (`LIEN_AVOCATS` dans generer.mjs) + lien
+  `.entete-annuaire` dans l'en-tête (logo seul sous 560 px) et le pied de page (page.js). Logo copié : `assets/logo-avocats-notaires.svg`
+  (la CSP n'autorise que les images du site). Clic compté `lien-site/avocats`. Encarts « Faire relire par un avocat » inchangés. Test + 2 sabotages.

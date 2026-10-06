@@ -29,10 +29,11 @@
 <meta name="theme-color" content="#8C2B3A">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&amp;family=Noto+Kufi+Arabic:wght@400;600;700;800&amp;family=Noto+Naskh+Arabic:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=483b9f4cca">
-<script defer src="../assets/documents.js?v=483b9f4cca"></script>
-<script defer src="../assets/page.js?v=483b9f4cca"></script>
-<script defer src="../assets/modele.js?v=483b9f4cca"></script>
+<link rel="stylesheet" href="../assets/style.css?v=bd5f403e21">
+<script defer src="../assets/documents.js?v=bd5f403e21"></script>
+<script defer src="../assets/page.js?v=bd5f403e21"></script>
+<script defer src="../assets/modele.js?v=bd5f403e21"></script>
+<script defer src="../assets/pass.js?v=bd5f403e21"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Quelle différence avec le certificat de résidence ?","acceptedAnswer":{"@type":"Answer","text":"Le certificat de résidence est délivré par l'administration. L'attestation d'hébergement est écrite par la personne qui vous héberge."}},{"@type":"Question","name":"ما الفرق مع شهادة الإقامة؟","acceptedAnswer":{"@type":"Answer","text":"شهادة الإقامة تسلمها الإدارة. أما شهادة الإيواء فيحررها الشخص الذي يؤويك."}},{"@type":"Question","name":"Faut-il la légaliser ?","acceptedAnswer":{"@type":"Answer","text":"En général oui : la signature de l'hébergeant est légalisée à la municipalité."}},{"@type":"Question","name":"هل يجب التعريف بالإمضاء؟","acceptedAnswer":{"@type":"Answer","text":"عادة نعم: يُعرَّف بإمضاء المُؤوي بالبلدية."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Documents Tunisie","item":"https://ah6259.github.io/documents-tunisie/"},{"@type":"ListItem","position":2,"name":"Attestation d'hébergement","item":"https://ah6259.github.io/documents-tunisie/attestation-d-hebergement/"}]}</script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -45,7 +46,7 @@
     <p class="fil"><a href="../"><span data-l="fr">Accueil</span><span data-l="ar">الرئيسية</span></a> › <span data-l="fr">Logement</span><span data-l="ar">السكن</span></p>
     <h1><span data-l="fr">Modèle d'attestation d'hébergement</span><span data-l="ar">نموذج شهادة إيواء</span></h1>
     <p class="intro"><span data-l="fr">Attester qu'une personne habite chez vous.</span><span data-l="ar">الإشهاد بأن شخصا يقيم عندك.</span></p>
-    <div class="pastilles"><span class="pastille"><span data-l="fr">Légalisation : </span><span data-l="ar">التعريف بالإمضاء: </span><span data-l="fr">Oui</span><span data-l="ar">نعم</span></span><span class="pastille"><span data-l="fr">PDF gratuit</span><span data-l="ar">⁨PDF⁩ مجاني</span></span><span class="maj"><span data-l="fr">Vérifié le</span><span data-l="ar">تم التثبت في</span>&nbsp;<span data-maj>05/10/2026</span></span></div>
+    <div class="pastilles"><span class="pastille"><span data-l="fr">Légalisation : </span><span data-l="ar">التعريف بالإمضاء: </span><span data-l="fr">Oui</span><span data-l="ar">نعم</span></span><span class="pastille"><span data-l="fr">1 PDF gratuit par jour</span><span data-l="ar">⁨PDF⁩ مجاني واحد كل يوم</span></span><span class="maj"><span data-l="fr">Vérifié le</span><span data-l="ar">تم التثبت في</span>&nbsp;<span data-maj>05/10/2026</span></span></div>
   </div>
   <p class="credit-photo" dir="ltr">Photo / صورة : Ms.Abeer Ali, <a href="https://commons.wikimedia.org/wiki/File:Tunis_Saiedy_bu_saied_01.jpg" rel="noopener noreferrer" target="_blank">CC BY-SA 4.0</a>, Wikimedia Commons</p>
 </section>
@@ -90,6 +91,23 @@
   <p class="erreurs" id="erreurs" role="alert" hidden></p>
   <button class="bouton" type="button" id="telecharger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span data-l="fr">Télécharger le PDF</span><span data-l="ar">تحميل ملف ⁨PDF⁩</span></button>
   <p class="aide-pdf"><span data-l="fr">Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF ».</span><span data-l="ar">في النافذة التي تظهر، اختر « حفظ بصيغة ⁨PDF⁩ ».</span></p>
+  <p class="pass-lien" id="pass-lien"><a class="btn-pass" href="../pass/" target="_blank" rel="noopener"><span data-l="fr">Pass Journée 7 DT : tous les documents pendant 24 heures</span><span data-l="ar">باقة اليوم ⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a><span class="petit"><span data-l="fr">1 document PDF gratuit par jour sur ce téléphone.</span><span data-l="ar">وثيقة ⁨PDF⁩ واحدة مجانية كل يوم على هذا الهاتف.</span></span></p>
+  <p class="pass-actif" id="pass-actif" role="status" hidden></p>
+  <div class="pass-bloque abo" id="pass-bloque" tabindex="-1" hidden>
+    <h3><span data-l="fr">Vous avez téléchargé votre document gratuit du jour</span><span data-l="ar">لقد حمّلت وثيقتك المجانية لهذا اليوم</span></h3>
+    <p><span data-l="fr">Chaque jour, 1 document PDF est gratuit sur ce téléphone. Pour télécharger celui-ci aujourd'hui :</span><span data-l="ar">كل يوم، وثيقة ⁨PDF⁩ واحدة مجانية على هذا الهاتف. لتحميل هذه الوثيقة اليوم:</span></p>
+    <a class="btn-pro" href="../pass/" target="_blank" rel="noopener"><span data-l="fr">Pass Journée 7 DT : tous les documents pendant 24 heures</span><span data-l="ar">باقة اليوم ⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a>
+    <p class="demain"><span data-l="fr">Sinon, revenez demain : un nouveau document gratuit vous attend.</span><span data-l="ar">وإلا، عد غدًا: وثيقة مجانية جديدة في انتظارك.</span></p>
+    <p class="petit"><span data-l="fr">Ce que vous avez écrit reste sur cette page : le Pass s'ouvre dans un nouvel onglet.</span><span data-l="ar">ما كتبته يبقى في هذه الصفحة: الباقة تُفتح في نافذة جديدة.</span></p>
+    <details class="pass-code"><summary><span data-l="fr">J'ai déjà un code</span><span data-l="ar">لدي رمز</span></summary>
+    <form class="code-form" id="code-modele" novalidate>
+      <label class="abo-etiquette" for="code-modele-saisie"><span data-l="fr">Votre code d'accès (8 caractères)</span><span data-l="ar">رمز الدخول (⁨8⁩ حروف وأرقام)</span></label>
+      <input type="text" id="code-modele-saisie" name="code" required maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button type="submit" class="btn-pro"><span data-l="fr">Activer mon Pass</span><span data-l="ar">تفعيل الباقة</span></button>
+      <p class="code-status" role="status" aria-live="polite"></p>
+    </form>
+    </details>
+  </div>
 </section>
 <section class="carte" id="apercu-carte">
   <h2><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span><span data-l="fr">Aperçu du document</span><span data-l="ar">معاينة الوثيقة</span></h2>

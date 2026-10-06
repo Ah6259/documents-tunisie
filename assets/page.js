@@ -26,8 +26,9 @@ const SITE = "https://ah6259.github.io/documents-tunisie/";
         <a class="logo" href="${racine || "./"}">
           <img class="logo-mark" src="${racine}assets/logo.svg" alt="" width="34" height="34">
           <span class="logo-nom">${T("Documents Tunisie", "وثائق تونس")}
-            <small>${T("Modèles gratuits · français et arabe", "نماذج مجانية · بالعربية والفرنسية")}</small></span>
+            <small>${T("1 PDF gratuit par jour · français et arabe", "PDF مجاني كل يوم · بالعربية والفرنسية")}</small></span>
         </a>
+        <a class="entete-annuaire" href="https://ah6259.github.io/avocats-notaires-tunisie/${html.lang === "ar" ? "?lang=ar" : ""}" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats" aria-label="${T("Avocats et notaires (annuaire gratuit)", "محامون وعدول (دليل مجاني)")}"><img src="${racine}assets/logo-avocats-notaires.svg" alt="" width="22" height="22"><span>${T("Avocats et notaires", "محامون وعدول")}</span></a>
         <button class="langue" type="button">${T("العربية", "Français")}</button>
       </div>`;
     const p = document.getElementById("pied");
@@ -38,6 +39,7 @@ const SITE = "https://ah6259.github.io/documents-tunisie/";
           <a href="${racine || "./"}">${T("Tous les documents", "كل الوثائق")}</a>
           <a href="${racine}vente-voiture/">${T("Vendre une voiture", "بيع سيارة")}</a>
           <a href="${racine}location-maison/">${T("Louer un logement", "كراء مسكن")}</a>
+          <a href="https://ah6259.github.io/avocats-notaires-tunisie/" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats">${T("Avocats et notaires", "محامون وعدول")}</a>
           <a href="${racine}a-propos/">${T("À propos et méthode", "من نحن والمنهجية")}</a>
           <a href="${racine}#avis">${T("Votre avis", "رأيك")}</a>
         </nav>
