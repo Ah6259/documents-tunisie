@@ -197,7 +197,7 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   const w = await page("index.html"), doc = w.document;
   check("accueil : 25 cartes de documents", doc.querySelectorAll("[data-cherche]").length === 25);
   check("accueil : 6 catégories avec icône", doc.querySelectorAll(".cat svg").length === 6);
-  check("accueil : 3 badges de confiance", doc.querySelectorAll(".badge-c").length === 3);
+  check("accueil : plus de badges sans lien ; « Gratuit, sans inscription » dans l'intro (FR + AR)", !doc.querySelector(".confiance, .badge-c") && /Gratuit, sans inscription/.test(doc.querySelector(".hero").textContent) && /مجاني، دون تسجيل/.test(doc.querySelector(".hero").textContent));
   const r = doc.getElementById("recherche");
   r.value = "procuration"; r.dispatchEvent(new w.Event("input"));
   check("accueil : la recherche « procuration » filtre", doc.querySelectorAll("[data-cherche]:not([hidden])").length === 2);
@@ -216,6 +216,15 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
 }
 
 // ---- 5. Règles communes : SEO, mentions, photos, sécurité ---------------------------
+// Tuiles « icône + petit texte » qui ont l'air de boutons mais ne mènent nulle part (supprimées le 06/10/2026, demande d'Ahmed)
+const tuilesSansLien = doc => [...doc.body.querySelectorAll("*")].filter(el => {
+  if (/^(a|button|label|summary|svg|h[1-6]|b|strong|em|small|i|option|select|input|textarea|form|header|footer|nav|main|figure|img|section|article)$/i.test(el.tagName)) return false;
+  if (el.closest("a,button,label,summary,header,footer,nav,form,svg,[hidden],template")) return false;
+  const f = el.firstElementChild;
+  if (!f || f.tagName.toLowerCase() !== "svg" || el.querySelector("a,button,input,select,textarea")) return false;
+  const t = el.textContent.replace(/\s+/g, " ").trim();
+  return t.length > 0 && t.length < 90;
+}).map(el => el.textContent.replace(/\s+/g, " ").trim().slice(0, 40));
 const V = new Set();
 for (const p of fichiers) {
   const s = lire(p);
@@ -232,6 +241,7 @@ for (const p of fichiers) {
   const m = s.match(/<img class="hero-photo" src="([^"]+)"/);
   check(`${p} : photo du bandeau présente (≤ 150 Ko) et créditée`, !!m && existsSync(join(root, dirname(p), m[1])) && statSync(join(root, dirname(p), m[1])).size <= 150000 && /class="credit-photo"[^]*Wikimedia Commons/.test(s));
   check(`${p} : pas de traduction automatique (translate="no" sur <html>, meta google notranslate)`, /<html translate="no"[ >]/.test(s) && /<meta charset="utf-8">\s*<meta name="google" content="notranslate">/.test(s));
+  { const morts = tuilesSansLien(new JSDOM(s).window.document); check(`${p} : aucune carte avec une icône sans lien (pas de faux bouton)${morts.length ? " → " + morts.join(" | ") : ""}`, !morts.length); }
   const w = await page(p), doc = w.document, pied = doc.getElementById("pied").textContent;
   check(`${p} : translate="no" gardé par le JavaScript (français puis arabe)`, doc.documentElement.getAttribute("translate") === "no" && (doc.querySelector(".langue")?.click(), doc.documentElement.lang === "ar" && doc.documentElement.getAttribute("translate") === "no"));
   check(`${p} : en-tête avec logo, pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));

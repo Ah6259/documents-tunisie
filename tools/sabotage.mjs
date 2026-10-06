@@ -37,6 +37,7 @@ const SABOTAGES = [
   ["exemple vidé (plus de données d'exemple, que des « ……… »)", d => changer(d, "assets/modele.js", "function feuilleExemple(doc, L) { return feuille(doc, valeursExemple(doc, L), L); }", "function feuilleExemple(doc, L) { return feuille(doc, {}, L); }")],
   ["étiquette « EXEMPLE » ajoutée dans le PDF", d => changer(d, "assets/modele.js", '<article class="feuille" lang="${L}"', '<article class="feuille" lang="${L}" data-x="EXEMPLE"')],
   ["règle [hidden] retirée (les éléments cachés par le JS restent visibles)", d => changer(d, "assets/style.css", "[hidden]{display:none!important}", "")],
+  ["carte avec icône sans lien remise sur l'accueil (faux bouton)", d => changer(d, "tools/generer.mjs", '<div class="cats">', '<div class="x">${svg(ICONES.bouclier)}Gratuit</div><div class="cats">')],
   ["formulaire qui lance le PDF même vide", d => changer(d, "assets/modele.js", "if (err.length) {", "if (false) {")],
 ];
 let rates = 0;
