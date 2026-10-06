@@ -29,6 +29,7 @@ const SITE = "https://ah6259.github.io/documents-tunisie/";
             <small>${T("1 PDF gratuit par jour · français et arabe", "PDF مجاني كل يوم · بالعربية والفرنسية")}</small></span>
         </a>
         <a class="entete-annuaire" href="https://ah6259.github.io/avocats-notaires-tunisie/${html.lang === "ar" ? "?lang=ar" : ""}" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats" aria-label="${T("Avocats et notaires (annuaire gratuit)", "محامون وعدول (دليل مجاني)")}"><img src="${racine}assets/logo-avocats-notaires.svg" alt="" width="22" height="22"><span>${T("Avocats et notaires", "محامون وعدول")}</span></a>
+        <button class="partager" type="button" aria-label="${T("Partager cette page", "شارك هذه الصفحة")}" title="${T("Partager", "شارك")}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
         <button class="langue" type="button">${T("العربية", "Français")}</button>
       </div>`;
     const p = document.getElementById("pied");
@@ -50,6 +51,13 @@ const SITE = "https://ah6259.github.io/documents-tunisie/";
         <p>© 2026 Documents Tunisie — ${T("tous droits réservés.", "جميع الحقوق محفوظة.")}</p>
       </div>`;
     document.querySelectorAll(".langue").forEach(b => b.addEventListener("click", () => appliquer(html.lang === "ar" ? "fr" : "ar")));
+    // bouton Partager (demande d'Ahmed) : menu de partage du téléphone, sinon WhatsApp avec le lien de la page
+    document.querySelectorAll(".partager").forEach(b => b.addEventListener("click", async () => {
+      const url = location.href.split("#")[0].replace(/[?&]lang=(fr|ar)/, ""), titre = document.title.split(" | ")[0];
+      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage" + location.pathname.replace("/documents-tunisie/", "/"), title: "Partage", event: true }); } catch (e) {}
+      if (navigator.share) { try { await navigator.share({ title: titre, text: titre, url }); return; } catch (e) { if (e && e.name === "AbortError") return; } }
+      window.open("https://wa.me/?text=" + encodeURIComponent(titre + " " + url), "_blank", "noopener");
+    }));
     document.querySelectorAll("[data-maj]").forEach(x => x.textContent = MAJ);
     // fiche « âgée » : plus de 12 mois depuis la vérification (selon la date du visiteur)
     const [j, m, a] = MAJ.split("/").map(Number);

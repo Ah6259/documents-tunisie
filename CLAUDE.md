@@ -113,3 +113,4 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Bouton à bordure dorée `.cat-annuaire` à la fin de la rangée des catégories de l'accueil (`LIEN_AVOCATS` dans generer.mjs) + lien
   `.entete-annuaire` dans l'en-tête (logo seul sous 560 px) et le pied de page (page.js). Logo copié : `assets/logo-avocats-notaires.svg`
   (la CSP n'autorise que les images du site). Clic compté `lien-site/avocats`. Encarts « Faire relire par un avocat » inchangés. Test + 2 sabotages.
+- **Bouton « Partager »** (06/10/2026, demande d'Ahmed) : icône ronde `.partager` dans l'en-tête de toutes les pages (page.js, FR+AR) ; menu de partage du téléphone (`navigator.share`), sinon WhatsApp (`wa.me`) avec l'adresse sans `#` ni `?lang` ; clic compté `partage/<page>` dans GoatCounter. Test dans test_site.

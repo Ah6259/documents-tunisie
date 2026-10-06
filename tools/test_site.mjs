@@ -407,9 +407,21 @@ for (const p of fichiers) {
   const w = await page(p), doc = w.document, pied = doc.getElementById("pied").textContent;
   check(`${p} : translate="no" gardé par le JavaScript (français puis arabe)`, doc.documentElement.getAttribute("translate") === "no" && (doc.querySelector(".langue")?.click(), doc.documentElement.lang === "ar" && doc.documentElement.getAttribute("translate") === "no"));
   check(`${p} : en-tête avec logo et lien « Avocats et notaires », pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && !!doc.querySelector("#entete a.entete-annuaire[href^=\"https://ah6259.github.io/avocats-notaires-tunisie/\"] img") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
+  check(`${p} : bouton « Partager » dans l'en-tête (arabe : « شارك هذه الصفحة »)`, doc.querySelector('#entete button.partager[aria-label="شارك هذه الصفحة"] svg'));
   check(`${p} : dates « vérifié le » = la constante MAJ`, [...doc.querySelectorAll("[data-maj]")].every(x => x.textContent === w.eval("MAJ")));
   const ld = [...s.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(x => JSON.parse(x[1]));
   if (!/^(index\.html|a-propos\/|pass\/)/.test(p)) check(`${p} : FAQ Google (JSON-LD) en français et en arabe`, ld.some(j => j["@type"] === "FAQPage" && j.mainEntity.length >= 2 && j.mainEntity.some(q => ARABE.test(q.name))));
+}
+// bouton Partager : sans menu de partage du téléphone (navigator.share), WhatsApp s'ouvre avec l'adresse de la page (sans ?lang ni #)
+for (const p of ["index.html", DOCS[0].slug + "/index.html"]) {
+  const w = await page(p), doc = w.document, ouverts = [];
+  w.open = (...a) => { ouverts.push(a); return null; };
+  const b = doc.querySelector("#entete button.partager");
+  check(`${p} : bouton « Partager » (aria-label « Partager cette page »)`, b && b.getAttribute("aria-label") === "Partager cette page" && !w.navigator.share);
+  b?.click(); await new Promise(ok => setTimeout(ok, 0));
+  const adresse = "https://ah6259.github.io/documents-tunisie/" + p.replace("index.html", "");
+  check(`${p} : sans navigator.share, le clic ouvre wa.me avec l'adresse de la page`, ouverts.length === 1 && ouverts[0][0].startsWith("https://wa.me/?text=")
+    && decodeURIComponent(ouverts[0][0].slice(20)).endsWith(" " + adresse) && ouverts[0][1] === "_blank");
 }
 check("même version ?v= sur toutes les pages", V.size === 1);
 // les pages publiées sont à jour par rapport aux données
