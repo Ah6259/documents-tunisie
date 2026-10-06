@@ -36,6 +36,7 @@ const SABOTAGES = [
   ["exemple du document retiré des pages de modèle", d => changer(d, "tools/generer.mjs", '<section class="carte" id="exemple">', '<section class="carte" id="exemple-retire">')],
   ["exemple vidé (plus de données d'exemple, que des « ……… »)", d => changer(d, "assets/modele.js", "function feuilleExemple(doc, L) { return feuille(doc, valeursExemple(doc, L), L); }", "function feuilleExemple(doc, L) { return feuille(doc, {}, L); }")],
   ["étiquette « EXEMPLE » ajoutée dans le PDF", d => changer(d, "assets/modele.js", '<article class="feuille" lang="${L}"', '<article class="feuille" lang="${L}" data-x="EXEMPLE"')],
+  ["règle [hidden] retirée (les éléments cachés par le JS restent visibles)", d => changer(d, "assets/style.css", "[hidden]{display:none!important}", "")],
   ["formulaire qui lance le PDF même vide", d => changer(d, "assets/modele.js", "if (err.length) {", "if (false) {")],
 ];
 let rates = 0;

@@ -47,6 +47,7 @@ for (const d of DOCS) {
     && ["fr", "ar"].every(L => !/\b\d{8,}\b/.test(M.feuilleExemple(d, L).replace(/<[^>]+>/g, ""))));
   check(`${d.slug} : le PDF ne contient jamais « EXEMPLE »`, ["fr", "ar"].every(L => !/EXEMPLE|ex-filigrane|ex-etiquette/.test(M.feuilleExemple(d, L))));
 }
+check("style : [hidden]{display:none!important} (un élément caché par le JS ne réapparaît jamais à cause d'un display:flex/grid)", /\[hidden\]\{display:none!important\}/.test(lire("assets/style.css").replace(/\s+/g, "")));
 check("exemple jamais imprimé (CSS : impression = #impression seulement, #exemple caché)", /body > \*:not\(#impression\)\{display:none!important\}/.test(lire("assets/style.css")) && /@media print\{#exemple\{display:none!important\}\}/.test(lire("assets/style.css")));
 for (const d of DOCS) check(`${d.slug} : modèle français et arabe`, typeof d.fr === "function" && typeof d.ar === "function" && d.champs.length >= 5);
 check("toutes les sources sont des sites officiels (.gov.tn, organismes publics)", Object.values(SOURCES).every(s => /\.(gov\.tn|tn)\//.test(s.url)));

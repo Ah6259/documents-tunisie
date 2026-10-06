@@ -57,7 +57,8 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 
 ## Tests (obligatoires avant toute publication)
 - `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 1190 vérifications) → **TOUT PASSE**.
-- `node tools/sabotage.mjs` : 24 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- `node tools/sabotage.mjs` : 25 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- CSS : `[hidden]{display:none!important}` obligatoire (sinon un `display:flex/grid` rend visibles les éléments cachés par le JS : recherche, « aucun résultat ») ; test + sabotage (06/10/2026).
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
 - `node tools/test_avis.mjs` : Votre avis (section, lien du pied de page sur toutes les pages, CSP, envoi simulé, refus si vide).
 - Captures : serveur `python -m http.server 8931 --bind 127.0.0.1` dans `site/`, puis `sh tools/captures.sh`.
