@@ -271,14 +271,37 @@ async function taperCode(w, code) {
     lien && lien.getAttribute("href") === "../pass/" && lien.target === "_blank" && /Pass Journée 7 DT : tous les documents pendant 24 heures/.test(lien.textContent)
     && doc.getElementById("telecharger").compareDocumentPosition(lien) === 4 && /1 document PDF gratuit par jour/.test(doc.getElementById("pass-lien").textContent));
   check("page de modèle : écran de blocage caché au départ, formulaire libre, aucun exemple", doc.getElementById("pass-bloque").hidden && !doc.getElementById("exemple") && doc.getElementById("formulaire").elements.length > 3);
+  check("page de modèle : l'aperçu est AVANT « Remplir le modèle », fenêtre réduite (420 px, 260 px sur téléphone), visible au départ",
+    doc.getElementById("apercu-carte").compareDocumentPosition(doc.getElementById("remplir")) === 4 && !doc.getElementById("apercu").hidden
+    && doc.getElementById("apercu-bloque").hidden && /\.apercu\{[^}]*max-height:420px/.test(lire("assets/style.css")) && /max-width:600px\)\{\.apercu\{max-height:260px/.test(lire("assets/style.css")));
+  { const va = doc.getElementById("voir-apercu");
+    check("page de modèle : bouton « Voir l'aperçu » juste après « Télécharger le PDF », qui remonte à l'aperçu (FR + AR)",
+      va && va.getAttribute("href") === "#apercu-carte" && doc.getElementById("telecharger").nextElementSibling === va && /Voir l'aperçu/.test(va.textContent) && /معاينة الوثيقة/.test(va.textContent)); }
   remplir(w, A); doc.getElementById("telecharger").click();
   check("Pass Journée : 1er PDF du jour autorisé (gratuit)", w.__imprime === 1 && doc.getElementById("pass-bloque").hidden);
   check("le PDF ne parle ni du Pass ni du site", !/Pass|باقة|Documents Tunisie|ah6259/.test(doc.getElementById("impression").innerHTML));
   doc.getElementById("telecharger").click();
   check("Pass Journée : le MÊME modèle peut être retéléchargé le même jour (correction)", w.__imprime === 2);
   const apresA = stock(w);
+  w = await pagePass(A.slug + "/index.html", { horloge: H, stockage: apresA });
+  check("aperçu : toujours lisible sur le document gratuit du jour lui-même", w.document.querySelectorAll("#apercu .feuille").length === 1 && !w.document.getElementById("apercu").classList.contains("fige") && w.document.getElementById("apercu-bloque").hidden);
   w = await pagePass(B.slug + "/index.html", { horloge: H, stockage: apresA }); doc = w.document;
-  remplir(w, B); doc.getElementById("telecharger").click();
+  {
+    const ap = doc.getElementById("apercu"), avant = ap.innerHTML, tp = doc.getElementById("apercu-bloque");
+    const lisible = M.feuille(B, valeursEx(B), "fr").replace(/<[^>]+>/g, " ").match(/\p{L}{6,}/gu) || [];
+    check("aperçu bloqué (autre document le même jour) : la fenêtre reste, document flou et BROUILLÉ (aucun mot lisible du modèle)",
+      !ap.hidden && ap.classList.contains("fige") && ap.querySelectorAll(".feuille").length === 1 && lisible.length > 10
+      && lisible.every(m => !ap.textContent.includes(m)) && /\.apercu\.fige\{[^}]*filter:blur/.test(lire("assets/style.css")));
+    remplir(w, B); doc.getElementById("formulaire").dispatchEvent(new w.Event("input"));
+    check("aperçu bloqué : le document ne bouge plus quand on remplit le formulaire", ap.innerHTML === avant);
+    check("aperçu bloqué : tampon « Pass Journée » par-dessus (payer le Pass pour télécharger et voir plusieurs documents, lien pass/, « ou revenez demain »)",
+      !tp.hidden && tp.parentElement === ap.parentElement && /Pass Journée/.test(tp.textContent) && /Payez le Pass pour télécharger et voir l'aperçu de plusieurs documents/.test(tp.textContent)
+      && tp.querySelector('a[href="../pass/"]') && /ou revenez demain/.test(tp.textContent));
+    check("tampon : secoue comme la cloche du site de l'eau (5 secousses toutes les 12 s, 3 séries ; immobile si « réduire les animations »)",
+      /\.apercu-tampon\{[^}]*animation:[^}]*tampon-secoue 12s[^}]* 3\}/.test(lire("assets/style.css")) && /2\.5%,7\.5%,12\.5%,17\.5%,22\.5%/.test(lire("assets/style.css"))
+      && /prefers-reduced-motion:reduce\)\{\.apercu-tampon\{animation:none\}/.test(lire("assets/style.css")));
+  }
+  doc.getElementById("telecharger").click();
   const bl = doc.getElementById("pass-bloque");
   check("Pass Journée : 2e document du même jour BLOQUÉ (pas de PDF), écran « Vous avez téléchargé votre document gratuit du jour »",
     w.__imprime === 0 && !bl.hidden && /Vous avez téléchargé votre document gratuit du jour/.test(bl.textContent));
@@ -311,6 +334,8 @@ async function taperCode(w, code) {
   st = await taperCode(w, "abcd 2345");
   check("code valide (tapé en minuscules avec espace) : accepté, Pass actif, écran de blocage fermé, heure de fin affichée",
     /Code accepté/.test(st.textContent) && w.PassJour.actif() && doc.getElementById("pass-bloque").hidden && !doc.getElementById("pass-actif").hidden && /Code accepté/.test(doc.getElementById("pass-actif").textContent));
+  check("aperçu : redevient lisible dès que le Pass est activé (plus de tampon)", !doc.getElementById("apercu").classList.contains("fige") && doc.querySelectorAll("#apercu .feuille").length === 1
+    && doc.getElementById("apercu").textContent.includes(String(valeursEx(B)[B.champs.find(c => c.id && /nom$/.test(c.id)).id])) && doc.getElementById("apercu-bloque").hidden);
   doc.getElementById("telecharger").click();
   check("avec un code valide : PDF autorisé", w.__imprime === 1);
   check("avec le Pass : le document gratuit du jour n'est pas consommé", JSON.parse(w.localStorage.getItem("dt-gratuit-v1")).doc === A.slug);

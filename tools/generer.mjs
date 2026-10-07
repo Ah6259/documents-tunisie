@@ -270,7 +270,21 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
 </section>
 `;
       // pas d'exemple rempli (spécimen) : retiré le 07/10/2026 à la demande d'Ahmed (on pouvait lire et recopier le document sans le télécharger)
-      s += `<section class="carte" id="remplir">
+      // aperçu AVANT « Remplir le modèle », fenêtre réduite. Document gratuit du jour déjà pris : la fenêtre reste, le document y est
+      // figé et brouillé (illisible), avec un tampon « Pass Journée » qui secoue comme la cloche du site de l'eau (demande d'Ahmed, 07/10/2026)
+      s += `<section class="carte" id="apercu-carte">
+  ${h2("liste", "Aperçu du document", "معاينة الوثيقة")}
+  <div class="apercu-cadre">
+  <div class="apercu protege" id="apercu" aria-live="polite"></div>
+  <div class="apercu-tampon" id="apercu-bloque" hidden>
+    <span class="tampon-titre">${bi("Pass Journée", "باقة اليوم")}</span>
+    <span class="tampon-sous">${bi("Votre document gratuit du jour est déjà utilisé. Payez le Pass pour télécharger et voir l'aperçu de plusieurs documents.", "استعملت وثيقتك المجانية لهذا اليوم. ادفع الباقة لتحميل ومعاينة عدة وثائق.")}</span>
+    <a href="../pass/" target="_blank" rel="noopener">${bi("7 DT : tous les documents pendant 24 heures", "7 د: كل الوثائق طيلة 24 ساعة")}</a>
+    <span class="tampon-demain">${bi("ou revenez demain", "أو عد غدًا")}</span>
+  </div>
+  </div>
+</section>
+<section class="carte" id="remplir">
   ${h2("remplir", "Remplir le modèle", "تعمير النموذج")}
   <p class="conseil">${bi("Langue du document :", "لغة الوثيقة:")}</p>
   <div class="choix" id="langue-doc" data-nom="langue-doc"><button type="button" data-v="fr">Français</button><button type="button" data-v="ar">العربية</button><button type="button" data-v="deux">${bi("Les deux", "الاثنتان")}</button></div>
@@ -279,12 +293,9 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   <noscript><p>${bi("Activez JavaScript pour remplir le modèle.", "فعّل JavaScript لتعمير النموذج.")}</p></noscript>
   <p class="erreurs" id="erreurs" role="alert" hidden></p>
   <button class="bouton" type="button" id="telecharger">${svg(ICONES.pdf)}${bi("Télécharger le PDF", "تحميل ملف PDF")}</button>
+  <a class="voir-apercu" id="voir-apercu" href="#apercu-carte">${bi("↑ Voir l'aperçu", "↑ معاينة الوثيقة")}</a>
   <p class="aide-pdf">${bi("Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF ».", "في النافذة التي تظهر، اختر « حفظ بصيغة PDF ».")}</p>
 ${PASS_MODELE}
-</section>
-<section class="carte" id="apercu-carte">
-  ${h2("liste", "Aperçu du document", "معاينة الوثيقة")}
-  <div class="apercu protege" id="apercu" aria-live="polite"></div>
 </section>
 <p class="avert">${bi("Modèle indicatif — ce site n'est pas officiel et ne remplace pas un avocat. Relisez le document avant de le signer.", "نموذج استرشادي — هذا الموقع ليس رسميا ولا يعوض المحامي. أعد قراءة الوثيقة قبل إمضائها.")}</p>\n`;
     }

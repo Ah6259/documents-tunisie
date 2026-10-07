@@ -29,11 +29,11 @@
 <meta name="theme-color" content="#8C2B3A">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&amp;family=Noto+Kufi+Arabic:wght@400;600;700;800&amp;family=Noto+Naskh+Arabic:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=4e5a710036">
-<script defer src="../assets/documents.js?v=4e5a710036"></script>
-<script defer src="../assets/page.js?v=4e5a710036"></script>
-<script defer src="../assets/modele.js?v=4e5a710036"></script>
-<script defer src="../assets/pass.js?v=4e5a710036"></script>
+<link rel="stylesheet" href="../assets/style.css?v=e4f6ab3857">
+<script defer src="../assets/documents.js?v=e4f6ab3857"></script>
+<script defer src="../assets/page.js?v=e4f6ab3857"></script>
+<script defer src="../assets/modele.js?v=e4f6ab3857"></script>
+<script defer src="../assets/pass.js?v=e4f6ab3857"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Quelle différence avec le certificat de résidence ?","acceptedAnswer":{"@type":"Answer","text":"Le certificat de résidence est délivré par l'administration. L'attestation d'hébergement est écrite par la personne qui vous héberge."}},{"@type":"Question","name":"ما الفرق مع شهادة الإقامة؟","acceptedAnswer":{"@type":"Answer","text":"شهادة الإقامة تسلمها الإدارة. أما شهادة الإيواء فيحررها الشخص الذي يؤويك."}},{"@type":"Question","name":"Faut-il la légaliser ?","acceptedAnswer":{"@type":"Answer","text":"En général oui : la signature de l'hébergeant est légalisée à la municipalité."}},{"@type":"Question","name":"هل يجب التعريف بالإمضاء؟","acceptedAnswer":{"@type":"Answer","text":"عادة نعم: يُعرَّف بإمضاء المُؤوي بالبلدية."}}]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Documents Tunisie","item":"https://ah6259.github.io/documents-tunisie/"},{"@type":"ListItem","position":2,"name":"Attestation d'hébergement","item":"https://ah6259.github.io/documents-tunisie/attestation-d-hebergement/"}]}</script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -62,6 +62,18 @@
   </div>
   <p class="note"><span data-l="fr">Le gouvernement a annoncé fin 2024 la suppression progressive de la légalisation pour certains documents : demandez à l'organisme qui recevra votre document s'il l'exige encore.</span><span data-l="ar">أعلنت الحكومة في أواخر ⁨2024⁩ عن الحذف التدريجي للتعريف بالإمضاء بالنسبة إلى بعض الوثائق: اسأل الجهة التي ستتسلم الوثيقة إن كانت لا تزال تشترطه.</span></p>
 </section>
+<section class="carte" id="apercu-carte">
+  <h2><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span><span data-l="fr">Aperçu du document</span><span data-l="ar">معاينة الوثيقة</span></h2>
+  <div class="apercu-cadre">
+  <div class="apercu protege" id="apercu" aria-live="polite"></div>
+  <div class="apercu-tampon" id="apercu-bloque" hidden>
+    <span class="tampon-titre"><span data-l="fr">Pass Journée</span><span data-l="ar">باقة اليوم</span></span>
+    <span class="tampon-sous"><span data-l="fr">Votre document gratuit du jour est déjà utilisé. Payez le Pass pour télécharger et voir l'aperçu de plusieurs documents.</span><span data-l="ar">استعملت وثيقتك المجانية لهذا اليوم. ادفع الباقة لتحميل ومعاينة عدة وثائق.</span></span>
+    <a href="../pass/" target="_blank" rel="noopener"><span data-l="fr">7 DT : tous les documents pendant 24 heures</span><span data-l="ar">⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a>
+    <span class="tampon-demain"><span data-l="fr">ou revenez demain</span><span data-l="ar">أو عد غدًا</span></span>
+  </div>
+  </div>
+</section>
 <section class="carte" id="remplir">
   <h2><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg></span><span data-l="fr">Remplir le modèle</span><span data-l="ar">تعمير النموذج</span></h2>
   <p class="conseil"><span data-l="fr">Langue du document :</span><span data-l="ar">لغة الوثيقة:</span></p>
@@ -71,6 +83,7 @@
   <noscript><p><span data-l="fr">Activez JavaScript pour remplir le modèle.</span><span data-l="ar">فعّل ⁨JavaScript⁩ لتعمير النموذج.</span></p></noscript>
   <p class="erreurs" id="erreurs" role="alert" hidden></p>
   <button class="bouton" type="button" id="telecharger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span data-l="fr">Télécharger le PDF</span><span data-l="ar">تحميل ملف ⁨PDF⁩</span></button>
+  <a class="voir-apercu" id="voir-apercu" href="#apercu-carte"><span data-l="fr">↑ Voir l'aperçu</span><span data-l="ar">↑ معاينة الوثيقة</span></a>
   <p class="aide-pdf"><span data-l="fr">Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF ».</span><span data-l="ar">في النافذة التي تظهر، اختر « حفظ بصيغة ⁨PDF⁩ ».</span></p>
   <p class="pass-lien" id="pass-lien"><a class="btn-pass" href="../pass/" target="_blank" rel="noopener"><span data-l="fr">Pass Journée 7 DT : tous les documents pendant 24 heures</span><span data-l="ar">باقة اليوم ⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a><span class="petit"><span data-l="fr">1 document PDF gratuit par jour sur ce téléphone.</span><span data-l="ar">وثيقة ⁨PDF⁩ واحدة مجانية كل يوم على هذا الهاتف.</span></span></p>
   <p class="pass-actif" id="pass-actif" role="status" hidden></p>
@@ -89,10 +102,6 @@
     </form>
     </details>
   </div>
-</section>
-<section class="carte" id="apercu-carte">
-  <h2><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span><span data-l="fr">Aperçu du document</span><span data-l="ar">معاينة الوثيقة</span></h2>
-  <div class="apercu protege" id="apercu" aria-live="polite"></div>
 </section>
 <p class="avert"><span data-l="fr">Modèle indicatif — ce site n'est pas officiel et ne remplace pas un avocat. Relisez le document avant de le signer.</span><span data-l="ar">نموذج استرشادي — هذا الموقع ليس رسميا ولا يعوض المحامي. أعد قراءة الوثيقة قبل إمضائها.</span></p>
 <section class="carte protege" id="etapes">

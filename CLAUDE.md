@@ -99,7 +99,13 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - **1 document PDF gratuit par jour et par appareil** (localStorage `dt-gratuit-v1` = { jour, doc }, dans un try). Retélécharger
   le MÊME modèle le même jour reste permis (correction). Un AUTRE modèle le même jour → écran `#pass-bloque` (« Vous avez téléchargé
   votre document gratuit du jour » → **Pass Journée 7 DT : tous les documents pendant 24 heures**, « Revenez demain », « J'ai déjà un code »
-  avec le formulaire du code sur place). Pages, exemple, formulaire et aperçu restent libres ; seul le téléchargement est bloqué.
+  avec le formulaire du code sur place). Pages et formulaire restent libres (plus d'exemple rempli depuis le 07/10).
+- **Aperçu (07/10/2026, demande d'Ahmed)** : section `#apercu-carte` AVANT « Remplir le modèle », fenêtre réduite (420 px, 260 px
+  sur téléphone ≤ 600 px) + bouton « ↑ Voir l'aperçu » (`#voir-apercu`) juste après « Télécharger le PDF ». Document gratuit du
+  jour déjà pris sur un AUTRE modèle (sans Pass) → la fenêtre RESTE mais le document est figé (ne suit plus la saisie), brouillé
+  (`brouiller()` : chaque lettre remplacée, illisible même sans le flou) et flou (`.apercu.fige`), sous le tampon `#apercu-bloque`
+  « Pass Journée » (payer pour télécharger et voir plusieurs documents, lien pass/, « ou revenez demain ») qui secoue comme la
+  cloche du site de l'eau (5 secousses / 12 s, 3 séries). Redevient lisible avec le Pass (événement `pass`). Testé (+ sabotage).
 - `assets/pass.js` (chargé seulement par les 16 pages de modèle et pass/) ; `modele.js` appelle `PassJour.acces/bloquer/noter`.
   Statistique anonyme `pass-bloque/<slug>` (une fois par page ouverte) = mesure de la demande.
 - Bouton « Pass Journée » : **jamais sur l'accueil** (décision d'Ahmed) ; seulement près de « Télécharger le PDF » (nouvel onglet,

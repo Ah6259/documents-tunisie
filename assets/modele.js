@@ -194,8 +194,29 @@
     function majApercu() {
       const v = valeurs();
       for (const c of doc.champs) if (!c.groupe) form.querySelector(`[data-champ="${c.id}"]`).hidden = !visible(c, v);
-      document.getElementById("apercu").innerHTML = langues().map(L => feuille(doc, v, L)).join("");
+      // document gratuit du jour déjà pris sur un AUTRE modèle (sans Pass) : la fenêtre reste, mais le document y est figé
+      // (il ne suit plus la saisie) et brouillé (illisible), sous le tampon « Pass Journée » (demande d'Ahmed, 07/10/2026)
+      const bloque = !!(window.PassJour && window.PassJour.acces(doc.slug) === "bloque");
+      const ap = document.getElementById("apercu"), msg = document.getElementById("apercu-bloque");
+      if (msg) msg.hidden = !bloque;
+      if (bloque) {
+        if (!ap.classList.contains("fige")) { const vide = Object.fromEntries(doc.champs.filter(c => !c.groupe).map(c => [c.id, c.type === "case" ? false : ""]));
+          ap.innerHTML = langues().map(L => feuille(doc, vide, L)).join(""); brouiller(ap); ap.classList.add("fige"); ap.setAttribute("aria-hidden", "true"); }
+        return;
+      }
+      ap.classList.remove("fige"); ap.removeAttribute("aria-hidden");
+      ap.innerHTML = langues().map(L => feuille(doc, v, L)).join("");
     }
+    // remplace chaque lettre et chiffre par un autre de la même écriture : la forme du document reste, le texte est illisible
+    function brouiller(el) {
+      const LAT = "aeionrstulcdmpb", ARA = "بتثجحدرسصطعفقلمنهوي";
+      let n = 7;
+      const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      for (let t = tw.nextNode(); t; t = tw.nextNode())
+        t.nodeValue = t.nodeValue.replace(/[\p{L}\p{N}]/gu, ch => { n = (n * 31 + 17) % 9973;
+          return /\p{N}/u.test(ch) ? String(n % 10) : /[؀-ۿ]/.test(ch) ? ARA[n % ARA.length] : LAT[n % LAT.length]; });
+    }
+    document.addEventListener("pass", () => majApercu());   // Pass activé ou expiré : l'aperçu suit
     form.addEventListener("input", majApercu);
     form.addEventListener("change", majApercu);
     document.getElementById("langue-doc").addEventListener("click", e => {
