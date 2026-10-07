@@ -1060,83 +1060,9 @@ ${pj.length ? `<p><b>الوثائق المصاحبة:</b> ${pj.join("؛ ")}.</p>
 }
 ];
 
-/* ---- Les 4 grands contrats : étapes seulement (modèle après relecture par un avocat) ---- */
+/* ---- Grand contrat en « étapes seulement » : bail commercial (vente voiture/moto et location maison : modèles depuis le 07/10/2026, plus bas) ---- */
 const AV = (fr, ar) => ({ fr, ar });
 const CONTRATS = [
-{
-  slug: "vente-voiture", cat: "vehicules", contrat: true,
-  titre: { fr: "Vente d'une voiture : les étapes", ar: "بيع سيارة: المراحل" },
-  court: { fr: "Contrat, légalisation, recette des finances, carte grise.", ar: "العقد، التعريف بالإمضاء، القباضة المالية، البطاقة الرمادية." },
-  bref: { fr: "Vendre une voiture d'occasion entre particuliers se fait en 4 temps : contrat signé en 2 exemplaires, signatures légalisées à la municipalité, enregistrement à la recette des finances, puis mutation de la carte grise à l'ATTT.",
-          ar: "يتم بيع سيارة مستعملة بين الخواص على 4 مراحل: عقد ممضى في نظيرين، التعريف بالإمضاءات بالبلدية، التسجيل بالقباضة المالية، ثم نقل ملكية البطاقة الرمادية بالوكالة الفنية للنقل البري." },
-  legal: { legalisation: "oui", enregistrement: "oui", cout: AV("Droits d'enregistrement : À VÉRIFIER (barème du Code des droits d'enregistrement et de timbre).", "معاليم التسجيل: يُتثبت منها (جدول مجلة معاليم التسجيل والطابع الجبائي)."),
-           delai: AV("Inscription à l'ATTT : 15 jours après la signature (délai annoncé, à confirmer auprès de l'ATTT).", "التسجيل بالوكالة الفنية للنقل البري: 15 يوما بعد الإمضاء (أجل معلن، يُتثبت منه لدى الوكالة).") },
-  etapes: [
-    { ic: "verifier", fr: ["Vérifier la voiture et ses papiers", "Carte grise au nom du vendeur, certificat de non gage de moins d'un mois (délivré par l'ATTT), vignette payée."], ar: ["التثبت من السيارة ووثائقها", "بطاقة رمادية باسم البائع، شهادة عدم رهن لا يتجاوز تاريخها شهرا (تسلمها الوكالة الفنية للنقل البري)، معلوم الجولان مدفوع."] },
-    { ic: "signer", fr: ["Signer le contrat en 2 exemplaires", "Modèle disponible après relecture par un avocat. Ne signez pas avant d'être devant l'agent de légalisation."], ar: ["إمضاء العقد في نظيرين", "النموذج متوفر بعد مراجعته من قبل محام. لا تمض قبل أن تكون أمام عون التعريف بالإمضاء."] },
-    { ic: "municipalite", fr: ["Légaliser les signatures", "Vendeur et acheteur, à la municipalité, avec leur CIN originale."], ar: ["التعريف بالإمضاءات", "البائع والمشتري، بالبلدية، مع بطاقة التعريف الأصلية."] },
-    { ic: "recette", fr: ["Enregistrer à la recette des finances", "Paiement des droits d'enregistrement (montant à vérifier)."], ar: ["التسجيل بالقباضة المالية", "دفع معاليم التسجيل (المبلغ يُتثبت منه)."] },
-    { ic: "attt", fr: ["Mutation de la carte grise à l'ATTT", "Demande, ancienne carte grise, contrat enregistré, certificat de non gage, reçu de déclaration d'impôt sur le revenu, vignette."], ar: ["نقل ملكية البطاقة الرمادية", "مطلب، البطاقة الرمادية القديمة، العقد المسجل، شهادة عدم الرهن، وصل التصريح بالضريبة على الدخل، معلوم الجولان."] }],
-  pieces: { fr: ["Carte grise originale", "Certificat de non gage (moins d'un mois)", "Reçu de la vignette de l'année", "CIN du vendeur et de l'acheteur", "Reçu de déclaration d'impôt sur le revenu (demandé à l'ATTT)", "Contrat en 2 exemplaires"],
-            ar: ["البطاقة الرمادية الأصلية", "شهادة عدم الرهن (أقل من شهر)", "وصل معلوم الجولان للسنة", "بطاقتا تعريف البائع والمشتري", "وصل التصريح بالضريبة على الدخل (تطلبه الوكالة)", "العقد في نظيرين"] },
-  ou: { fr: ["Municipalité (légalisation)", "Recette des finances (enregistrement)", "Agence de l'ATTT (carte grise)"], ar: ["البلدية (التعريف بالإمضاء)", "القباضة المالية (التسجيل)", "الوكالة الفنية للنقل البري (البطاقة الرمادية)"] },
-  pieges: { fr: ["Ne remettez jamais la voiture sans contrat légalisé : jusqu'à la mutation, le vendeur reste le propriétaire inscrit.", "Méfiez-vous d'un certificat de non gage ancien : demandez-en un récent."],
-            ar: ["لا تسلم السيارة دون عقد معرف بإمضائه: إلى حين نقل الملكية يبقى البائع هو المالك المسجل.", "احذر من شهادة عدم رهن قديمة: اطلب شهادة حديثة."] },
-  averifier: { fr: ["Montant des droits d'enregistrement d'une vente de véhicule.", "Délai de 15 jours pour l'inscription à l'ATTT.", "Liste exacte des pièces demandées par l'ATTT."], ar: ["مبلغ معاليم تسجيل بيع عربة.", "أجل 15 يوما للتسجيل بالوكالة الفنية للنقل البري.", "القائمة الدقيقة للوثائق التي تطلبها الوكالة."] },
-  faq: [
-    { fr: ["Combien coûte l'enregistrement d'un contrat de vente de voiture ?", "Le montant dépend du barème du Code des droits d'enregistrement et de timbre. Nous ne l'affichons pas tant qu'il n'a pas été vérifié : demandez à la recette des finances."], ar: ["كم تبلغ معاليم تسجيل عقد بيع سيارة؟", "يتوقف المبلغ على جدول مجلة معاليم التسجيل والطابع الجبائي. لا ننشره قبل التثبت منه: اسأل القباضة المالية."] },
-    { fr: ["Pourquoi n'y a-t-il pas de modèle de contrat ?", "Un contrat de vente engage beaucoup. Notre modèle sera publié après relecture par un avocat."], ar: ["لماذا لا يوجد نموذج عقد؟", "عقد البيع التزام هام. سيُنشر نموذجنا بعد مراجعته من قبل محام."] }
-  ],
-  sources: ["attt", "finances", "legislation"]
-},
-{
-  slug: "vente-moto", cat: "vehicules", contrat: true,
-  titre: { fr: "Vente d'une moto : les étapes", ar: "بيع دراجة نارية: المراحل" },
-  court: { fr: "Mêmes étapes que la voiture pour les motos immatriculées.", ar: "نفس مراحل السيارة بالنسبة إلى الدراجات المسجلة." },
-  bref: { fr: "Pour une moto immatriculée, les étapes sont les mêmes que pour une voiture : contrat en 2 exemplaires, légalisation, enregistrement à la recette des finances, mutation de la carte grise à l'ATTT.",
-          ar: "بالنسبة إلى الدراجة النارية المسجلة، المراحل هي نفسها كالسيارة: عقد في نظيرين، التعريف بالإمضاء، التسجيل بالقباضة المالية، نقل ملكية البطاقة الرمادية." },
-  legal: { legalisation: "oui", enregistrement: "oui", cout: AV("Droits d'enregistrement : À VÉRIFIER.", "معاليم التسجيل: يُتثبت منها."),
-           delai: AV("Délai d'inscription à l'ATTT : à confirmer auprès de l'ATTT.", "أجل التسجيل بالوكالة: يُتثبت منه لدى الوكالة.") },
-  etapes: [
-    { ic: "verifier", fr: ["Vérifier la moto et ses papiers", "Carte grise au nom du vendeur, certificat de non gage récent."], ar: ["التثبت من الدراجة ووثائقها", "بطاقة رمادية باسم البائع، شهادة عدم رهن حديثة."] },
-    { ic: "signer", fr: ["Signer le contrat en 2 exemplaires", "Modèle disponible après relecture par un avocat."], ar: ["إمضاء العقد في نظيرين", "النموذج متوفر بعد مراجعته من قبل محام."] },
-    { ic: "municipalite", fr: ["Légaliser les signatures", "À la municipalité, avec les CIN originales."], ar: ["التعريف بالإمضاءات", "بالبلدية، مع بطاقات التعريف الأصلية."] },
-    { ic: "recette", fr: ["Enregistrer à la recette des finances", "Droits à payer : à vérifier."], ar: ["التسجيل بالقباضة المالية", "المعاليم: يُتثبت منها."] },
-    { ic: "attt", fr: ["Mutation de la carte grise à l'ATTT", "Avec le contrat enregistré et les pièces demandées."], ar: ["نقل ملكية البطاقة الرمادية", "مع العقد المسجل والوثائق المطلوبة."] }],
-  pieces: { fr: ["Carte grise originale", "Certificat de non gage", "CIN du vendeur et de l'acheteur", "Contrat en 2 exemplaires"], ar: ["البطاقة الرمادية الأصلية", "شهادة عدم الرهن", "بطاقتا تعريف البائع والمشتري", "العقد في نظيرين"] },
-  ou: { fr: ["Municipalité", "Recette des finances", "Agence de l'ATTT"], ar: ["البلدية", "القباضة المالية", "الوكالة الفنية للنقل البري"] },
-  pieges: { fr: ["Les petits cyclomoteurs non immatriculés ne suivent pas forcément ces étapes : renseignez-vous à l'ATTT."], ar: ["الدراجات الصغيرة غير المسجلة لا تخضع بالضرورة لهذه المراحل: استفسر لدى الوكالة."] },
-  averifier: { fr: ["Montant des droits d'enregistrement.", "Pièces et délai exigés par l'ATTT pour les motos."], ar: ["مبلغ معاليم التسجيل.", "الوثائق والأجل التي تشترطها الوكالة بالنسبة إلى الدراجات النارية."] },
-  faq: [
-    { fr: ["Faut-il légaliser un contrat de vente de moto ?", "Oui, comme pour une voiture : les signatures sont légalisées à la municipalité avant l'enregistrement."], ar: ["هل يجب التعريف بإمضاء عقد بيع دراجة نارية؟", "نعم، كالسيارة: يُعرَّف بالإمضاءات بالبلدية قبل التسجيل."] }
-  ],
-  sources: ["attt", "finances", "legislation"]
-},
-{
-  slug: "location-maison", cat: "logement", contrat: true,
-  titre: { fr: "Location d'une maison ou d'un appartement : les étapes", ar: "كراء منزل أو شقة: المراحل" },
-  court: { fr: "Contrat, légalisation, enregistrement dans les 60 jours.", ar: "العقد، التعريف بالإمضاء، التسجيل في أجل 60 يوما." },
-  bref: { fr: "Le bail d'habitation est signé en au moins 3 exemplaires, les signatures sont légalisées, puis le contrat est enregistré à la recette des finances du lieu du logement. Pénalités si l'enregistrement est fait après 60 jours.",
-          ar: "يُمضى عقد كراء محل السكنى في 3 نظائر على الأقل، ويُعرَّف بالإمضاءات، ثم يُسجل العقد بالقباضة المالية لمكان المحل. توظف خطايا إذا تم التسجيل بعد 60 يوما." },
-  legal: { legalisation: "oui", enregistrement: "oui", cout: AV("Droits d'enregistrement pour un logement : taux À VÉRIFIER.", "معاليم تسجيل كراء محل سكنى: النسبة يُتثبت منها."),
-           delai: AV("Enregistrement dans les 60 jours (pénalités au-delà).", "التسجيل في أجل 60 يوما (خطايا بعده).") },
-  etapes: [
-    { ic: "verifier", fr: ["Vérifier le logement et le propriétaire", "Titre de propriété ou mandat du propriétaire, état du logement."], ar: ["التثبت من المحل ومن المالك", "سند الملكية أو توكيل المالك، حالة المحل."] },
-    { ic: "signer", fr: ["Signer le bail en au moins 3 exemplaires", "Modèle disponible après relecture par un avocat. Faites un état des lieux d'entrée."], ar: ["إمضاء العقد في 3 نظائر على الأقل", "النموذج متوفر بعد مراجعته من قبل محام. قم بمعاينة عند الدخول."] },
-    { ic: "municipalite", fr: ["Légaliser les signatures", "À la municipalité. Le propriétaire montre son quitus ou sa déclaration fiscale."], ar: ["التعريف بالإمضاءات", "بالبلدية. يقدم المالك إبراء الذمة الجبائية أو تصريحه الجبائي."] },
-    { ic: "recette", fr: ["Enregistrer à la recette des finances", "Celle du lieu du logement, dans les 60 jours. Contrat rendu en général sous 24 h."], ar: ["التسجيل بالقباضة المالية", "قباضة مكان المحل، في أجل 60 يوما. يُسترجع العقد عادة في ظرف 24 ساعة."] },
-    { ic: "garder", fr: ["Chacun garde son exemplaire enregistré", "Et les reçus de loyer à chaque paiement."], ar: ["يحتفظ كل طرف بنظيره المسجل", "ووصولات خلاص الكراء عند كل دفع."] }],
-  pieces: { fr: ["CIN du propriétaire et du locataire", "Quitus ou déclaration fiscale du propriétaire (à la légalisation)", "Bail en au moins 3 exemplaires"], ar: ["بطاقتا تعريف المالك والمتسوغ", "إبراء الذمة أو التصريح الجبائي للمالك (عند التعريف بالإمضاء)", "العقد في 3 نظائر على الأقل"] },
-  ou: { fr: ["Municipalité (légalisation)", "Recette des finances du lieu du logement (enregistrement)"], ar: ["البلدية (التعريف بالإمضاء)", "القباضة المالية لمكان المحل (التسجيل)"] },
-  pieges: { fr: ["Passé 60 jours, des pénalités s'ajoutent aux droits d'enregistrement.", "Écrivez clairement le préavis, le dépôt de garantie et qui paie quoi (eau, électricité, syndic)."],
-            ar: ["بعد 60 يوما تضاف خطايا إلى معاليم التسجيل.", "اكتب بوضوح أجل الإعلام ومبلغ الضمان ومن يدفع ماذا (الماء، الكهرباء، النقابة)."] },
-  averifier: { fr: ["Taux des droits d'enregistrement d'un bail d'habitation.", "Montant des pénalités de retard."], ar: ["نسبة معاليم تسجيل كراء محل سكنى.", "مبلغ خطايا التأخير."] },
-  faq: [
-    { fr: ["Faut-il enregistrer un contrat de location de maison en Tunisie ?", "Oui, à la recette des finances du lieu du logement, dans les 60 jours ; sinon des pénalités s'appliquent."], ar: ["هل يجب تسجيل عقد كراء منزل في تونس؟", "نعم، بالقباضة المالية لمكان المحل في أجل 60 يوما؛ وإلا توظف خطايا."] },
-    { fr: ["Quel texte s'applique au bail d'habitation ?", "Le Code des obligations et des contrats (articles 727 et suivants)."], ar: ["ما هو النص المنطبق على كراء محل السكنى؟", "مجلة الالتزامات والعقود (الفصل 727 وما بعده)."] }
-  ],
-  sources: ["finances", "legislation"]
-},
 {
   slug: "bail-commercial", cat: "logement", contrat: true,
   titre: { fr: "Bail commercial : les étapes", ar: "كراء محل تجاري: المراحل" },
@@ -1147,7 +1073,7 @@ const CONTRATS = [
            delai: AV("Enregistrement dans les 60 jours (pénalités au-delà).", "التسجيل في أجل 60 يوما (خطايا بعده).") },
   etapes: [
     { ic: "verifier", fr: ["Vérifier le local et l'activité autorisée", "Destination du local, autorisations nécessaires à votre activité."], ar: ["التثبت من المحل ومن النشاط المسموح به", "وجهة المحل، الرخص اللازمة لنشاطك."] },
-    { ic: "signer", fr: ["Signer le bail", "Modèle disponible après relecture par un avocat."], ar: ["إمضاء العقد", "النموذج متوفر بعد مراجعته من قبل محام."] },
+    { ic: "signer", fr: ["Signer le bail", "Faites rédiger ou relire le contrat par un avocat : le bail commercial donne des droits particuliers."], ar: ["إمضاء العقد", "اطلب من محام تحرير العقد أو مراجعته: يمنح الكراء التجاري حقوقا خاصة."] },
     { ic: "municipalite", fr: ["Légaliser les signatures", "À la municipalité."], ar: ["التعريف بالإمضاءات", "بالبلدية."] },
     { ic: "recette", fr: ["Enregistrer à la recette des finances", "Droits : 1 % du loyer annuel, minimum 40 DT, dans les 60 jours."], ar: ["التسجيل بالقباضة المالية", "المعاليم: 1 % من معين الكراء السنوي، بحد أدنى 40 دينارا، في أجل 60 يوما."] },
     { ic: "garder", fr: ["Déclarer l'adresse au registre", "Si vous créez une société ou un commerce : RNE."], ar: ["التصريح بالعنوان بالسجل", "إن كنت تحدث شركة أو تجارة: السجل الوطني للمؤسسات."] }],
@@ -1162,6 +1088,206 @@ const CONTRATS = [
   sources: ["finances", "legislation", "rne"]
 }
 ];
+
+/* ======================================================================= 17-19 : grands contrats (modèles du 07/10/2026,
+   demande d'Ahmed). Rédigés d'après le Code des obligations et des contrats (vente : art. 564 et suivants ; louage de choses :
+   art. 727 et suivants). Aucun texte copié d'un autre site. Montants des droits d'enregistrement : toujours « à vérifier ». */
+// partie commune aux contrats : « Article n — titre » puis le texte
+const art = (n, frT, txt) => `<p><b>Article ${n} — ${frT}</b><br>${txt}</p>`;
+const fasl = (n, arT, txt) => `<p><b>الفصل ${n} — ${arT}</b><br>${txt}</p>`;
+const FRAIS = [{ v: "acheteur", fr: "de l'acheteur", ar: "المشتري" }, { v: "vendeur", fr: "du vendeur", ar: "البائع" }, { v: "moitie", fr: "des deux parties, à parts égales", ar: "الطرفين مناصفة" }];
+// vente d'un véhicule d'occasion entre particuliers : voiture ou moto (même contrat, mots adaptés)
+function venteVehicule(moto) {
+  const T = moto ? { fr: "CONTRAT DE VENTE D'UNE MOTO", ar: "عقد بيع دراجة نارية" } : { fr: "CONTRAT DE VENTE D'UNE VOITURE", ar: "عقد بيع سيارة" };
+  const puiss = moto ? ["Cylindrée (cm³)", "سعة المحرك (صم³)", "125"] : ["Puissance fiscale (CV)", "القوة الجبائية (خيل)", "5"];
+  const listeFR = v => `<ul class="d-liste"><li>Marque : ${v("marque")} — Modèle : ${v("modele")}</li><li>N° d'immatriculation : ${v("immat")}</li><li>N° de série (châssis) : ${v("chassis")}</li>${v.has("mise") ? `<li>Date de première mise en circulation : ${v("mise")}</li>` : ""}${v.has("puissance") ? `<li>${puiss[0]} : ${v("puissance")}</li>` : ""}${v.has("km") ? `<li>Kilométrage affiché au compteur : ${v("km")} km</li>` : ""}</ul>`;
+  const listeAR = v => `<ul class="d-liste"><li>النوع: ${v("marque")} — الطراز: ${v("modele")}</li><li>رقم التسجيل المنجمي: ${v("immat")}</li><li>الرقم التسلسلي (الهيكل): ${v("chassis")}</li>${v.has("mise") ? `<li>تاريخ أول جولان: ${v("mise")}</li>` : ""}${v.has("puissance") ? `<li>${puiss[1]}: ${v("puissance")}</li>` : ""}${v.has("km") ? `<li>عدد الكيلومترات بالعداد: ${v("km")} كم</li>` : ""}</ul>`;
+  const remiseFR = v => `${v("remise")}${v.has("heure") ? ` à ${v("heure")}` : ""}`;
+  const remiseAR = v => `${v("remise")}${v.has("heure") ? ` على الساعة ${v("heure")}` : ""}`;
+  return {
+    exemple: { v_nom: ["Mohamed Ben Salah", "محمد بن صالح"], v_cin: "0XXXXXXX", v_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"],
+               a_nom: ["Sami Trabelsi", "سامي الطرابلسي"], a_cin: "1XXXXXXX", a_adresse: ["5 avenue Habib Bourguiba, Sousse", "5 شارع الحبيب بورقيبة، سوسة"],
+               marque: moto ? ["Yamaha", "ياماها"] : ["Peugeot", "بيجو"], modele: moto ? "YBR 125" : "208", immat: moto ? ["123456", "123456"] : ["123 TU 4567", "123 تونس 4567"],
+               chassis: moto ? "JYAXXXXXXXXXXXXXX" : "VF3XXXXXXXXXXXXXX", mise: "2019-03-15", puissance: puiss[2], km: moto ? "28000" : "96000",
+               prix: moto ? "4500" : "32000", paiement: "comptant", remise: "2026-10-05", heure: "15h00", frais: "acheteur", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
+    champs: [
+      groupe("Le vendeur", "البائع"), nom("v_nom"), cin("v_cin"), adresse("v_adresse"),
+      groupe("L'acheteur", "المشتري"), nom("a_nom", ["Sami Trabelsi", "سامي الطرابلسي"]), cin("a_cin"), adresse("a_adresse", ["5 avenue Habib Bourguiba, Sousse", "5 شارع الحبيب بورقيبة، سوسة"]),
+      groupe(moto ? "La moto (comme sur la carte grise)" : "La voiture (comme sur la carte grise)", moto ? "الدراجة النارية (كما في البطاقة الرمادية)" : "السيارة (كما في البطاقة الرمادية)"),
+      c("marque", "Marque", "النوع (العلامة)", moto ? ["Yamaha", "ياماها"] : ["Peugeot", "بيجو"]), c("modele", "Modèle", "الطراز", moto ? "YBR 125" : "208"),
+      c("immat", "N° d'immatriculation", "رقم التسجيل المنجمي", moto ? "123456" : ["123 TU 4567", "123 تونس 4567"]),
+      c("chassis", "N° de série (châssis)", "الرقم التسلسلي (الهيكل)", "VF3XXXXXXXX123456"),
+      date("mise", "Date de première mise en circulation (facultatif)", "تاريخ أول جولان (اختياري)", { opt: true, ex: "2019-03-15" }),
+      c("puissance", puiss[0] + " (facultatif)", puiss[1] + " (اختياري)", puiss[2], { opt: true, mode: "numeric", max: 6 }),
+      c("km", "Kilométrage au compteur (facultatif)", "عدد الكيلومترات بالعداد (اختياري)", "96000", { opt: true, mode: "numeric", max: 9 }),
+      groupe("Le prix et la remise", "الثمن والتسليم"), c("prix", "Prix de vente (DT)", "ثمن البيع (د.ت)", moto ? "4500" : "32000", { type: "montant" }),
+      choix("paiement", "Paiement", "الدفع", [{ v: "comptant", fr: "payé en totalité à la signature", ar: "مدفوع كاملا عند الإمضاء" }, { v: "autre", fr: "autres modalités", ar: "كيفية أخرى" }]),
+      c("modalites", "Modalités de paiement", "كيفية الدفع", ["20 000 DT à la signature, le reste le 30/11/2026", "20.000 د عند الإمضاء والباقي في 30/11/2026"], { si: ["paiement", "autre"] }),
+      date("remise", "Date de remise du véhicule", "تاريخ تسليم العربة"), c("heure", "Heure de remise (facultatif)", "ساعة التسليم (اختياري)", "15h00", { opt: true, max: 10 }),
+      choix("frais", "Droits d'enregistrement et frais de carte grise à la charge", "معاليم التسجيل ومصاريف البطاقة الرمادية على", FRAIS),
+      ...fin()
+    ],
+    fr: v => `<h1 class="d-titre">${T.fr}</h1>
+<p><b>Entre les soussignés :</b></p>
+<p>${idFR(v, "v_")}, ci-après « le vendeur »,</p>
+<p>et ${idFR(v, "a_")}, ci-après « l'acheteur »,</p>
+<p>il a été convenu ce qui suit :</p>
+${art(1, "Objet", `Le vendeur vend à l'acheteur, qui accepte, le véhicule suivant :`)}${listeFR(v)}
+${art(2, "Prix", `La vente est faite au prix de <b>${v("prix")}</b> (${v.lettres("prix")}). ${v.is("paiement", "autre") ? `Ce prix est payé selon les modalités suivantes : ${v("modalites")}.` : "Le vendeur reconnaît avoir reçu ce prix en totalité de l'acheteur à la signature du présent contrat, dont quittance."}`)}
+${art(3, "Déclarations du vendeur", "Le vendeur déclare être le seul propriétaire du véhicule, inscrit à son nom sur la carte grise, et que ce véhicule n'est grevé d'aucun gage, saisie ou opposition.")}
+${art(4, "État du véhicule", "L'acheteur déclare avoir examiné et essayé le véhicule et l'accepter dans l'état où il se trouve au jour de la remise. Les garanties prévues par la loi restent applicables.")}
+${art(5, "Remise et responsabilité", `Le véhicule est remis à l'acheteur le ${remiseFR(v)}, avec la carte grise, les clés et les documents du véhicule. À compter de cette remise, l'acheteur est seul responsable de l'utilisation du véhicule, notamment des infractions, accidents et dommages ; le vendeur reste responsable de ceux survenus avant.`)}
+${art(6, "Formalités et frais", `L'acheteur s'engage à faire enregistrer le présent contrat et à faire établir la carte grise à son nom auprès de l'Agence technique des transports terrestres (ATTT) dans les délais légaux. Les droits d'enregistrement et les frais de mutation sont à la charge ${v("frais")}.`)}
+<p>Fait en deux exemplaires originaux, un pour chaque partie.</p>
+${faitFR(v)}${signe("Le vendeur<br><small>signature légalisée</small>", "L'acheteur<br><small>signature légalisée</small>")}`,
+    ar: v => `<h1 class="d-titre">${T.ar}</h1>
+<p><b>بين الممضين أسفله:</b></p>
+<p>${idAR(v, "v_")}، ويُشار إليه فيما يلي بـ«البائع»،</p>
+<p>و${idAR(v, "a_")}، ويُشار إليه فيما يلي بـ«المشتري»،</p>
+<p>تم الاتفاق على ما يلي:</p>
+${fasl(1, "موضوع العقد", "باع البائع إلى المشتري، الذي قبل، العربة التالية:")}${listeAR(v)}
+${fasl(2, "الثمن", `تم هذا البيع بثمن قدره <b>${v("prix")}</b> (${v.lettres("prix")}). ${v.is("paiement", "autre") ? `ويُدفع هذا الثمن حسب الكيفية التالية: ${v("modalites")}.` : "ويعترف البائع بأنه قبض هذا الثمن كاملا من المشتري عند إمضاء هذا العقد، وهذا إبراء له منه."}`)}
+${fasl(3, "تصريحات البائع", "يصرح البائع بأنه المالك الوحيد للعربة المسجلة باسمه بالبطاقة الرمادية، وبأنها خالية من كل رهن أو عقلة أو اعتراض.")}
+${fasl(4, "حالة العربة", "يصرح المشتري بأنه عاين العربة وجربها وقبلها على الحالة التي هي عليها يوم التسليم، مع بقاء الضمانات المنصوص عليها بالقانون سارية.")}
+${fasl(5, "التسليم والمسؤولية", `تُسلَّم العربة إلى المشتري بتاريخ ${remiseAR(v)}، مع البطاقة الرمادية والمفاتيح ووثائق العربة. وابتداء من هذا التسليم يكون المشتري وحده مسؤولا عن استعمال العربة، وخاصة عن المخالفات والحوادث والأضرار، ويبقى البائع مسؤولا عما حصل قبل ذلك.`)}
+${fasl(6, "الإجراءات والمصاريف", `يلتزم المشتري بتسجيل هذا العقد وباستخراج البطاقة الرمادية باسمه لدى الوكالة الفنية للنقل البري في الآجال القانونية. وتحمل معاليم التسجيل ومصاريف نقل الملكية على ${v("frais")}.`)}
+<p>حُرّر في نظيرين أصليين، بيد كل طرف نظير.</p>
+${faitAR(v)}${signe("البائع<br><small>إمضاء معرف به</small>", "المشتري<br><small>إمضاء معرف به</small>")}`
+  };
+}
+const LEG_DEUX = { ic: "municipalite", fr: ["Légaliser les signatures", "Les deux parties, à la municipalité, en personne, avec leur CIN originale. Vous signez devant l'agent."],
+  ar: ["التعريف بالإمضاءات", "الطرفان، بالبلدية، شخصيا، مع بطاقة التعريف الأصلية. تمضيان أمام العون."] };
+const DOCS_CONTRATS = [
+/* ======================================================================= 17 */
+Object.assign({
+  slug: "vente-voiture", cat: "vehicules", grand: true, rang: 17, motscles: { fr: "contrat vente voiture occasion acheter", ar: "عقد بيع سيارة شراء" },
+  titre: { fr: "Contrat de vente d'une voiture", ar: "عقد بيع سيارة" },
+  court: { fr: "Le contrat entre vendeur et acheteur, puis légalisation, enregistrement et carte grise.", ar: "العقد بين البائع والمشتري، ثم التعريف بالإمضاء والتسجيل والبطاقة الرمادية." },
+  bref: { fr: "Vendre une voiture d'occasion entre particuliers se fait en 4 temps : contrat signé en 2 exemplaires, signatures légalisées à la municipalité, enregistrement à la recette des finances, puis mutation de la carte grise à l'ATTT.",
+          ar: "يتم بيع سيارة مستعملة بين الخواص على 4 مراحل: عقد ممضى في نظيرين، التعريف بالإمضاءات بالبلدية، التسجيل بالقباضة المالية، ثم نقل ملكية البطاقة الرمادية بالوكالة الفنية للنقل البري." },
+  legal: { legalisation: "oui", enregistrement: "oui", cout: AV("Modèle gratuit. Droits d'enregistrement : À VÉRIFIER (barème du Code des droits d'enregistrement et de timbre).", "النموذج مجاني. معاليم التسجيل: يُتثبت منها (جدول مجلة معاليم التسجيل والطابع الجبائي)."),
+           delai: AV("Inscription à l'ATTT : 15 jours après la signature (délai annoncé, à confirmer auprès de l'ATTT).", "التسجيل بالوكالة الفنية للنقل البري: 15 يوما بعد الإمضاء (أجل معلن، يُتثبت منه لدى الوكالة).") },
+  etapes: [
+    { ic: "verifier", fr: ["Vérifier la voiture et ses papiers", "Carte grise au nom du vendeur, certificat de non gage de moins d'un mois (délivré par l'ATTT), vignette payée."], ar: ["التثبت من السيارة ووثائقها", "بطاقة رمادية باسم البائع، شهادة عدم رهن لا يتجاوز تاريخها شهرا (تسلمها الوكالة الفنية للنقل البري)، معلوم الجولان مدفوع."] },
+    ETAPE_REMPLIR, ETAPE_IMPRIMER(2), LEG_DEUX,
+    { ic: "recette", fr: ["Enregistrer à la recette des finances", "Paiement des droits d'enregistrement (montant à vérifier)."], ar: ["التسجيل بالقباضة المالية", "دفع معاليم التسجيل (المبلغ يُتثبت منه)."] },
+    { ic: "attt", fr: ["Mutation de la carte grise à l'ATTT", "Demande, ancienne carte grise, contrat enregistré, certificat de non gage, reçu de déclaration d'impôt sur le revenu, vignette."], ar: ["نقل ملكية البطاقة الرمادية", "مطلب، البطاقة الرمادية القديمة، العقد المسجل، شهادة عدم الرهن، وصل التصريح بالضريبة على الدخل، معلوم الجولان."] }],
+  pieces: { fr: ["Carte grise originale", "Certificat de non gage (moins d'un mois)", "Reçu de la vignette de l'année", "CIN originale du vendeur et de l'acheteur", "Reçu de déclaration d'impôt sur le revenu (demandé à l'ATTT)", "Contrat en 2 exemplaires"],
+            ar: ["البطاقة الرمادية الأصلية", "شهادة عدم الرهن (أقل من شهر)", "وصل معلوم الجولان للسنة", "بطاقتا التعريف الأصليتان للبائع والمشتري", "وصل التصريح بالضريبة على الدخل (تطلبه الوكالة)", "العقد في نظيرين"] },
+  ou: { fr: [LEG_OU.fr, "Recette des finances (enregistrement)", "Agence de l'ATTT (carte grise)"], ar: [LEG_OU.ar, "القباضة المالية (التسجيل)", "الوكالة الفنية للنقل البري (البطاقة الرمادية)"] },
+  pieges: { fr: ["Recopiez le n° d'immatriculation et le n° de série exactement comme sur la carte grise.", "Ne remettez jamais la voiture sans contrat légalisé : jusqu'à la mutation, le vendeur reste le propriétaire inscrit.", "Méfiez-vous d'un certificat de non gage ancien : demandez-en un récent.", "Notez l'heure de la remise : elle fixe qui est responsable des amendes et accidents."],
+            ar: ["انقل رقم التسجيل والرقم التسلسلي كما هما في البطاقة الرمادية.", "لا تسلم السيارة دون عقد معرف بإمضائه: إلى حين نقل الملكية يبقى البائع هو المالك المسجل.", "احذر من شهادة عدم رهن قديمة: اطلب شهادة حديثة.", "اكتب ساعة التسليم: بها يُعرف من يتحمل المخالفات والحوادث."] },
+  averifier: { fr: ["Montant des droits d'enregistrement d'une vente de véhicule.", "Délai de 15 jours pour l'inscription à l'ATTT.", "Liste exacte des pièces demandées par l'ATTT."], ar: ["مبلغ معاليم تسجيل بيع عربة.", "أجل 15 يوما للتسجيل بالوكالة الفنية للنقل البري.", "القائمة الدقيقة للوثائق التي تطلبها الوكالة."] },
+  faq: [
+    { fr: ["Combien coûte l'enregistrement d'un contrat de vente de voiture ?", "Le montant dépend du barème du Code des droits d'enregistrement et de timbre. Nous ne l'affichons pas tant qu'il n'a pas été vérifié : demandez à la recette des finances."], ar: ["كم تبلغ معاليم تسجيل عقد بيع سيارة؟", "يتوقف المبلغ على جدول مجلة معاليم التسجيل والطابع الجبائي. لا ننشره قبل التثبت منه: اسأل القباضة المالية."] },
+    { fr: ["Faut-il légaliser le contrat de vente de voiture ?", "Oui : le vendeur et l'acheteur signent devant l'agent de la municipalité, avec leur CIN originale, avant l'enregistrement."], ar: ["هل يجب التعريف بإمضاء عقد بيع السيارة؟", "نعم: يمضي البائع والمشتري أمام عون البلدية، مع بطاقة التعريف الأصلية، قبل التسجيل."] },
+    { fr: ["Qui paie les frais de la vente ?", "C'est aux parties de le décider : le modèle vous laisse choisir l'acheteur, le vendeur, ou les deux à parts égales."], ar: ["من يدفع مصاريف البيع؟", "يقرر الطرفان ذلك: يتيح لك النموذج اختيار المشتري أو البائع أو الطرفين مناصفة."] }
+  ],
+  sources: ["attt", "finances", "legislation"]
+}, venteVehicule(false)),
+/* ======================================================================= 18 */
+Object.assign({
+  slug: "vente-moto", cat: "vehicules", grand: true, rang: 18, motscles: { fr: "contrat vente moto scooter", ar: "عقد بيع دراجة نارية موتور" },
+  titre: { fr: "Contrat de vente d'une moto", ar: "عقد بيع دراجة نارية" },
+  court: { fr: "Le contrat pour une moto immatriculée : mêmes étapes que la voiture.", ar: "عقد الدراجة النارية المسجلة: نفس مراحل السيارة." },
+  bref: { fr: "Pour une moto immatriculée, les étapes sont les mêmes que pour une voiture : contrat en 2 exemplaires, légalisation, enregistrement à la recette des finances, mutation de la carte grise à l'ATTT.",
+          ar: "بالنسبة إلى الدراجة النارية المسجلة، المراحل هي نفسها كالسيارة: عقد في نظيرين، التعريف بالإمضاء، التسجيل بالقباضة المالية، نقل ملكية البطاقة الرمادية." },
+  legal: { legalisation: "oui", enregistrement: "oui", cout: AV("Modèle gratuit. Droits d'enregistrement : À VÉRIFIER.", "النموذج مجاني. معاليم التسجيل: يُتثبت منها."),
+           delai: AV("Délai d'inscription à l'ATTT : à confirmer auprès de l'ATTT.", "أجل التسجيل بالوكالة: يُتثبت منه لدى الوكالة.") },
+  etapes: [
+    { ic: "verifier", fr: ["Vérifier la moto et ses papiers", "Carte grise au nom du vendeur, certificat de non gage récent."], ar: ["التثبت من الدراجة ووثائقها", "بطاقة رمادية باسم البائع، شهادة عدم رهن حديثة."] },
+    ETAPE_REMPLIR, ETAPE_IMPRIMER(2), LEG_DEUX,
+    { ic: "recette", fr: ["Enregistrer à la recette des finances", "Droits à payer : à vérifier."], ar: ["التسجيل بالقباضة المالية", "المعاليم: يُتثبت منها."] },
+    { ic: "attt", fr: ["Mutation de la carte grise à l'ATTT", "Avec le contrat enregistré et les pièces demandées."], ar: ["نقل ملكية البطاقة الرمادية", "مع العقد المسجل والوثائق المطلوبة."] }],
+  pieces: { fr: ["Carte grise originale", "Certificat de non gage", "CIN originale du vendeur et de l'acheteur", "Contrat en 2 exemplaires"], ar: ["البطاقة الرمادية الأصلية", "شهادة عدم الرهن", "بطاقتا التعريف الأصليتان للبائع والمشتري", "العقد في نظيرين"] },
+  ou: { fr: [LEG_OU.fr, "Recette des finances", "Agence de l'ATTT"], ar: [LEG_OU.ar, "القباضة المالية", "الوكالة الفنية للنقل البري"] },
+  pieges: { fr: ["Les petits cyclomoteurs non immatriculés ne suivent pas forcément ces étapes : renseignez-vous à l'ATTT.", "Recopiez le n° d'immatriculation et le n° de série exactement comme sur la carte grise."],
+            ar: ["الدراجات الصغيرة غير المسجلة لا تخضع بالضرورة لهذه المراحل: استفسر لدى الوكالة.", "انقل رقم التسجيل والرقم التسلسلي كما هما في البطاقة الرمادية."] },
+  averifier: { fr: ["Montant des droits d'enregistrement.", "Pièces et délai exigés par l'ATTT pour les motos."], ar: ["مبلغ معاليم التسجيل.", "الوثائق والأجل التي تشترطها الوكالة بالنسبة إلى الدراجات النارية."] },
+  faq: [
+    { fr: ["Faut-il légaliser un contrat de vente de moto ?", "Oui, comme pour une voiture : les signatures sont légalisées à la municipalité avant l'enregistrement."], ar: ["هل يجب التعريف بإمضاء عقد بيع دراجة نارية؟", "نعم، كالسيارة: يُعرَّف بالإمضاءات بالبلدية قبل التسجيل."] }
+  ],
+  sources: ["attt", "finances", "legislation"]
+}, venteVehicule(true)),
+/* ======================================================================= 19 */
+{
+  slug: "location-maison", cat: "logement", grand: true, rang: 19, motscles: { fr: "contrat location bail maison appartement logement loyer", ar: "عقد كراء منزل شقة سكنى" },
+  titre: { fr: "Contrat de location d'une maison ou d'un appartement", ar: "عقد كراء منزل أو شقة" },
+  court: { fr: "Le bail d'habitation, puis légalisation et enregistrement dans les 60 jours.", ar: "عقد كراء محل السكنى، ثم التعريف بالإمضاء والتسجيل في أجل 60 يوما." },
+  bref: { fr: "Le bail d'habitation est signé en au moins 3 exemplaires, les signatures sont légalisées, puis le contrat est enregistré à la recette des finances du lieu du logement. Pénalités si l'enregistrement est fait après 60 jours.",
+          ar: "يُمضى عقد كراء محل السكنى في 3 نظائر على الأقل، ويُعرَّف بالإمضاءات، ثم يُسجل العقد بالقباضة المالية لمكان المحل. توظف خطايا إذا تم التسجيل بعد 60 يوما." },
+  legal: { legalisation: "oui", enregistrement: "oui", cout: AV("Modèle gratuit. Droits d'enregistrement pour un logement : taux À VÉRIFIER.", "النموذج مجاني. معاليم تسجيل كراء محل سكنى: النسبة يُتثبت منها."),
+           delai: AV("Enregistrement dans les 60 jours (pénalités au-delà).", "التسجيل في أجل 60 يوما (خطايا بعده).") },
+  exemple: { b_nom: ["Mohamed Ben Salah", "محمد بن صالح"], b_cin: "0XXXXXXX", b_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"],
+             l_nom: ["Karim Jaziri", "كريم الجزيري"], l_cin: "1XXXXXXX", l_adresse: ["3 rue Ibn Khaldoun, Sfax", "3 نهج ابن خلدون، صفاقس"],
+             log_adresse: ["8 rue des Jasmins, Ariana", "8 نهج الياسمين، أريانة"], log_desc: ["un appartement de 3 pièces au 2e étage, avec cuisine et salle de bain", "شقة من 3 غرف بالطابق الثاني، بها مطبخ وبيت استحمام"],
+             meuble: "non", debut: "2026-11-01", duree: "1an", preavis: "1", loyer: "750", jour: "5", garantie: "750", frais: "locataire", lieu: ["Ariana", "أريانة"], date: "2026-10-05" },
+  champs: [
+    groupe("Le propriétaire (bailleur)", "المالك (المسوّغ)"), nom("b_nom"), cin("b_cin"), adresse("b_adresse"),
+    groupe("Le locataire", "المتسوّغ"), nom("l_nom", ["Karim Jaziri", "كريم الجزيري"]), cin("l_cin"), adresse("l_adresse", ["3 rue Ibn Khaldoun, Sfax", "3 نهج ابن خلدون، صفاقس"]),
+    groupe("Le logement", "المحل"),
+    c("log_adresse", "Adresse du logement loué", "عنوان المحل المسوَّغ", ["8 rue des Jasmins, Ariana", "8 نهج الياسمين، أريانة"]),
+    c("log_desc", "Description", "الوصف", ["un appartement de 3 pièces au 2e étage, avec cuisine et salle de bain", "شقة من 3 غرف بالطابق الثاني، بها مطبخ وبيت استحمام"]),
+    choix("meuble", "Meublé ?", "مؤثث؟", [{ v: "non", fr: "non meublé", ar: "غير مؤثث" }, { v: "oui", fr: "meublé", ar: "مؤثث" }]),
+    groupe("La durée", "المدة"), date("debut", "Début de la location", "بداية الكراء", { ex: "2026-11-01" }),
+    choix("duree", "Durée", "المدة", [{ v: "1an", fr: "un (1) an", ar: "سنة واحدة" }, { v: "2ans", fr: "deux (2) ans", ar: "سنتين" }, { v: "6mois", fr: "six (6) mois", ar: "ستة أشهر" }]),
+    choix("preavis", "Préavis pour partir ou ne pas renouveler", "أجل الإعلام بالمغادرة أو عدم التجديد", [{ v: "1", fr: "un (1) mois", ar: "شهر واحد" }, { v: "2", fr: "deux (2) mois", ar: "شهرين" }, { v: "3", fr: "trois (3) mois", ar: "ثلاثة أشهر" }]),
+    groupe("Le loyer", "معين الكراء"), c("loyer", "Loyer mensuel (DT)", "معين الكراء الشهري (د.ت)", "750", { type: "montant" }),
+    c("jour", "Payé au plus tard le (jour du mois)", "يُدفع في أجل أقصاه اليوم (من الشهر)", "5", { mode: "numeric", max: 2 }),
+    c("garantie", "Dépôt de garantie (DT, facultatif)", "مبلغ الضمان (د.ت، اختياري)", "750", { type: "montant", opt: true }),
+    choix("frais", "Droits d'enregistrement à la charge", "معاليم التسجيل على", [{ v: "locataire", fr: "du locataire", ar: "المتسوّغ" }, { v: "bailleur", fr: "du bailleur", ar: "المسوّغ" }, { v: "moitie", fr: "des deux parties, à parts égales", ar: "الطرفين مناصفة" }]),
+    ...fin()
+  ],
+  fr: v => { let n = 3; const N = () => ++n; return `<h1 class="d-titre">CONTRAT DE LOCATION D'UN LOCAL À USAGE D'HABITATION</h1>
+<p><b>Entre les soussignés :</b></p>
+<p>${idFR(v, "b_", "propriétaire du logement désigné ci-dessous")}, ci-après « le bailleur »,</p>
+<p>et ${idFR(v, "l_")}, ci-après « le locataire »,</p>
+<p>il a été convenu ce qui suit :</p>
+${art(1, "Objet", `Le bailleur donne en location au locataire, qui accepte, le logement situé à ${v("log_adresse")}, composé de : ${v("log_desc")}, loué ${v("meuble")}. Le logement est loué à usage d'habitation uniquement. Le locataire ne peut ni le sous-louer ni céder le présent contrat sans l'accord écrit du bailleur.`)}
+${art(2, "Durée", `Le présent contrat est conclu pour une durée de ${v("duree")}, à compter du ${v("debut")}. Il se renouvelle par tacite reconduction pour la même durée, sauf si l'une des parties informe l'autre par écrit de sa volonté d'y mettre fin, au moins ${v("preavis")} avant la fin de la période en cours.`)}
+${art(3, "Loyer", `Le loyer est fixé à <b>${v("loyer")}</b> (${v.lettres("loyer")}) par mois, payable d'avance au plus tard le ${v("jour")} de chaque mois. Le bailleur remet un reçu au locataire à chaque paiement.`)}
+${v.has("garantie") ? art(N(), "Dépôt de garantie", `À la signature, le locataire remet au bailleur la somme de <b>${v("garantie")}</b> (${v.lettres("garantie")}) à titre de garantie. Elle lui est rendue à la remise des clés, après déduction, le cas échéant, des loyers et charges impayés et du coût de réparation des dégradations dont il est responsable.`) : ""}
+${art(N(), "Charges", "Les consommations d'eau, d'électricité, de gaz et de téléphone du logement sont à la charge du locataire.")}
+${art(N(), "Obligations du locataire", "Le locataire s'engage à utiliser le logement avec soin, à payer le loyer aux dates prévues, à faire les petites réparations d'entretien courant, à ne faire aucune transformation sans l'accord écrit du bailleur, et à rendre le logement en bon état à la fin de la location, sauf l'usure normale.")}
+${art(N(), "Obligations du bailleur", "Le bailleur s'engage à remettre le logement en bon état d'habitation, à faire les grosses réparations et à garantir au locataire la jouissance paisible du logement.")}
+${art(N(), "Enregistrement", `Le présent contrat est enregistré à la recette des finances. Les droits d'enregistrement sont à la charge ${v("frais")}.`)}
+<p>Fait en trois exemplaires originaux : un pour chaque partie et un pour l'enregistrement.</p>
+${faitFR(v)}${signe("Le bailleur<br><small>signature légalisée</small>", "Le locataire<br><small>signature légalisée</small>")}`; },
+  ar: v => { let n = 3; const N = () => ++n; return `<h1 class="d-titre">عقد كراء محل معد للسكنى</h1>
+<p><b>بين الممضين أسفله:</b></p>
+<p>${idAR(v, "b_", "مالك(ة) المحل المبين أسفله")}، ويُشار إليه فيما يلي بـ«المسوّغ»،</p>
+<p>و${idAR(v, "l_")}، ويُشار إليه فيما يلي بـ«المتسوّغ»،</p>
+<p>تم الاتفاق على ما يلي:</p>
+${fasl(1, "موضوع العقد", `يسوّغ المسوّغ إلى المتسوّغ، الذي قبل، المحل الكائن بـ${v("log_adresse")}، والمتكون من: ${v("log_desc")}، ${v("meuble")}. ويُسوَّغ المحل للسكنى فقط، ولا يجوز للمتسوّغ تسويغه من الباطن أو إحالة هذا العقد دون موافقة كتابية من المسوّغ.`)}
+${fasl(2, "المدة", `أُبرم هذا العقد لمدة ${v("duree")} تبتدئ من ${v("debut")}، ويتجدد ضمنيا لنفس المدة ما لم يُعلم أحد الطرفين الآخر كتابيا برغبته في إنهائه قبل ${v("preavis")} على الأقل من نهاية المدة الجارية.`)}
+${fasl(3, "معين الكراء", `حُدد معين الكراء بـ<b>${v("loyer")}</b> (${v.lettres("loyer")}) شهريا، يُدفع مسبقا في أجل أقصاه اليوم ${v("jour")} من كل شهر، ويسلّم المسوّغ للمتسوّغ وصلا عن كل خلاص.`)}
+${v.has("garantie") ? fasl(N(), "الضمان", `يدفع المتسوّغ عند الإمضاء إلى المسوّغ مبلغا قدره <b>${v("garantie")}</b> (${v.lettres("garantie")}) على سبيل الضمان، يُرجع إليه عند تسليم المفاتيح بعد طرح ما قد يكون متخلدا بذمته من معاليم كراء ومصاريف وكلفة إصلاح الأضرار التي يتحمل مسؤوليتها.`) : ""}
+${fasl(N(), "المصاريف", "يتحمل المتسوّغ معاليم استهلاك الماء والكهرباء والغاز والهاتف بالمحل.")}
+${fasl(N(), "التزامات المتسوّغ", "يلتزم المتسوّغ باستعمال المحل بعناية والمحافظة عليه، وبدفع معين الكراء في آجاله، وبالقيام بالإصلاحات البسيطة للصيانة العادية، وبعدم إدخال أي تغيير على المحل دون موافقة كتابية من المسوّغ، وبإرجاعه في حالة حسنة عند انتهاء الكراء باستثناء ما ينتج عن الاستعمال العادي.")}
+${fasl(N(), "التزامات المسوّغ", "يلتزم المسوّغ بتسليم المحل في حالة صالحة للسكنى، وبالقيام بالإصلاحات الكبرى، وبضمان انتفاع المتسوّغ بالمحل انتفاعا هادئا.")}
+${fasl(N(), "التسجيل", `يُسجل هذا العقد بالقباضة المالية، وتحمل معاليم التسجيل على ${v("frais")}.`)}
+<p>حُرّر في ثلاثة نظائر أصلية: نظير لكل طرف ونظير للتسجيل.</p>
+${faitAR(v)}${signe("المسوّغ<br><small>إمضاء معرف به</small>", "المتسوّغ<br><small>إمضاء معرف به</small>")}`; },
+  etapes: [
+    { ic: "verifier", fr: ["Vérifier le logement et le propriétaire", "Titre de propriété ou mandat du propriétaire, état du logement."], ar: ["التثبت من المحل ومن المالك", "سند الملكية أو توكيل المالك، حالة المحل."] },
+    ETAPE_REMPLIR, ETAPE_IMPRIMER(3),
+    { ic: "municipalite", fr: ["Légaliser les signatures", "Les deux parties, à la municipalité, avec leur CIN originale. Le propriétaire montre son quitus ou sa déclaration fiscale."], ar: ["التعريف بالإمضاءات", "الطرفان، بالبلدية، مع بطاقة التعريف الأصلية. يقدم المالك إبراء الذمة الجبائية أو تصريحه الجبائي."] },
+    { ic: "recette", fr: ["Enregistrer à la recette des finances", "Celle du lieu du logement, dans les 60 jours. Contrat rendu en général sous 24 h."], ar: ["التسجيل بالقباضة المالية", "قباضة مكان المحل، في أجل 60 يوما. يُسترجع العقد عادة في ظرف 24 ساعة."] },
+    { ic: "garder", fr: ["Chacun garde son exemplaire enregistré", "Et les reçus de loyer à chaque paiement (modèle « Reçu de loyer » sur ce site)."], ar: ["يحتفظ كل طرف بنظيره المسجل", "ووصولات خلاص الكراء عند كل دفع (نموذج «وصل خلاص كراء» بهذا الموقع)."] }],
+  pieces: { fr: ["CIN originale du propriétaire et du locataire", "Quitus ou déclaration fiscale du propriétaire (à la légalisation)", "Bail en au moins 3 exemplaires"], ar: ["بطاقتا التعريف الأصليتان للمالك والمتسوغ", "إبراء الذمة أو التصريح الجبائي للمالك (عند التعريف بالإمضاء)", "العقد في 3 نظائر على الأقل"] },
+  ou: { fr: [LEG_OU.fr, "Recette des finances du lieu du logement (enregistrement)"], ar: [LEG_OU.ar, "القباضة المالية لمكان المحل (التسجيل)"] },
+  pieges: { fr: ["Passé 60 jours, des pénalités s'ajoutent aux droits d'enregistrement.", "Faites un état des lieux écrit à l'entrée (photos datées) : il évite les disputes sur le dépôt de garantie.", "Gardez un reçu pour chaque loyer payé."],
+            ar: ["بعد 60 يوما تضاف خطايا إلى معاليم التسجيل.", "قم بمعاينة كتابية عند الدخول (صور مؤرخة): تجنب الخلافات حول مبلغ الضمان.", "احتفظ بوصل عن كل معين كراء مدفوع."] },
+  averifier: { fr: ["Taux des droits d'enregistrement d'un bail d'habitation.", "Montant des pénalités de retard."], ar: ["نسبة معاليم تسجيل كراء محل سكنى.", "مبلغ خطايا التأخير."] },
+  faq: [
+    { fr: ["Faut-il enregistrer un contrat de location de maison en Tunisie ?", "Oui, à la recette des finances du lieu du logement, dans les 60 jours ; sinon des pénalités s'appliquent."], ar: ["هل يجب تسجيل عقد كراء منزل في تونس؟", "نعم، بالقباضة المالية لمكان المحل في أجل 60 يوما؛ وإلا توظف خطايا."] },
+    { fr: ["Quel texte s'applique au bail d'habitation ?", "Le Code des obligations et des contrats (articles 727 et suivants)."], ar: ["ما هو النص المنطبق على كراء محل السكنى؟", "مجلة الالتزامات والعقود (الفصل 727 وما بعده)."] },
+    { fr: ["Combien d'exemplaires faut-il ?", "Au moins 3 : un pour le propriétaire, un pour le locataire et un gardé par la recette des finances."], ar: ["كم نظيرا يلزم؟", "3 على الأقل: نظير للمالك ونظير للمتسوّغ ونظير تحتفظ به القباضة المالية."] }
+  ],
+  sources: ["finances", "legislation"]
+}
+];
+DOCS.push(...DOCS_CONTRATS);
 
 /* ---- Démarches expliquées : EXPLICATION SEULEMENT, aucun modèle à remplir (textes officiels vérifiés le 05/10/2026) ----
    Divorce et mariage : Code du statut personnel (art. 3, 5, 30 à 32), loi n° 57-3 (état civil), loi n° 64-46 (certificat prénuptial),

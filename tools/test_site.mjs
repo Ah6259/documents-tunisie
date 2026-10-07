@@ -22,7 +22,11 @@ const TOUS = [...DOCS, ...CONTRATS, ...GUIDES];
 const ARABE = /[؀-ۿ]/;
 
 // ---- 1. Données : chaque document est complet ---------------------------------
-check("au moins 16 documents à remplir, 4 grands contrats et 5 démarches expliquées (le robot de nuit peut en ajouter ; aucun ne doit disparaître)", DOCS.length >= 16 && CONTRATS.length >= 4 && GUIDES.length >= 5);
+check("au moins 19 documents à remplir (dont 3 grands contrats), 1 contrat en « étapes seulement » et 5 démarches expliquées (le robot de nuit peut en ajouter ; aucun ne doit disparaître)", DOCS.length >= 19 && CONTRATS.length >= 1 && GUIDES.length >= 5);
+// grands contrats devenus modèles (demande d'Ahmed, 07/10/2026) : vente voiture, vente moto, location maison — mêmes adresses qu'avant
+const GRANDS = ["vente-voiture", "vente-moto", "location-maison"];
+for (const slug of GRANDS) { const d = DOCS.find(x => x.slug === slug);
+  check(`${slug} : modèle de contrat à remplir (formulaire + texte FR et AR), même adresse qu'avant`, !!d && d.grand === true && !d.contrat && d.champs.length > 10 && typeof d.fr === "function" && typeof d.ar === "function"); }
 check("adresses (slug) uniques", new Set(TOUS.map(d => d.slug)).size === TOUS.length);
 const bil = o => o && o.fr && o.ar && ARABE.test(JSON.stringify(o.ar)) && JSON.stringify(o.fr).length > 4;
 for (const d of TOUS) {
@@ -373,7 +377,7 @@ async function taperCode(w, code) {
     typeof pj.sel === "string" && pj.sel.length >= 16 && pj.tours >= 100000 && Array.isArray(pj.codes)
     && pj.codes.every(c => Object.keys(c).sort().join() === "fin,h" && /^[0-9a-f]{64}$/.test(c.h) && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?Z$/.test(c.fin))
     && Object.keys(pj).every(k => ["_lisez_moi", "maj", "sel", "tours", "codes"].includes(k)));
-  check("Pass Journée : chargé sur les 16 pages de modèle, jamais sur l'accueil, les guides ou les grands contrats",
+  check("Pass Journée : chargé sur toutes les pages de modèle, jamais sur l'accueil, les guides ou les grands contrats",
     DOCS.every(d => /assets\/pass\.js\?v=/.test(lire(d.slug + "/index.html")) && /id="pass-bloque"/.test(lire(d.slug + "/index.html")))
     && ![...CONTRATS, ...GUIDES].some(d => /pass\.js|btn-pass/.test(lire(d.slug + "/index.html"))) && !/pass\.js|btn-pass/.test(lire("index.html")));
 }

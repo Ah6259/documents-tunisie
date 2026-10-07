@@ -258,9 +258,9 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
     } else if (d.contrat) {
       const utiles = DOCS.filter(x => x.cat === d.cat);
       s += `<section class="carte contrat-bientot" id="modele-a-venir">
-  ${h2("cadenas", "Modèle de contrat : bientôt", "نموذج العقد: قريبا")}
-  <p>${bi("Modèle disponible après relecture par un avocat. Un contrat de ce type engage beaucoup : en attendant, faites rédiger ou relire votre contrat par un avocat.",
-           "النموذج متوفر بعد مراجعته من قبل محام. هذا النوع من العقود التزام هام: في الأثناء، اطلب من محام تحرير عقدك أو مراجعته.")}</p>
+  ${h2("cadenas", "Pas de modèle pour ce contrat", "لا يوجد نموذج لهذا العقد")}
+  <p>${bi("Ce contrat a des règles particulières : il n'a pas de modèle sur ce site. Faites-le rédiger ou relire par un avocat.",
+           "لهذا العقد قواعد خاصة: ليس له نموذج في هذا الموقع. اطلب من محام تحريره أو مراجعته.")}</p>
   ${utiles.length ? `<p>${bi("Documents utiles déjà disponibles :", "وثائق مفيدة متوفرة الآن:")}</p><ul class="liste">${utiles.map(x => `<li><a href="../${x.slug}/">${bi(x.titre.fr, x.titre.ar)}</a></li>`).join("")}</ul>` : ""}
 </section>\n`;
     } else {
@@ -350,10 +350,10 @@ ${pied}`;
 <div class="cats">${CATEGORIES.map(k => `<button type="button" class="cat" data-cat="${k.id}">${svg(k.svg)}${bi(k.fr, k.ar)}</button>`).join("")}${LIEN_AVOCATS}</div>
 <p class="vide-recherche" id="aucun" hidden>${bi("Aucun document trouvé. Essayez un autre mot. Votre recherche est notée : les documents les plus demandés sont ajoutés au site.", "لم يتم العثور على أي وثيقة. جرّب كلمة أخرى. تم تسجيل بحثك: نضيف إلى الموقع الوثائق الأكثر طلبًا.")}</p>
 <section class="bloc-docs"><h2 class="titre-section">${bi("Les documents les plus demandés", "الوثائق الأكثر طلبا")}</h2>
-<div class="docs">${[...DOCS].sort((a, b) => a.rang - b.rang).map(x => carteDoc(x, "")).join("")}</div></section>
-<section class="bloc-docs"><h2 class="titre-section">${bi("Les grands contrats : toutes les étapes", "العقود الكبرى: كل المراحل")}</h2>
-<p class="conseil">${bi("Étapes, pièces et frais tout de suite ; modèle à remplir après relecture par un avocat.", "المراحل والوثائق والمعاليم الآن؛ النموذج بعد مراجعته من قبل محام.")}</p>
-<div class="docs">${CONTRATS.map(x => carteDoc(x, "")).join("")}</div></section>
+<div class="docs">${DOCS.filter(x => !x.grand).sort((a, b) => a.rang - b.rang).map(x => carteDoc(x, "")).join("")}</div></section>
+<section class="bloc-docs"><h2 class="titre-section">${bi("Les grands contrats : vente et location", "العقود الكبرى: البيع والكراء")}</h2>
+<p class="conseil">${bi("Modèles à remplir, avec toutes les étapes : légalisation, enregistrement, carte grise.", "نماذج للتعمير، مع كل المراحل: التعريف بالإمضاء، التسجيل، البطاقة الرمادية.")}</p>
+<div class="docs">${[...DOCS.filter(x => x.grand).sort((a, b) => a.rang - b.rang), ...CONTRATS].map(x => carteDoc(x, "")).join("")}</div></section>
 <section class="bloc-docs"><h2 class="titre-section">${bi("Démarches expliquées", "إجراءات مشروحة")}</h2>
 <p class="conseil">${bi("Explication seulement, à partir des textes officiels : aucun modèle à remplir.", "شرح فقط، انطلاقا من النصوص الرسمية: لا يوجد نموذج للتعمير.")}</p>
 <div class="docs">${GUIDES.map(x => carteDoc(x, "")).join("")}</div></section>
@@ -396,8 +396,8 @@ ${pied}`;
   ${sourcesHTML(Object.keys(SOURCES))}
 </section>
 <section class="carte averifier">${h2("alerte", "Limites", "الحدود")}
-  <ul class="liste" data-l="fr"><li>Ce site <b>n'est pas officiel</b> et ne remplace pas un avocat, un notaire ou l'administration.</li><li>Les montants et délais non confirmés sont marqués <b>« à vérifier »</b>.</li><li>Les contrats importants (vente de véhicule, location, bail commercial) n'auront de modèle qu'<b>après relecture par un avocat</b>.</li><li>Les documents délivrés par l'administration (certificat de résidence, non gage…) ne sont pas des modèles : demandez-les à l'administration.</li></ul>
-  <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>العقود الهامة (بيع عربة، كراء، كراء تجاري) لن يكون لها نموذج إلا <b>بعد مراجعتها من قبل محام</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
+  <ul class="liste" data-l="fr"><li>Ce site <b>n'est pas officiel</b> et ne remplace pas un avocat, un notaire ou l'administration.</li><li>Les montants et délais non confirmés sont marqués <b>« à vérifier »</b>.</li><li>Le <b>bail commercial</b> a des règles particulières (loi n° 77-37) : il n'a pas de modèle, faites-le rédiger par un avocat.</li><li>Les documents délivrés par l'administration (certificat de résidence, non gage…) ne sont pas des modèles : demandez-les à l'administration.</li></ul>
+  <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>لـ<b>الكراء التجاري</b> قواعد خاصة (القانون عدد 37 لسنة 1977): ليس له نموذج، اطلب من محام تحريره.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
   <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seuls votre choix de langue, le jour et le nom du document gratuit du jour (pour compter 1 document gratuit par jour) et, si vous en avez un, votre code de Pass Journée sont gardés dans votre navigateur ; le code est vérifié dans votre téléphone. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, et le nom des modèles dont le téléchargement attend un Pass Journée, jamais ce que vous écrivez dans les formulaires. Seules exceptions, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer » ; la demande de Pass Journée envoie votre nom et votre téléphone de la même façon, seulement pour vous envoyer votre code (voir les <a href="../pass/conditions/">conditions du Pass Journée</a>).</p>

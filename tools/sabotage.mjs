@@ -16,7 +16,7 @@ const SABOTAGES = [
   ["modèle arabe qui oublie le nom du mandataire", d => changer(d, "assets/documents.js", "<p>أوكل بمقتضى هذا ${idAR(v, \"d_\")}،</p>", "<p>أوكل بمقتضى هذا،</p>")],
   ["faute de frappe dans un champ (le document affiche « undefined »)", d => changer(d, "assets/documents.js", "N° d'immatriculation : ${v(\"immat\")}", "N° d'immatriculation : ${v.immat}")],
   ["montant en lettres faux (80 = « quatre-vingt »)", d => changer(d, "assets/modele.js", 'u === 0 ? "quatre-vingts"', 'u === 0 ? "quatre-vingt"')],
-  ["contrat de vente de voiture publié sans relecture d'avocat", d => changer(d, "assets/documents.js", 'slug: "vente-voiture", cat: "vehicules", contrat: true,', 'slug: "vente-voiture", cat: "vehicules", contrat: true, fr: v => "", ar: v => "",')],
+  ["bail commercial publié avec un modèle (pas de modèle pour ce contrat)", d => changer(d, "assets/documents.js", 'slug: "bail-commercial", cat: "logement", contrat: true,', 'slug: "bail-commercial", cat: "logement", contrat: true, fr: v => "", ar: v => "",')],
   ["étape sans traduction arabe", d => changer(d, "assets/documents.js", 'ar: ["الاحتفاظ بالأصل داخل العربة", "مع البطاقة الرمادية وشهادة التأمين. احتفظ بنسخة في منزلك."]', 'ar: ["Garder l\'original"]')],
   ["source non officielle ajoutée", d => changer(d, "assets/documents.js", 'url: "https://www.intt.tn/"', 'url: "https://www.exemple.com/"')],
   ["nom d'un concurrent dans le README", d => changer(d, "README.md", "# Documents Tunisie", "# Documents Tunisie (inspiré de " + [..."nt.ecitsujolla"].reverse().join("") + ")")],  // nom écrit à l'envers : jamais en clair dans ce dépôt

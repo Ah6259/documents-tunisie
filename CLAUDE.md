@@ -15,8 +15,9 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Adresse prévue : https://ah6259.github.io/documents-tunisie/ — dépôt `Ah6259/documents-tunisie` (GitHub Pages, main).
 - Couleur principale bordeaux `#8C2B3A`. Français + arabe (bouton, ou `?lang=ar`). Mobile d'abord.
 - **Le PDF ne porte AUCUNE mention du site** (décision d'Ahmed 05/10/2026 : c'est le document de la personne, on aide seulement à l'écrire ; l'avertissement « modèle indicatif / relisez » reste sur la page web). Test + sabotage le vérifient.
-- 16 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**) + 4 grands contrats en « étapes seulement »
-  (vente voiture, vente moto, location maison, bail commercial) : **modèle seulement après relecture par un avocat**
+- 19 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**), dont **3 grands contrats** (07/10/2026, demande
+  d'Ahmed : vente voiture, vente moto, location maison ; `grand: true`, rédigés d'après le COC, aucun texte copié ; pas de mention
+  « modèle indicatif » ajoutée, décision d'Ahmed) + 1 contrat en « étapes seulement » : **bail commercial** (pas de modèle)
   + 5 « démarches expliquées » (`GUIDES`, explication seulement, jamais de modèle, 05/10/2026) : divorce, mariage,
   contrat de travail CDI/CDD (loi n° 2025-9), CIVP/Karama/Service civil (décret n° 2019-542, ANETI), prêt d'honneur (06/10/2026).
 - Données : `assets/documents.js`. Pages fabriquées par `node tools/generer.mjs` (ne pas éditer les HTML à la main).
@@ -70,7 +71,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - `tests.yml` : à chaque push.
 
 ## Reste à faire / idées
-- Relecture des 4 grands contrats par un avocat, puis modèles.
+- Bail commercial : modèle seulement si Ahmed le demande (règles particulières, loi n° 77-37).
 - Autres pages « explication seulement » (`GUIDES`, encart « Explication seulement », section « Démarches expliquées » de l'accueil) : certificat de résidence, non gage, TEJ… Autres documents de l'étude (55).
 
 ## Mise à jour du 05/10/2026 (soir)

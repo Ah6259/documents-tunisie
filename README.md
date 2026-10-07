@@ -4,11 +4,10 @@ Modèles de documents tunisiens à remplir (**1 PDF gratuit par jour**, étapes 
 officielles** après la signature (légalisation, recette des finances, ATTT…).
 Adresse prévue : https://ah6259.github.io/documents-tunisie/ (GitHub Pages, branche `main`).
 
-- **16 modèles à remplir** : formulaire → aperçu → PDF fabriqué **dans le téléphone** (impression du navigateur,
+- **19 modèles à remplir** (dont les contrats de vente de voiture, de moto et de location de maison) : formulaire → aperçu → PDF fabriqué **dans le téléphone** (impression du navigateur,
   « Enregistrer au format PDF »). Rien n'est envoyé, aucun compte, aucune bibliothèque externe.
   Avant le formulaire, un **« Exemple du document »** (données fictives, étiquette « EXEMPLE », réduit avec « Agrandir l'exemple ») ; jamais imprimé.
-- **4 grands contrats** (vente de voiture, de moto, location de maison, bail commercial) : pages « étapes » seulement ;
-  le modèle sera publié **après relecture par un avocat**.
+- **Bail commercial** : page « étapes » seulement (pas de modèle).
 - **5 démarches expliquées** (divorce, mariage, contrat de travail CDI/CDD depuis la loi n° 2025-9, CIVP/Karama/Service civil,
   prêt d'honneur sans intérêts) : explication à partir des textes officiels (`GUIDES` dans `assets/documents.js`) ; seul le prêt
   d'honneur renvoie vers un modèle de lettre (« demande de prêt d'honneur », marqué « modèle indicatif »).
