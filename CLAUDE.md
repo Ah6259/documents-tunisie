@@ -19,7 +19,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
   d'Ahmed : vente voiture, vente moto, location maison ; `grand: true`, rédigés d'après le COC, aucun texte copié ; pas de mention
   « modèle indicatif » ajoutée, décision d'Ahmed) + 1 contrat en « étapes seulement » : **bail commercial** (pas de modèle)
   + 5 « démarches expliquées » (`GUIDES`, explication seulement, jamais de modèle, 05/10/2026) : divorce, mariage,
-  contrat de travail CDI/CDD (loi n° 2025-9), CIVP/Karama/Service civil (décret n° 2019-542, ANETI), prêt d'honneur (06/10/2026).
+  contrat de travail CDI/CDD (loi n° 2025-9), CIVP/Karama/Service civil (décret n° 2019-542, ANETI), prêt d'honneur (06/10/2026), traite / lettre de change (07/10/2026 : remplir, accepter, endosser, échéance, protêt, pièges avant de signer ; pas de modèle, formulaire imprimé des banques).
 - Données : `assets/documents.js`. Pages fabriquées par `node tools/generer.mjs` (ne pas éditer les HTML à la main).
 - Date unique « vérifié le » : `MAJ` dans `assets/page.js`. Ne la changer qu'après une vraie relecture des sources.
 - Ce qui n'est pas confirmé par un texte officiel va dans `averifier` (affiché « À vérifier »), jamais inventé.

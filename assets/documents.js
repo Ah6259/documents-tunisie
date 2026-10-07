@@ -1435,6 +1435,53 @@ const GUIDES = [
     { fr: ["Peut-on avoir deux prêts d'honneur ?", "Pas tant qu'un précédent crédit sur l'honneur de la même catégorie n'est pas entièrement remboursé : la banque le vérifie à la Banque centrale."], ar: ["هل يمكن الحصول على قرضين على الشرف؟", "لا، ما دام قرض سابق على الشرف من نفس الصنف لم يُسدد بالكامل: يتثبت البنك من ذلك لدى البنك المركزي."] }
   ],
   sources: HONNEUR_SOURCES
+},
+/* Traite (lettre de change) : explication seulement (07/10/2026, demande d'Ahmed). D'après le Code de commerce (livre III,
+   lettre de change). Pas de modèle : les banques utilisent des formulaires imprimés. Points non confirmés dans « averifier ». */
+{
+  slug: "traite-lettre-de-change", cat: "argent", guide: true,
+  motscles: { fr: "traite lettre de change effet de commerce échéance aval endos protêt", ar: "كمبيالة سفتجة كمبيالات ورقة تجارية أجل ضمان احتياطي تظهير احتجاج" },
+  titre: { fr: "Traite (lettre de change) : la remplir et la signer sans risque", ar: "الكمبيالة: كيفية تعميرها وإمضائها دون مخاطر" },
+  court: { fr: "Qui est qui, les mentions à écrire, et ce qu'il faut vérifier avant de la signer ou de la donner.", ar: "من هو من، البيانات التي تُكتب، وما يجب التثبت منه قبل إمضائها أو تسليمها." },
+  bref: { fr: "La traite (lettre de change, كمبيالة) est un ordre écrit : le tireur (celui à qui l'argent est dû) ordonne au tiré (celui qui doit payer) de payer une somme précise, à une date précise (l'échéance), au bénéficiaire. En signant « accepté », le tiré s'engage à payer à l'échéance. Elle est régie par le Code de commerce. On la remplit sur un formulaire imprimé, vendu en librairie ou fourni par la banque.",
+          ar: "الكمبيالة (السفتجة) أمر كتابي: يأمر الساحب (الدائن) المسحوب عليه (المدين) بأن يدفع مبلغا محددا، في تاريخ محدد (تاريخ الاستحقاق)، إلى المستفيد. وبإمضائه «مقبول» يلتزم المسحوب عليه بالدفع عند الاستحقاق. وتخضع لمجلة التجارة. وتُعمّر على مطبوعة تباع بالمكتبات أو يسلمها البنك." },
+  legal: { legalisation: "non", enregistrement: "non", cout: AV("Formulaire en librairie ou à la banque. Droit de timbre éventuel : À VÉRIFIER.", "المطبوعة بالمكتبات أو بالبنك. معلوم الطابع الجبائي إن وجد: يُتثبت منه."),
+           delai: AV("Paiement à l'échéance écrite sur la traite. Si elle n'est pas payée, le protêt doit être fait très vite (délai à vérifier).", "الدفع في تاريخ الاستحقاق المكتوب بالكمبيالة. إذا لم تُدفع، يجب القيام بالاحتجاج بسرعة كبيرة (الأجل يُتثبت منه).") },
+  etapes: [
+    { ic: "info", fr: ["Qui est qui", "Le tireur fait la traite : c'est celui à qui l'argent est dû (souvent le vendeur). Le tiré doit payer (souvent l'acheteur). Le bénéficiaire reçoit l'argent : souvent le tireur lui-même, ou sa banque."], ar: ["من هو من", "الساحب يحرر الكمبيالة: هو الدائن (غالبا البائع). المسحوب عليه هو الذي يدفع (غالبا المشتري). المستفيد يقبض المبلغ: غالبا الساحب نفسه أو بنكه."] },
+    { ic: "remplir", fr: ["Écrire toutes les mentions", "Le montant, le nom du tiré, l'échéance, le lieu de paiement (banque et RIB du tiré), le nom du bénéficiaire, la date et le lieu de création, et la signature du tireur. Le mot « lettre de change » est déjà imprimé sur le formulaire."], ar: ["كتابة كل البيانات", "المبلغ، اسم المسحوب عليه، تاريخ الاستحقاق، مكان الدفع (بنك المسحوب عليه ومعرفه البنكي RIB)، اسم المستفيد، تاريخ ومكان الإنشاء، وإمضاء الساحب. عبارة «كمبيالة» مطبوعة مسبقا على المطبوعة."] },
+    { ic: "verifier", fr: ["Le montant en chiffres ET en lettres", "Écrivez la même somme dans les deux cases, sans rature. Si les deux ne sont pas pareilles, c'est en général la somme en lettres qui compte."], ar: ["المبلغ بالأرقام وبالأحرف", "اكتب نفس المبلغ في الخانتين، دون شطب. إذا اختلفا، يُعتد عادة بالمبلغ المكتوب بالأحرف."] },
+    { ic: "signer", fr: ["Le tiré accepte en signant", "Il écrit « accepté » et signe sur le devant de la traite. Dès ce moment, il doit payer à l'échéance."], ar: ["المسحوب عليه يقبل بالإمضاء", "يكتب «مقبول» ويمضي على وجه الكمبيالة. ومنذ تلك اللحظة يصبح ملزما بالدفع عند الاستحقاق."] },
+    { ic: "remettre", fr: ["La donner à quelqu'un (endos)", "Pour la transmettre à une autre personne ou à une banque, le bénéficiaire signe au dos (endossement). Chaque personne qui signe au dos garantit aussi le paiement."], ar: ["تسليمها لشخص آخر (التظهير)", "لإحالتها إلى شخص آخر أو إلى بنك، يمضي المستفيد على ظهرها (التظهير). وكل من يمضي على الظهر يضمن هو أيضا الدفع."] },
+    { ic: "horloge", fr: ["Le jour de l'échéance", "La traite est présentée à la banque du tiré. L'argent doit être sur le compte ce jour-là."], ar: ["يوم الاستحقاق", "تُقدَّم الكمبيالة إلى بنك المسحوب عليه. ويجب أن يكون المبلغ بالحساب في ذلك اليوم."] },
+    { ic: "alerte", fr: ["Si elle n'est pas payée", "Le porteur fait constater l'impayé par un huissier de justice (protêt), puis peut réclamer le paiement au tiré, au tireur et à ceux qui ont signé au dos, avec les frais."], ar: ["إذا لم تُدفع", "يطلب الحامل من عدل منفذ معاينة عدم الدفع (الاحتجاج)، ثم يمكنه مطالبة المسحوب عليه والساحب ومن أمضوا على الظهر بالدفع مع المصاريف."] }],
+  pieces: { fr: ["Formulaire de traite (librairie ou banque)", "RIB complet du tiré (banque où la traite sera payée)", "Facture ou contrat qui explique la dette (à garder)"], ar: ["مطبوعة الكمبيالة (مكتبة أو بنك)", "المعرف البنكي الكامل RIB للمسحوب عليه (البنك الذي ستُدفع فيه)", "الفاتورة أو العقد الذي يبين الدين (للاحتفاظ به)"] },
+  ou: { fr: ["Banque du tiré (paiement à l'échéance)", "Banque du bénéficiaire (remise à l'encaissement)", "Huissier de justice (protêt si impayé)"], ar: ["بنك المسحوب عليه (الدفع عند الاستحقاق)", "بنك المستفيد (التقديم للاستخلاص)", "عدل منفذ (الاحتجاج عند عدم الدفع)"] },
+  pieges: { fr: ["Ne signez JAMAIS une traite en blanc (sans montant, sans échéance ou sans nom) : quelqu'un pourrait la remplir à votre place.",
+                 "Avant de signer, relisez le montant, l'échéance et le nom du bénéficiaire.",
+                 "Attention : une fois acceptée et donnée à une autre personne ou à une banque, vous devez la payer même s'il y a un problème avec la marchandise ou le service. Réglez les désaccords AVANT de signer.",
+                 "Pour payer en plusieurs fois, faites une traite par échéance et notez leurs numéros et dates dans le contrat ou la facture.",
+                 "Gardez une photo de chaque traite signée et la liste des échéances.",
+                 "Mettez l'argent sur le compte avant l'échéance : une traite impayée entraîne un protêt, des frais et des poursuites.",
+                 "Si vous payez une traite directement (sans la banque), récupérez l'original : sinon elle peut vous être présentée une seconde fois.",
+                 "Si vous recevez une traite : vérifiez la signature d'acceptation, le RIB complet du tiré et sa capacité à payer."],
+            ar: ["لا تمض أبدا كمبيالة على بياض (دون مبلغ أو دون تاريخ استحقاق أو دون اسم): قد يعمّرها شخص آخر مكانك.",
+                 "قبل الإمضاء، أعد قراءة المبلغ وتاريخ الاستحقاق واسم المستفيد.",
+                 "انتبه: بعد قبولها وتسليمها إلى شخص آخر أو إلى بنك، يجب عليك دفعها حتى لو كان هناك إشكال في البضاعة أو الخدمة. حُلّ الخلافات قبل الإمضاء.",
+                 "للدفع على أقساط، حرر كمبيالة لكل قسط واكتب أعدادها وتواريخها في العقد أو الفاتورة.",
+                 "احتفظ بصورة لكل كمبيالة ممضاة وبقائمة تواريخ الاستحقاق.",
+                 "ضع المبلغ في الحساب قبل الاستحقاق: الكمبيالة غير المدفوعة تؤدي إلى احتجاج ومصاريف وتتبعات.",
+                 "إذا دفعت كمبيالة مباشرة (دون البنك)، استرجع الأصل: وإلا قد تُقدَّم إليك مرة ثانية.",
+                 "إذا تسلمت كمبيالة: تثبت من إمضاء القبول ومن المعرف البنكي الكامل للمسحوب عليه ومن قدرته على الدفع."] },
+  averifier: { fr: ["Obligation d'utiliser le formulaire normalisé exigé par les banques (Banque centrale de Tunisie).", "Droit de timbre sur la traite.", "Délai et frais du protêt.", "Inscription d'une traite impayée auprès de la Banque centrale.", "Articles exacts du Code de commerce sur la lettre de change."],
+               ar: ["وجوب استعمال المطبوعة الموحدة التي تشترطها البنوك (البنك المركزي التونسي).", "معلوم الطابع الجبائي على الكمبيالة.", "أجل الاحتجاج ومصاريفه.", "تسجيل الكمبيالة غير المدفوعة لدى البنك المركزي.", "الفصول الدقيقة لمجلة التجارة المتعلقة بالكمبيالة."] },
+  faq: [
+    { fr: ["Quelle différence entre une traite et un chèque ?", "Le chèque se paie dès qu'il est présenté. La traite se paie à une date fixée à l'avance, l'échéance : elle sert surtout à payer plus tard ou en plusieurs fois."], ar: ["ما الفرق بين الكمبيالة والصك؟", "الصك يُدفع بمجرد تقديمه. أما الكمبيالة فتُدفع في تاريخ محدد مسبقا هو تاريخ الاستحقاق: وتُستعمل خاصة للدفع لاحقا أو على أقساط."] },
+    { fr: ["Qui remplit la traite ?", "En général le tireur (le vendeur ou le créancier) la remplit, puis la donne au tiré qui l'accepte en signant."], ar: ["من يعمّر الكمبيالة؟", "عادة يعمّرها الساحب (البائع أو الدائن)، ثم يسلمها إلى المسحوب عليه الذي يقبلها بالإمضاء."] },
+    { fr: ["Que se passe-t-il si je ne peux pas payer à l'échéance ?", "Prévenez le bénéficiaire et votre banque AVANT l'échéance pour chercher un accord. Sinon, la traite est protestée par un huissier et les frais s'ajoutent à la dette."], ar: ["ماذا يحدث إذا لم أستطع الدفع عند الاستحقاق؟", "أعلم المستفيد وبنكك قبل الاستحقاق للبحث عن اتفاق. وإلا يتم الاحتجاج على الكمبيالة من قبل عدل منفذ وتضاف المصاريف إلى الدين."] },
+    { fr: ["Pourquoi n'y a-t-il pas de modèle à imprimer ?", "Les banques demandent des traites remplies sur un formulaire imprimé : achetez-le en librairie ou demandez-le à votre banque. Cette page explique comment le remplir."], ar: ["لماذا لا يوجد نموذج للطباعة؟", "تطلب البنوك كمبيالات معمرة على مطبوعة جاهزة: اشترها من المكتبة أو اطلبها من بنكك. وتشرح هذه الصفحة كيفية تعميرها."] }
+  ],
+  sources: ["legislation", "bct"]
 }
 ];
 

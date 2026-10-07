@@ -199,7 +199,7 @@ check("mariage : second lien vers l'annuaire des prestataires de mariage", /href
 check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "ar"].every(L => !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques/.test(M.feuille(d, valeursEx(d), L)))));
 {
   const w = await page("index.html"), doc = w.document;
-  check("accueil : 25 cartes de documents", doc.querySelectorAll("[data-cherche]").length === 25);
+  check(`accueil : ${TOUS.length} cartes de documents (une par document, contrat et démarche)`, doc.querySelectorAll("[data-cherche]").length === TOUS.length);
   check("accueil : 6 catégories avec icône", doc.querySelectorAll(".cat svg").length === 6);
   check("accueil : plus de badges sans lien ; « 1 document gratuit par jour, étapes gratuites, sans inscription » dans l'intro (FR + AR)", !doc.querySelector(".confiance, .badge-c") && /1 document gratuit par jour, étapes gratuites, sans inscription/.test(doc.querySelector(".hero").textContent) && /وثيقة مجانية كل يوم، المراحل مجانية، دون تسجيل/.test(doc.querySelector(".hero").textContent));
   check("accueil : PAS de bouton « Pass Journée » (décision d'Ahmed : le visiteur partirait), aucun lien vers pass/", !doc.querySelector('a[href^="pass/"], a[href*="/pass/"], .btn-pass, .btn-pro') && !/Pass Journée/.test(doc.body.textContent));

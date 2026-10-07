@@ -104,6 +104,7 @@ export function pages(root) {
     "vente-voiture": [RELIRE], "vente-moto": [RELIRE], "location-maison": [RELIRE], "bail-commercial": [RELIRE], "contrat-de-travail": [RELIRE],
     "reconnaissance-de-dette": [["Faire relire ce document par un avocat ou un notaire près de chez vous (annuaire gratuit)", "مراجعة هذه الوثيقة من قبل محام أو عدل إشهاد قريب منك (دليل مجاني)"]],
     "divorce": [["Trouver un avocat près de chez vous (annuaire gratuit)", "إيجاد محام قريب منك (دليل مجاني)"]],
+    "traite-lettre-de-change": [["Un doute avant de signer une traite ? Trouver un avocat près de chez vous (annuaire gratuit)", "شك قبل إمضاء كمبيالة؟ إيجاد محام قريب منك (دليل مجاني)"]],
     "civp-karama-service-civil": [["Une question sur votre contrat ? Trouver un avocat près de chez vous (annuaire gratuit)", "سؤال حول عقدك؟ إيجاد محام قريب منك (دليل مجاني)"]],
     "pret-d-honneur": [AIDE_HONNEUR, CALCUL_CREDIT], "demande-pret-d-honneur": [AIDE_HONNEUR, CALCUL_CREDIT],
     "mariage": [["Trouver un notaire (عدل إشهاد) près de chez vous (annuaire gratuit)", "إيجاد عدل إشهاد قريب منك (دليل مجاني)"],
