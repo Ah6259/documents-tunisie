@@ -376,6 +376,18 @@ html[dir="rtl"] .entete-annuaire{padding:4px 5px 4px 10px}
 .btn-video-partager{display:block;width:100%;max-width:360px;margin:0 auto;padding:13px;border-radius:14px;border:2px solid var(--p);background:#fff;color:var(--p);font-weight:700;font-size:1rem;cursor:pointer;font-family:inherit}
 .lien-video{text-align:center;font-size:.9rem;margin:18px 0 6px}.lien-video a{color:inherit;text-decoration:underline}
 
+/* schéma SPÉCIMEN case par case (traite, 07/10/2026) : défile sur téléphone, légende colorée selon qui remplit */
+.schema-doc{margin:6px 0 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px}
+.schema-doc img{display:block;width:100%;min-width:720px;height:auto}
+.schema-glisser{margin:2px 0 10px}
+@media (min-width:760px){.schema-glisser{display:none}}
+.cases{list-style:none;margin:8px 0;padding:0;display:grid;gap:8px}
+.cases li{display:flex;gap:10px;align-items:flex-start;line-height:1.5}
+.cases .num{flex:none;width:26px;height:26px;border-radius:50%;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.cases .qui-T .num{background:#1F5FA8}.cases .qui-T b{color:#1F5FA8}
+.cases .qui-A .num{background:#157347}.cases .qui-A b{color:#157347}
+.cases .qui-G .num{background:#6B3FA0}.cases .qui-G b{color:#6B3FA0}
+
 /* === BOUTON DE PAIEMENT — commun à tous les sites d'Ahmed (07/10/2026) : reconnaissable au premier coup d'œil.
    Or en dégradé (comme une pièce), contour brun foncé, relief qui s'enfonce au clic, reflet toutes les 5 s. === */
 .btn-pass,.btn-pro{background:linear-gradient(180deg,#FFD978 0%,#F2B33D 52%,#DC9416 100%)!important;color:#2B1D00!important;

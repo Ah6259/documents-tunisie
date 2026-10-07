@@ -254,6 +254,17 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
            "تشرح هذه الصفحة القواعد والمراحل انطلاقا من النصوص الرسمية. لا يوجد نموذج للتعمير: لوضعيتك الخاصة، توجه إلى الإدارة المعنية أو إلى محام.")}</p>`}
 </section>
 `;
+      // schéma SPÉCIMEN dessiné par nous, cases numérotées + légende (ex. traite, demande d'Ahmed du 07/10/2026)
+      if (d.schema) { const S = d.schema, QUI = { T: ["le tireur", "الساحب"], A: ["le tiré", "المسحوب عليه"], G: ["le garant", "الضامن"] };
+        s += `<section class="carte protege" id="schema">
+  ${h2("remplir", "Case par case", "خانة بخانة")}
+  <p>${bi("Schéma (spécimen) du formulaire vendu en librairie et à la banque. Chaque numéro est expliqué en dessous. Couleurs : bleu = le tireur remplit, vert = le tiré, violet = le garant, gris = la banque.", "رسم توضيحي (نموذج) للمطبوعة التي تباع بالمكتبات وبالبنوك. كل رقم مشروح أسفله. الألوان: الأزرق = يعمّره الساحب، الأخضر = المسحوب عليه، البنفسجي = الضامن، الرمادي = البنك.")}</p>
+  <figure class="schema-doc"><img src="../assets/illustrations/${S.img}?v=${V}" width="${S.l}" height="${S.h}" alt="${esc(S.alt.fr)}" loading="lazy"></figure>
+  <p class="petit schema-glisser">${bi("Sur téléphone : faites glisser le schéma vers la gauche pour tout voir.", "على الهاتف: اسحب الرسم نحو اليسار لرؤية كل شيء.")}</p>
+  <ol class="cases">${S.cases.map(c => `<li class="qui-${c.qui}"><span class="num">${c.n}</span><span><b>${bi(QUI[c.qui][0], QUI[c.qui][1])}</b> · ${bi(c.fr, c.ar)}</span></li>`).join("")}</ol>
+  <p class="note">${bi(S.gris.fr, S.gris.ar)}</p>
+</section>
+`; }
     } else if (d.contrat) {
       const utiles = DOCS.filter(x => x.cat === d.cat);
       s += `<section class="carte contrat-bientot" id="modele-a-venir">

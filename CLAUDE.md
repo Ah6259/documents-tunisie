@@ -129,3 +129,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
   Pour la refaire : `python fabriquer.py documents` puis `python brancher_partage.py documents` dans le dossier PRIVÉ du PC `videos (outil)/`.
 
 - **Langue en mémoire (06/10/2026)** : la mémoire du navigateur (localStorage) est PARTAGÉE par tous les sites d'ah6259.github.io : `page.js` n'accepte que « fr » ou « ar » (sinon langue par défaut). Ne jamais écrire une autre valeur sous la clé « langue ».
+- **Schéma « Case par case » (07/10/2026, demande d'Ahmed)** : champ `schema` d'un guide (img, cases {n, qui T/A/G, fr, ar},
+  gris) → section `#schema` (.protege) après « Explication seulement ». Traite : `assets/illustrations/traite-cases.svg`,
+  dessin ORIGINAL (disposition de la traite normalisée observée sur des exemples publics, jamais leurs photos), marqué
+  « SPÉCIMEN · نموذج », sans vrai RIB ni vrai nom (le test le vérifie). Défile horizontalement sur téléphone.

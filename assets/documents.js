@@ -1536,7 +1536,28 @@ const GUIDES = [
     { fr: ["Que se passe-t-il si je ne peux pas payer à l'échéance ?", "Prévenez le bénéficiaire et votre banque AVANT l'échéance pour chercher un accord. Sinon, la traite est protestée par un huissier et les frais s'ajoutent à la dette."], ar: ["ماذا يحدث إذا لم أستطع الدفع عند الاستحقاق؟", "أعلم المستفيد وبنكك قبل الاستحقاق للبحث عن اتفاق. وإلا يتم الاحتجاج على الكمبيالة من قبل عدل منفذ وتضاف المصاريف إلى الدين."] },
     { fr: ["Pourquoi n'y a-t-il pas de modèle à imprimer ?", "Les banques demandent des traites remplies sur un formulaire imprimé : achetez-le en librairie ou demandez-le à votre banque. Cette page explique comment le remplir."], ar: ["لماذا لا يوجد نموذج للطباعة؟", "تطلب البنوك كمبيالات معمرة على مطبوعة جاهزة: اشترها من المكتبة أو اطلبها من بنكك. وتشرح هذه الصفحة كيفية تعميرها."] }
   ],
-  sources: ["legislation", "bct"]
+  sources: ["legislation", "bct"],
+  // schéma SPÉCIMEN dessiné par nous (assets/illustrations/traite-cases.svg), cases numérotées (demande d'Ahmed, 07/10/2026)
+  // qui : T = le tireur remplit, A = le tiré, G = le garant ; cases grises = la banque
+  schema: { img: "traite-cases.svg", l: 960, h: 600,
+    alt: { fr: "Schéma de la traite tunisienne (spécimen) avec les cases numérotées de 1 à 14", ar: "رسم توضيحي للكمبيالة التونسية (نموذج) مع خانات مرقمة من 1 إلى 14" },
+    cases: [
+      { n: 1, qui: "T", fr: "Lieu et date de création : la ville et la date du jour où la traite est faite (en haut et en bas).", ar: "مكان وتاريخ التحرير: المدينة وتاريخ اليوم الذي تُحرَّر فيه الكمبيالة (في الأعلى وفي الأسفل)." },
+      { n: 2, qui: "T", fr: "Échéance : la date où le tiré doit payer (la même en haut et en bas).", ar: "تاريخ الاستحقاق: اليوم الذي يجب فيه الدفع (نفس التاريخ في الأعلى وفي الأسفل)." },
+      { n: 3, qui: "T", fr: "Montant en chiffres, avec les millimes (exemple : 2 520,000) : la même somme dans les deux cases.", ar: "المبلغ بالأرقام مع المليمات (مثلا: 2 520,000): نفس المبلغ في الخانتين." },
+      { n: 4, qui: "T", fr: "Montant en lettres, sans rature : c'est lui qui compte si les chiffres sont différents.", ar: "المبلغ بلسان القلم دون شطب: هو المعتمد إذا اختلف عن الأرقام." },
+      { n: 5, qui: "T", fr: "« À l'ordre de » : celui qui recevra l'argent, souvent le tireur lui-même (ou sa société).", ar: "«لأمر»: من سيتسلم المبلغ، غالبا الساحب نفسه (أو شركته)." },
+      { n: 6, qui: "T", fr: "RIB du tiré : ses 20 chiffres (2 banque, 3 agence, 13 compte, 2 clé), un chiffre par case, en haut et en bas. Demandez-lui son RIB écrit.", ar: "المعرف البنكي للمسحوب عليه: أرقامه العشرون (2 للبنك، 3 للفرع، 13 للحساب، 2 للمفتاح)، رقم في كل خانة، في الأعلى وفي الأسفل. اطلبه منه مكتوبا." },
+      { n: 7, qui: "T", fr: "Domiciliation : le nom de la banque et de l'agence du tiré (là où la traite sera payée).", ar: "التوطين: اسم بنك المسحوب عليه وفرعه (حيث تُدفع الكمبيالة)." },
+      { n: 8, qui: "T", fr: "Tireur : le nom de celui à qui l'argent est dû, ou de sa société.", ar: "الساحب: اسم الدائن أو اسم شركته." },
+      { n: 9, qui: "T", fr: "Nom et adresse du tiré : celui qui doit payer, adresse complète.", ar: "اسم وعنوان المسحوب عليه: المدين، بالعنوان الكامل." },
+      { n: 10, qui: "T", fr: "« Protestable » : une croix dans Oui ou Non. Demandez conseil à votre banque (à vérifier).", ar: "«قابلة للاحتجاج»: علامة في نعم أو لا. استشر بنكك (يُتثبت منه)." },
+      { n: 11, qui: "A", fr: "Signature du tiré (en haut à gauche).", ar: "إمضاء المسحوب عليه (في الأعلى على اليسار)." },
+      { n: 12, qui: "A", fr: "Acceptation : le tiré écrit « Accepté » et signe. Dès ce moment, il doit payer à l'échéance.", ar: "القبول: يكتب المسحوب عليه «مقبول» ويمضي. منذ تلك اللحظة يلتزم بالدفع عند الاستحقاق." },
+      { n: 13, qui: "G", fr: "Aval (facultatif) : seulement s'il y a un garant (une personne ou une banque) : « Bon pour aval » et sa signature.", ar: "الضمان الاحتياطي (اختياري): فقط إذا وُجد ضامن (شخص أو بنك): «صالح للضمان» وإمضاؤه." },
+      { n: 14, qui: "T", fr: "Signature (et cachet) du tireur : sans elle, la traite ne vaut rien.", ar: "إمضاء (وختم) الساحب: دونه لا قيمة للكمبيالة." }
+    ],
+    gris: { fr: "Cases grises : réservées à la banque, n'écrivez rien (numéro déjà imprimé, nom du cédant, valeur, codes réservés, ligne de lecture et code-barres).", ar: "الخانات الرمادية: خاصة بالبنك، لا تكتب فيها شيئا (العدد المطبوع، اسم المحيل، القيمة، الرموز المحجوزة، سطر القراءة والرمز الشريطي)." } }
 }
 ];
 

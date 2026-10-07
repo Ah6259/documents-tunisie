@@ -182,6 +182,18 @@ for (const slug of HONNEUR) {
   const g = (await page("pret-d-honneur/index.html")).document;
   check("prêt d'honneur : la page explicative mène au modèle de lettre", !!g.querySelector('#explication-seulement a[href="../demande-pret-d-honneur/"]'));
 }
+{
+  // traite : schéma SPÉCIMEN dessiné par nous, cases numérotées 1 à 14 + légende FR/AR (demande d'Ahmed du 07/10/2026)
+  const doc = (await page("traite-lettre-de-change/index.html")).document, sec = doc.getElementById("schema");
+  const img = sec && sec.querySelector("figure.schema-doc img"), svgT = existsSync(join(root, "assets/illustrations/traite-cases.svg")) ? lire("assets/illustrations/traite-cases.svg") : "";
+  const nums = [...(svgT.matchAll(/text-anchor="middle">(\d+)<\/text>/g))].map(m => +m[1]);
+  check("traite : schéma « Case par case » (image à nous, protégée), 14 cases expliquées en FR et AR, cases grises = banque",
+    sec && sec.classList.contains("protege") && img && /^\.\.\/assets\/illustrations\/traite-cases\.svg\?v=/.test(img.getAttribute("src")) && img.getAttribute("alt")
+    && sec.querySelectorAll("ol.cases li").length === 14 && [...sec.querySelectorAll("ol.cases li")].every(li => li.querySelector('[data-l="fr"]') && li.querySelector('[data-l="ar"]'))
+    && /Cases grises/.test(sec.textContent) && doc.getElementById("explication-seulement").compareDocumentPosition(sec) === 4);
+  check("traite : le schéma est un SPÉCIMEN dessiné par nous (mention « SPÉCIMEN · نموذج », numéros 1 à 14, aucun vrai RIB ni vrai nom)",
+    /SPÉCIMEN · نموذج/.test(svgT) && /Dessin original de Documents Tunisie/.test(svgT) && [...Array(14)].every((_, i) => nums.includes(i + 1)) && !/\d{6,}/.test(svgT.replace(/<[^>]+>/g, " ")));
+}
 check("mariage : second lien vers l'annuaire des prestataires de mariage", /href="https:\/\/ah6259\.github\.io\/mariage-tunisie\/"[^>]*data-annuaire="lien-mariage\/mariage"/.test(lire("mariage/index.html")));
 check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "ar"].every(L => !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques/.test(M.feuille(d, valeursEx(d), L)))));
 {
