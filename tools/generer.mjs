@@ -12,9 +12,7 @@ export function pages(root) {
   const req = createRequire(join(root, "tools", "x.js"));
   delete req.cache[req.resolve(join(root, "assets/documents.js"))];
   const { DOCS, CONTRATS, GUIDES, CATEGORIES, SOURCES, LEG_SUPPR } = req(join(root, "assets/documents.js"));
-  // même rendu que le PDF (assets/modele.js) pour l'exemple affiché avant le formulaire
   delete req.cache[req.resolve(join(root, "assets/modele.js"))];
-  const { feuilleExemple } = req(join(root, "assets/modele.js"));
   const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
   const URL = "https://ah6259.github.io/documents-tunisie/";
@@ -271,20 +269,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   ${d.guidePlus ? `<p><a href="../${d.guidePlus}/">${bi("Toutes les conditions et les étapes →", "كل الشروط والمراحل ←")}</a></p>` : ""}
 </section>
 `;
-      // exemple rempli avec des données fictives : même mise en page que le PDF, étiquette « EXEMPLE », jamais imprimé
-      // (l'impression ne garde que #impression) ni compté (pas d'événement GoatCounter). Réduit, avec « Agrandir » sans script.
-      s += `<section class="carte" id="exemple">
-  ${h2("liste", "Exemple du document", "مثال للوثيقة")}
-  <p class="conseil">${bi("Voici à quoi ressemblera votre document, rempli ici avec des données fictives. Vous mettrez les vôtres dans le formulaire « Remplir le modèle » ci-dessous.", "هكذا ستبدو وثيقتك، معمّرة هنا بمعطيات وهمية. ستكتب معطياتك في استمارة « تعمير النموذج » أسفله.")}</p>
-  <div class="ex-zone">
-    <details class="ex-agrandir"><summary><span class="ex-ouvrir">${bi("Agrandir l'exemple", "تكبير المثال")}</span><span class="ex-fermer">${bi("Réduire l'exemple", "تصغير المثال")}</span></summary></details>
-    <div class="ex-boite protege">
-      <div class="ex-page" data-l="fr"><span class="ex-etiquette">EXEMPLE · données fictives</span><span class="ex-filigrane" aria-hidden="true">EXEMPLE</span>${feuilleExemple(d, "fr")}</div>
-      <div class="ex-page" data-l="ar"><span class="ex-etiquette">مثال · معطيات وهمية</span><span class="ex-filigrane" aria-hidden="true">مثال</span>${feuilleExemple(d, "ar")}</div>
-    </div>
-  </div>
-</section>
-`;
+      // pas d'exemple rempli (spécimen) : retiré le 07/10/2026 à la demande d'Ahmed (on pouvait lire et recopier le document sans le télécharger)
       s += `<section class="carte" id="remplir">
   ${h2("remplir", "Remplir le modèle", "تعمير النموذج")}
   <p class="conseil">${bi("Langue du document :", "لغة الوثيقة:")}</p>
@@ -397,8 +382,8 @@ ${pied}`;
   ${sourcesHTML(Object.keys(SOURCES))}
 </section>
 <section class="carte averifier">${h2("alerte", "Limites", "الحدود")}
-  <ul class="liste" data-l="fr"><li>Ce site <b>n'est pas officiel</b> et ne remplace pas un avocat, un notaire ou l'administration.</li><li>Les montants et délais non confirmés sont marqués <b>« à vérifier »</b>.</li><li>Le <b>bail commercial</b> a des règles particulières (loi n° 77-37) : il n'a pas de modèle, faites-le rédiger par un avocat.</li><li>Les documents délivrés par l'administration (certificat de résidence, non gage…) ne sont pas des modèles : demandez-les à l'administration.</li></ul>
-  <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>لـ<b>الكراء التجاري</b> قواعد خاصة (القانون عدد 37 لسنة 1977): ليس له نموذج، اطلب من محام تحريره.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
+  <ul class="liste" data-l="fr"><li>Ce site <b>n'est pas officiel</b> et ne remplace pas un avocat, un notaire ou l'administration.</li><li>Les montants et délais non confirmés sont marqués <b>« à vérifier »</b>.</li><li>Les documents délivrés par l'administration (certificat de résidence, non gage…) ne sont pas des modèles : demandez-les à l'administration.</li></ul>
+  <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
   <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seuls votre choix de langue, le jour et le nom du document gratuit du jour (pour compter 1 document gratuit par jour) et, si vous en avez un, votre code de Pass Journée sont gardés dans votre navigateur ; le code est vérifié dans votre téléphone. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, et le nom des modèles dont le téléchargement attend un Pass Journée, jamais ce que vous écrivez dans les formulaires. Seules exceptions, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer » ; la demande de Pass Journée envoie votre nom et votre téléphone de la même façon, seulement pour vous envoyer votre code (voir les <a href="../pass/conditions/">conditions du Pass Journée</a>).</p>
@@ -423,8 +408,8 @@ ${pied}`;
       chemin: "pass/", racine: "../", scripts: ["page.js", "pass.js"], jsonld: [] });
     s += corpsDebut(' data-page="pass"') + "\n";
     s += hero({ photo: "administration", racine: "../", fil: `<a href="../">${bi("Accueil", "الرئيسية")}</a>`, h1: bi("Pass Journée", "باقة اليوم"),
-      intro: bi("Tous les documents en PDF pendant 24 heures, pour 7 DT. Sans Pass, 1 document PDF reste gratuit chaque jour, et les pages, les exemples et les étapes restent gratuits.",
-                "كل الوثائق بصيغة PDF طيلة 24 ساعة، مقابل 7 د. دون باقة، تبقى وثيقة PDF واحدة مجانية كل يوم، وتبقى الصفحات والأمثلة والمراحل مجانية.") });
+      intro: bi("Tous les documents en PDF pendant 24 heures, pour 7 DT. Sans Pass, 1 document PDF reste gratuit chaque jour, et les pages et les étapes restent gratuites.",
+                "كل الوثائق بصيغة PDF طيلة 24 ساعة، مقابل 7 د. دون باقة، تبقى وثيقة PDF واحدة مجانية كل يوم، وتبقى الصفحات والمراحل مجانية.") });
     s += `\n<main class="wrap chevauche">
 <section class="carte pass-etat" id="pass-etat" role="status" hidden></section>
 <section class="offre-pro" id="offre">
@@ -500,7 +485,7 @@ ${pied}`;
     <p class="petit">${bi("Pas de renouvellement automatique. Quand vous avez le code, tapez-le plus haut dans « J'ai un code ».", "لا تجديد آلي. عندما يصلك الرمز، اكتبه أعلاه في «لدي رمز».")}</p>
   </div>
 </section>
-<p class="avert">${bi("Sans Pass, le site reste utilisable : toutes les pages, les exemples, le remplissage, l'aperçu et les étapes sont gratuits, avec 1 document PDF gratuit par jour. Les modèles sont indicatifs et ne remplacent pas un avocat.", "دون باقة، يبقى الموقع قابلا للاستعمال: كل الصفحات والأمثلة والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم. النماذج استرشادية ولا تعوض المحامي.")}</p>
+<p class="avert">${bi("Sans Pass, le site reste utilisable : toutes les pages, le remplissage, l'aperçu et les étapes sont gratuits, avec 1 document PDF gratuit par jour. Les modèles sont indicatifs et ne remplacent pas un avocat.", "دون باقة، يبقى الموقع قابلا للاستعمال: كل الصفحات والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم. النماذج استرشادية ولا تعوض المحامي.")}</p>
 </main>
 ${pied}`;
     out["pass/index.html"] = s;
@@ -517,8 +502,8 @@ ${pied}`;
     const art = (n, tFr, tAr, fr, ar) => `  <h2>${bi(n + ". " + tFr, n + ". " + tAr)}</h2>\n  <p>${bi(fr, ar)}</p>\n`;
     s += `\n<main class="wrap chevauche">
 <section class="carte conditions">
-${art(1, "Le service", "الخدمة", "Le Pass Journée est vendu par l'éditeur du site « Documents Tunisie ». Pendant 24 heures, il permet de télécharger en PDF tous les modèles du site, en français, en arabe ou dans les deux langues. Sans Pass, les pages, les exemples, le remplissage, l'aperçu et les étapes restent gratuits, avec 1 document PDF gratuit par jour et par téléphone.",
-  "تُباع باقة اليوم من قبل ناشر موقع «وثائق تونس». وتمكّن، طيلة 24 ساعة، من تحميل كل نماذج الموقع بصيغة PDF، بالعربية أو بالفرنسية أو باللغتين. دون باقة، تبقى الصفحات والأمثلة والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم وعلى كل هاتف.")}
+${art(1, "Le service", "الخدمة", "Le Pass Journée est vendu par l'éditeur du site « Documents Tunisie ». Pendant 24 heures, il permet de télécharger en PDF tous les modèles du site, en français, en arabe ou dans les deux langues. Sans Pass, les pages, le remplissage, l'aperçu et les étapes restent gratuits, avec 1 document PDF gratuit par jour et par téléphone.",
+  "تُباع باقة اليوم من قبل ناشر موقع «وثائق تونس». وتمكّن، طيلة 24 ساعة، من تحميل كل نماذج الموقع بصيغة PDF، بالعربية أو بالفرنسية أو باللغتين. دون باقة، تبقى الصفحات والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم وعلى كل هاتف.")}
 ${art(2, "Prix", "السعر", "7 DT pour 24 heures, en dinars tunisiens. Le prix affiché au moment de la demande s'applique.", "7 د مقابل 24 ساعة، بالدينار التونسي. يُطبَّق السعر المعروض عند الطلب.")}
 ${art(3, "Durée", "المدة", "Le Pass est valable 24 heures à partir de l'envoi de votre code par WhatsApp. Le code marche quelques minutes après l'envoi (10 minutes au plus).", "الباقة صالحة 24 ساعة ابتداءً من إرسال رمزك عبر واتساب. يعمل الرمز بعد دقائق من إرساله (10 دقائق على الأكثر).")}
 ${art(4, "Paiement", "الدفع", "Paiement par D17, IZI ou Wafacash au 24 321 390, avec pour motif le nom et le téléphone de l'acheteur, puis preuve envoyée par WhatsApp au même numéro. Le code est envoyé après réception du paiement.", "الدفع عبر D17 أو IZI أو Wafacash على الرقم 24 321 390 مع ذكر اسم المشتري ورقم هاتفه، ثم إرسال الإثبات عبر واتساب على نفس الرقم. يُرسل الرمز بعد وصول الدفع.")}

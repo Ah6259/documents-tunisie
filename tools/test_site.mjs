@@ -22,9 +22,9 @@ const TOUS = [...DOCS, ...CONTRATS, ...GUIDES];
 const ARABE = /[؀-ۿ]/;
 
 // ---- 1. Données : chaque document est complet ---------------------------------
-check("au moins 19 documents à remplir (dont 3 grands contrats), 1 contrat en « étapes seulement » et 5 démarches expliquées (le robot de nuit peut en ajouter ; aucun ne doit disparaître)", DOCS.length >= 19 && CONTRATS.length >= 1 && GUIDES.length >= 5);
-// grands contrats devenus modèles (demande d'Ahmed, 07/10/2026) : vente voiture, vente moto, location maison — mêmes adresses qu'avant
-const GRANDS = ["vente-voiture", "vente-moto", "location-maison"];
+check("au moins 20 documents à remplir (dont 4 grands contrats) et 6 démarches expliquées (le robot de nuit peut en ajouter ; aucun ne doit disparaître)", DOCS.length >= 20 && GUIDES.length >= 6);
+// grands contrats devenus modèles (demande d'Ahmed, 07/10/2026 : plus de règle « après relecture par un avocat ») — mêmes adresses qu'avant
+const GRANDS = ["vente-voiture", "vente-moto", "location-maison", "bail-commercial"];
 for (const slug of GRANDS) { const d = DOCS.find(x => x.slug === slug);
   check(`${slug} : modèle de contrat à remplir (formulaire + texte FR et AR), même adresse qu'avant`, !!d && d.grand === true && !d.contrat && d.champs.length > 10 && typeof d.fr === "function" && typeof d.ar === "function"); }
 check("adresses (slug) uniques", new Set(TOUS.map(d => d.slug)).size === TOUS.length);
@@ -129,19 +129,8 @@ for (const d of DOCS) {
   check(`${d.slug} : PDF lancé, document final sans champ vide`, w.__imprime === 1 && imp && imp.querySelectorAll(".feuille").length === 2 && !imp.querySelector("mark.vide") && doc.getElementById("erreurs").hidden);
   check(`${d.slug} : le PDF imprimé ne contient aucun lien d'annuaire ni avertissement de la page`, !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques|indicatif|Important avant/.test(imp.innerHTML));
   check(`${d.slug} : le PDF imprimé ne contient pas l'exemple (ni « EXEMPLE », ni données fictives)`, !/EXEMPLE|مثال|fictive|وهمية|0XXXXXXX/.test(imp.innerHTML));
-  // exemple du document AVANT le formulaire « Remplir le modèle » (données fictives, même rendu que le PDF)
-  const ex = doc.getElementById("exemple"), nomEx = l => M.valeursExemple(d, l)[d.champs.find(c => c.id && /nom$/.test(c.id)).id];
-  check(`${d.slug} : exemple du document affiché AVANT le formulaire`, ex && (ex.compareDocumentPosition(f) & w.Node.DOCUMENT_POSITION_FOLLOWING) && !ex.contains(f)
-    && (ex.compareDocumentPosition(doc.getElementById("remplir")) & w.Node.DOCUMENT_POSITION_FOLLOWING));
-  check(`${d.slug} : exemple marqué « EXEMPLE » (FR) et « مثال » (AR), une page par langue`, ex && ex.querySelector('[data-l="fr"] .ex-etiquette')?.textContent.includes("EXEMPLE")
-    && ex.querySelector('[data-l="ar"] .ex-etiquette')?.textContent.includes("مثال") && ex.querySelectorAll(".ex-filigrane").length === 2
-    && ex.querySelector('[data-l="fr"] .feuille[lang="fr"]') && ex.querySelector('[data-l="ar"] .feuille[lang="ar"][dir="rtl"]'));
-  check(`${d.slug} : exemple rempli avec les données d'exemple (aucun « ……… » vide)`, ex && !ex.querySelector("mark.vide") && ex.querySelectorAll(".feuille").length === 2
-    && ex.querySelector('.feuille[lang="fr"]').textContent.includes(nomEx("fr")) && ex.querySelector('.feuille[lang="ar"]').textContent.includes(nomEx("ar"))
-    && (t => (t.innerHTML = M.feuilleExemple(d, "fr"), t.textContent))(doc.createElement("div")) === ex.querySelector('.feuille[lang="fr"]').textContent);
-  check(`${d.slug} : exemple réduit avec bouton « Agrandir l'exemple » (sans script), protégé, sans lien ni bouton PDF`, ex && ex.querySelector("details.ex-agrandir summary")?.textContent.includes("Agrandir l'exemple")
-    && ex.querySelector(".ex-boite.protege") && !ex.querySelector("a, button, form, [data-annuaire]"));
-  check(`${d.slug} : exemple inchangé après le PDF (pas de mélange avec le document de la personne)`, ex && ex.querySelector('.feuille[lang="fr"]').textContent.includes(nomEx("fr")) && !imp.contains(ex));
+  // plus d'exemple (spécimen) sur les pages : demande d'Ahmed du 07/10/2026 (lisible et copiable sans télécharger)
+  check(`${d.slug} : aucun exemple rempli (spécimen) sur la page`, !doc.getElementById("exemple") && !doc.querySelector(".ex-page, .ex-boite, .ex-filigrane"));
   check(`${d.slug} : sections étapes, pièces, où aller, FAQ, sources`, ["etapes", "pieces", "ou", "faq", "sources"].every(id => doc.getElementById(id)) && doc.querySelectorAll("#etapes .schema li").length === d.etapes.length);
   check(`${d.slug} : avertissement « non officiel, ne remplace pas un avocat »`, doc.querySelector(".avert").textContent.includes("ne remplace pas un avocat"));
   check(`${d.slug} : champs du formulaire sélectionnables (pas dans une zone protégée)`, !f.closest(".protege"));
@@ -151,8 +140,6 @@ for (const d of DOCS) {
   check("page en arabe : lang=ar, dir=rtl, bouton « Français »", doc.documentElement.lang === "ar" && doc.documentElement.dir === "rtl" && doc.querySelector(".langue").textContent === "Français");
   check("page en arabe : aperçu du document en arabe par défaut", doc.querySelector('#apercu .feuille[lang="ar"]') && !doc.querySelector('#apercu .feuille[lang="fr"]'));
   // (jsdom ne charge pas la feuille de style : on vérifie la structure + la règle CSS qui cache l'autre langue)
-  check("page en arabe : exemple du document en arabe (bloc data-l=\"ar\", rendu arabe de droite à gauche)", doc.querySelector('#exemple .ex-page[data-l="ar"] .feuille[lang="ar"][dir="rtl"]')
-    && /\[data-l\]\{display:none\}/.test(lire("assets/style.css")));
   check("page en arabe : exemples des champs en arabe", ARABE.test(doc.querySelector("#formulaire input[type=text]").placeholder));
   const ar = [...doc.querySelectorAll('[data-l="ar"]')].map(x => x.innerHTML).join(" ").replace(/<[^>]+>/g, " ");
   check("textes arabes : mots latins et nombres isolés", !/[؀-ۿ][^<⁨⁩]*?[\s(،:]PDF[\s.،)]/.test(ar) && ar.includes("⁨"));
@@ -283,7 +270,7 @@ async function taperCode(w, code) {
   check("page de modèle : bouton « Pass Journée 7 DT : tous les documents pendant 24 heures » près du téléchargement (vers pass/, nouvel onglet)",
     lien && lien.getAttribute("href") === "../pass/" && lien.target === "_blank" && /Pass Journée 7 DT : tous les documents pendant 24 heures/.test(lien.textContent)
     && doc.getElementById("telecharger").compareDocumentPosition(lien) === 4 && /1 document PDF gratuit par jour/.test(doc.getElementById("pass-lien").textContent));
-  check("page de modèle : écran de blocage caché au départ, exemple et formulaire libres", doc.getElementById("pass-bloque").hidden && doc.getElementById("exemple") && doc.getElementById("formulaire").elements.length > 3);
+  check("page de modèle : écran de blocage caché au départ, formulaire libre, aucun exemple", doc.getElementById("pass-bloque").hidden && !doc.getElementById("exemple") && doc.getElementById("formulaire").elements.length > 3);
   remplir(w, A); doc.getElementById("telecharger").click();
   check("Pass Journée : 1er PDF du jour autorisé (gratuit)", w.__imprime === 1 && doc.getElementById("pass-bloque").hidden);
   check("le PDF ne parle ni du Pass ni du site", !/Pass|باقة|Documents Tunisie|ah6259/.test(doc.getElementById("impression").innerHTML));

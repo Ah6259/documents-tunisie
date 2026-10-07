@@ -1060,33 +1060,9 @@ ${pj.length ? `<p><b>الوثائق المصاحبة:</b> ${pj.join("؛ ")}.</p>
 }
 ];
 
-/* ---- Grand contrat en « étapes seulement » : bail commercial (vente voiture/moto et location maison : modèles depuis le 07/10/2026, plus bas) ---- */
+/* ---- Contrats en « étapes seulement » : aucun depuis le 07/10/2026 (tous les grands contrats ont un modèle, plus bas) ---- */
 const AV = (fr, ar) => ({ fr, ar });
 const CONTRATS = [
-{
-  slug: "bail-commercial", cat: "logement", contrat: true,
-  titre: { fr: "Bail commercial : les étapes", ar: "كراء محل تجاري: المراحل" },
-  court: { fr: "Contrat, légalisation, enregistrement (1 % du loyer annuel).", ar: "العقد، التعريف بالإمضاء، التسجيل (1 % من معين الكراء السنوي)." },
-  bref: { fr: "Le bail d'un local commercial suit la loi n° 77-37 du 25 mai 1977. Il est signé en plusieurs exemplaires, légalisé, puis enregistré à la recette des finances : droits de 1 % du loyer annuel, avec un minimum de 40 DT.",
-          ar: "يخضع كراء المحل التجاري للقانون عدد 37 لسنة 1977 المؤرخ في 25 ماي 1977. يُمضى في عدة نظائر، ويُعرَّف بالإمضاء، ثم يُسجل بالقباضة المالية: المعاليم 1 % من معين الكراء السنوي، بحد أدنى 40 دينارا." },
-  legal: { legalisation: "oui", enregistrement: "oui", cout: AV("1 % du loyer annuel, minimum 40 DT (à confirmer à la recette des finances).", "1 % من معين الكراء السنوي، بحد أدنى 40 دينارا (يُتثبت منه بالقباضة المالية)."),
-           delai: AV("Enregistrement dans les 60 jours (pénalités au-delà).", "التسجيل في أجل 60 يوما (خطايا بعده).") },
-  etapes: [
-    { ic: "verifier", fr: ["Vérifier le local et l'activité autorisée", "Destination du local, autorisations nécessaires à votre activité."], ar: ["التثبت من المحل ومن النشاط المسموح به", "وجهة المحل، الرخص اللازمة لنشاطك."] },
-    { ic: "signer", fr: ["Signer le bail", "Faites rédiger ou relire le contrat par un avocat : le bail commercial donne des droits particuliers."], ar: ["إمضاء العقد", "اطلب من محام تحرير العقد أو مراجعته: يمنح الكراء التجاري حقوقا خاصة."] },
-    { ic: "municipalite", fr: ["Légaliser les signatures", "À la municipalité."], ar: ["التعريف بالإمضاءات", "بالبلدية."] },
-    { ic: "recette", fr: ["Enregistrer à la recette des finances", "Droits : 1 % du loyer annuel, minimum 40 DT, dans les 60 jours."], ar: ["التسجيل بالقباضة المالية", "المعاليم: 1 % من معين الكراء السنوي، بحد أدنى 40 دينارا، في أجل 60 يوما."] },
-    { ic: "garder", fr: ["Déclarer l'adresse au registre", "Si vous créez une société ou un commerce : RNE."], ar: ["التصريح بالعنوان بالسجل", "إن كنت تحدث شركة أو تجارة: السجل الوطني للمؤسسات."] }],
-  pieces: { fr: ["CIN ou extrait du registre des parties", "Quitus fiscal du propriétaire", "Bail en plusieurs exemplaires"], ar: ["بطاقات التعريف أو مضمون السجل للأطراف", "إبراء الذمة الجبائية للمالك", "العقد في عدة نظائر"] },
-  ou: { fr: ["Municipalité", "Recette des finances du lieu du local", "Registre national des entreprises (si création d'activité)"], ar: ["البلدية", "القباضة المالية لمكان المحل", "السجل الوطني للمؤسسات (عند بعث نشاط)"] },
-  pieges: { fr: ["Le bail commercial donne des droits particuliers au locataire (renouvellement) : faites relire le contrat par un avocat."], ar: ["يمنح الكراء التجاري حقوقا خاصة للمتسوغ (التجديد): اعرض العقد على محام."] },
-  averifier: { fr: ["Taux de 1 % et minimum de 40 DT (à reconfirmer à chaque loi de finances).", "Montant des pénalités de retard."], ar: ["نسبة 1 % والحد الأدنى 40 دينارا (يُعاد التثبت منهما مع كل قانون مالية).", "مبلغ خطايا التأخير."] },
-  faq: [
-    { fr: ["Combien coûte l'enregistrement d'un bail commercial ?", "1 % du loyer annuel, avec un minimum de 40 DT, à la recette des finances (à confirmer sur place)."], ar: ["كم تبلغ معاليم تسجيل كراء محل تجاري؟", "1 % من معين الكراء السنوي، بحد أدنى 40 دينارا، بالقباضة المالية (يُتثبت منه بعين المكان)."] },
-    { fr: ["Quelle loi régit le bail commercial ?", "La loi n° 77-37 du 25 mai 1977."], ar: ["ما هو القانون المنظم للكراء التجاري؟", "القانون عدد 37 لسنة 1977 المؤرخ في 25 ماي 1977."] }
-  ],
-  sources: ["finances", "legislation", "rne"]
-}
 ];
 
 /* ======================================================================= 17-19 : grands contrats (modèles du 07/10/2026,
@@ -1288,6 +1264,85 @@ ${faitAR(v)}${signe("المسوّغ<br><small>إمضاء معرف به</small>",
 }
 ];
 DOCS.push(...DOCS_CONTRATS);
+/* ======================================================================= 20 : bail commercial (modèle du 07/10/2026, demande d'Ahmed :
+   plus de règle « modèle après relecture par un avocat »). Loi n° 77-37 du 25 mai 1977 + COC (louage). Aucun texte copié. */
+const FRAIS_BAIL = [{ v: "locataire", fr: "du locataire", ar: "المتسوّغ" }, { v: "bailleur", fr: "du bailleur", ar: "المسوّغ" }, { v: "moitie", fr: "des deux parties, à parts égales", ar: "الطرفين مناصفة" }];
+DOCS.push({
+  slug: "bail-commercial", cat: "logement", grand: true, rang: 20, motscles: { fr: "bail commercial location local magasin boutique bureau loyer", ar: "كراء محل تجاري دكان مكتب" },
+  titre: { fr: "Bail commercial (location d'un local)", ar: "عقد كراء محل تجاري" },
+  court: { fr: "Louer un magasin, une boutique ou un bureau : contrat, légalisation, enregistrement (1 % du loyer annuel).", ar: "كراء دكان أو محل أو مكتب: العقد، التعريف بالإمضاء، التسجيل (1 % من معين الكراء السنوي)." },
+  bref: { fr: "Le bail d'un local commercial suit la loi n° 77-37 du 25 mai 1977, qui donne au locataire des droits particuliers, notamment pour le renouvellement. Il est signé en plusieurs exemplaires, légalisé, puis enregistré à la recette des finances : droits de 1 % du loyer annuel, avec un minimum de 40 DT.",
+          ar: "يخضع كراء المحل التجاري للقانون عدد 37 لسنة 1977 المؤرخ في 25 ماي 1977، الذي يمنح المتسوّغ حقوقا خاصة، خاصة في التجديد. يُمضى في عدة نظائر، ويُعرَّف بالإمضاء، ثم يُسجل بالقباضة المالية: المعاليم 1 % من معين الكراء السنوي، بحد أدنى 40 دينارا." },
+  legal: { legalisation: "oui", enregistrement: "oui", cout: AV("Modèle gratuit. Enregistrement : 1 % du loyer annuel, minimum 40 DT (à confirmer à la recette des finances).", "النموذج مجاني. التسجيل: 1 % من معين الكراء السنوي، بحد أدنى 40 دينارا (يُتثبت منه بالقباضة المالية)."),
+           delai: AV("Enregistrement dans les 60 jours (pénalités au-delà).", "التسجيل في أجل 60 يوما (خطايا بعده).") },
+  exemple: { b_nom: ["Mohamed Ben Salah", "محمد بن صالح"], b_cin: "0XXXXXXX", b_adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"],
+             l_nom: ["Karim Jaziri", "كريم الجزيري"], l_cin: "1XXXXXXX", l_adresse: ["3 rue Ibn Khaldoun, Sfax", "3 نهج ابن خلدون، صفاقس"],
+             loc_adresse: ["25 avenue de la Liberté, Sousse", "25 شارع الحرية، سوسة"], loc_desc: ["un local au rez-de-chaussée de 40 m², avec vitrine", "محل بالطابق الأرضي مساحته 40 م² بواجهة"],
+             activite: ["vente de vêtements", "بيع الملابس"], debut: "2026-11-01", duree: "3ans", loyer: "1200", jour: "5", hausse: "5", garantie: "2400", frais: "locataire", lieu: ["Sousse", "سوسة"], date: "2026-10-05" },
+  champs: [
+    groupe("Le propriétaire (bailleur)", "المالك (المسوّغ)"), nom("b_nom"), cin("b_cin"), adresse("b_adresse"),
+    groupe("Le locataire (personne ou gérant de la société)", "المتسوّغ (شخص أو مسير الشركة)"), nom("l_nom", ["Karim Jaziri", "كريم الجزيري"]), cin("l_cin"), adresse("l_adresse", ["3 rue Ibn Khaldoun, Sfax", "3 نهج ابن خلدون، صفاقس"]),
+    groupe("Le local", "المحل"),
+    c("loc_adresse", "Adresse du local", "عنوان المحل", ["25 avenue de la Liberté, Sousse", "25 شارع الحرية، سوسة"]),
+    c("loc_desc", "Description", "الوصف", ["un local au rez-de-chaussée de 40 m², avec vitrine", "محل بالطابق الأرضي مساحته 40 م² بواجهة"]),
+    c("activite", "Activité exercée dans le local", "النشاط الممارس بالمحل", ["vente de vêtements", "بيع الملابس"]),
+    groupe("La durée", "المدة"), date("debut", "Début de la location", "بداية الكراء", { ex: "2026-11-01" }),
+    choix("duree", "Durée", "المدة", [{ v: "3ans", fr: "trois (3) ans", ar: "ثلاث سنوات" }, { v: "1an", fr: "un (1) an", ar: "سنة واحدة" }, { v: "2ans", fr: "deux (2) ans", ar: "سنتين" }, { v: "5ans", fr: "cinq (5) ans", ar: "خمس سنوات" }]),
+    groupe("Le loyer", "معين الكراء"), c("loyer", "Loyer mensuel (DT)", "معين الكراء الشهري (د.ت)", "1200", { type: "montant" }),
+    c("jour", "Payé au plus tard le (jour du mois)", "يُدفع في أجل أقصاه اليوم (من الشهر)", "5", { mode: "numeric", max: 2 }),
+    c("hausse", "Augmentation chaque année (%, facultatif)", "الزيادة كل سنة (%، اختياري)", "5", { opt: true, mode: "decimal", max: 4 }),
+    c("garantie", "Dépôt de garantie (DT, facultatif)", "مبلغ الضمان (د.ت، اختياري)", "2400", { type: "montant", opt: true }),
+    choix("frais", "Droits d'enregistrement à la charge", "معاليم التسجيل على", FRAIS_BAIL),
+    ...fin()
+  ],
+  fr: v => { let n = 3; const N = () => ++n; return `<h1 class="d-titre">CONTRAT DE LOCATION D'UN LOCAL À USAGE COMMERCIAL</h1>
+<p><b>Entre les soussignés :</b></p>
+<p>${idFR(v, "b_", "propriétaire du local désigné ci-dessous")}, ci-après « le bailleur »,</p>
+<p>et ${idFR(v, "l_")}, ci-après « le locataire »,</p>
+<p>il a été convenu ce qui suit :</p>
+${art(1, "Objet", `Le bailleur donne en location au locataire, qui accepte, le local situé à ${v("loc_adresse")}, composé de : ${v("loc_desc")}. Le local est loué pour l'activité suivante : ${v("activite")}. Le locataire ne peut pas changer d'activité, ni sous-louer le local ou céder le présent contrat, sans l'accord écrit du bailleur, sauf dans les cas prévus par la loi.`)}
+${art(2, "Durée", `Le présent contrat est conclu pour une durée de ${v("duree")}, à compter du ${v("debut")}. Son renouvellement et sa fin sont soumis à la loi n° 77-37 du 25 mai 1977 sur les baux commerciaux.`)}
+${art(3, "Loyer", `Le loyer est fixé à <b>${v("loyer")}</b> (${v.lettres("loyer")}) par mois, payable d'avance au plus tard le ${v("jour")} de chaque mois. Le bailleur remet un reçu au locataire à chaque paiement.${v.has("hausse") ? ` Le loyer augmente de ${v("hausse")} % chaque année, à la date anniversaire du contrat.` : ""}`)}
+${v.has("garantie") ? art(N(), "Dépôt de garantie", `À la signature, le locataire remet au bailleur la somme de <b>${v("garantie")}</b> (${v.lettres("garantie")}) à titre de garantie. Elle lui est rendue à la remise des clés, après déduction, le cas échéant, des loyers et charges impayés et du coût de réparation des dégradations dont il est responsable.`) : ""}
+${art(N(), "Charges, impôts et autorisations", "Les consommations d'eau, d'électricité, de gaz et de téléphone du local sont à la charge du locataire. Le locataire obtient à ses frais les autorisations nécessaires à son activité et respecte la réglementation qui s'y applique.")}
+${art(N(), "Obligations du locataire", "Le locataire s'engage à utiliser le local avec soin et seulement pour l'activité prévue, à payer le loyer aux dates prévues, à faire les réparations d'entretien courant, à ne faire aucune transformation sans l'accord écrit du bailleur, et à rendre le local en bon état à la fin de la location, sauf l'usure normale.")}
+${art(N(), "Obligations du bailleur", "Le bailleur s'engage à remettre le local en bon état, à faire les grosses réparations et à garantir au locataire la jouissance paisible du local.")}
+${art(N(), "Enregistrement", `Le présent contrat est enregistré à la recette des finances. Les droits d'enregistrement sont à la charge ${v("frais")}.`)}
+<p>Fait en trois exemplaires originaux : un pour chaque partie et un pour l'enregistrement.</p>
+${faitFR(v)}${signe("Le bailleur<br><small>signature légalisée</small>", "Le locataire<br><small>signature légalisée</small>")}`; },
+  ar: v => { let n = 3; const N = () => ++n; return `<h1 class="d-titre">عقد كراء محل معد للاستعمال التجاري</h1>
+<p><b>بين الممضين أسفله:</b></p>
+<p>${idAR(v, "b_", "مالك(ة) المحل المبين أسفله")}، ويُشار إليه فيما يلي بـ«المسوّغ»،</p>
+<p>و${idAR(v, "l_")}، ويُشار إليه فيما يلي بـ«المتسوّغ»،</p>
+<p>تم الاتفاق على ما يلي:</p>
+${fasl(1, "موضوع العقد", `يسوّغ المسوّغ إلى المتسوّغ، الذي قبل، المحل الكائن بـ${v("loc_adresse")}، والمتكون من: ${v("loc_desc")}. ويُسوَّغ المحل لممارسة النشاط التالي: ${v("activite")}. ولا يجوز للمتسوّغ تغيير النشاط أو تسويغ المحل من الباطن أو إحالة هذا العقد دون موافقة كتابية من المسوّغ، إلا في الحالات التي يقتضيها القانون.`)}
+${fasl(2, "المدة", `أُبرم هذا العقد لمدة ${v("duree")} تبتدئ من ${v("debut")}. ويخضع تجديده وإنهاؤه للقانون عدد 37 لسنة 1977 المؤرخ في 25 ماي 1977 المتعلق بالكراء التجاري.`)}
+${fasl(3, "معين الكراء", `حُدد معين الكراء بـ<b>${v("loyer")}</b> (${v.lettres("loyer")}) شهريا، يُدفع مسبقا في أجل أقصاه اليوم ${v("jour")} من كل شهر، ويسلّم المسوّغ للمتسوّغ وصلا عن كل خلاص.${v.has("hausse") ? ` ويُرفّع في معين الكراء بنسبة ${v("hausse")} % كل سنة، في تاريخ ذكرى إبرام العقد.` : ""}`)}
+${v.has("garantie") ? fasl(N(), "الضمان", `يدفع المتسوّغ عند الإمضاء إلى المسوّغ مبلغا قدره <b>${v("garantie")}</b> (${v.lettres("garantie")}) على سبيل الضمان، يُرجع إليه عند تسليم المفاتيح بعد طرح ما قد يكون متخلدا بذمته من معاليم كراء ومصاريف وكلفة إصلاح الأضرار التي يتحمل مسؤوليتها.`) : ""}
+${fasl(N(), "المصاريف والأداءات والتراخيص", "يتحمل المتسوّغ معاليم استهلاك الماء والكهرباء والغاز والهاتف بالمحل. ويتحصل المتسوّغ على نفقته على التراخيص اللازمة لنشاطه ويحترم التراتيب المنطبقة عليه.")}
+${fasl(N(), "التزامات المتسوّغ", "يلتزم المتسوّغ باستعمال المحل بعناية وللنشاط المتفق عليه فقط، وبدفع معين الكراء في آجاله، وبالقيام بإصلاحات الصيانة العادية، وبعدم إدخال أي تغيير على المحل دون موافقة كتابية من المسوّغ، وبإرجاعه في حالة حسنة عند انتهاء الكراء باستثناء ما ينتج عن الاستعمال العادي.")}
+${fasl(N(), "التزامات المسوّغ", "يلتزم المسوّغ بتسليم المحل في حالة حسنة، وبالقيام بالإصلاحات الكبرى، وبضمان انتفاع المتسوّغ بالمحل انتفاعا هادئا.")}
+${fasl(N(), "التسجيل", `يُسجل هذا العقد بالقباضة المالية، وتحمل معاليم التسجيل على ${v("frais")}.`)}
+<p>حُرّر في ثلاثة نظائر أصلية: نظير لكل طرف ونظير للتسجيل.</p>
+${faitAR(v)}${signe("المسوّغ<br><small>إمضاء معرف به</small>", "المتسوّغ<br><small>إمضاء معرف به</small>")}`; },
+  etapes: [
+    { ic: "verifier", fr: ["Vérifier le local et l'activité autorisée", "Destination du local, autorisations nécessaires à votre activité."], ar: ["التثبت من المحل ومن النشاط المسموح به", "وجهة المحل، الرخص اللازمة لنشاطك."] },
+    ETAPE_REMPLIR, ETAPE_IMPRIMER(3),
+    { ic: "municipalite", fr: ["Légaliser les signatures", "Les deux parties, à la municipalité, avec leur CIN originale."], ar: ["التعريف بالإمضاءات", "الطرفان، بالبلدية، مع بطاقة التعريف الأصلية."] },
+    { ic: "recette", fr: ["Enregistrer à la recette des finances", "Droits : 1 % du loyer annuel, minimum 40 DT, dans les 60 jours."], ar: ["التسجيل بالقباضة المالية", "المعاليم: 1 % من معين الكراء السنوي، بحد أدنى 40 دينارا، في أجل 60 يوما."] },
+    { ic: "garder", fr: ["Déclarer l'adresse au registre", "Si vous créez une société ou un commerce : RNE."], ar: ["التصريح بالعنوان بالسجل", "إن كنت تحدث شركة أو تجارة: السجل الوطني للمؤسسات."] }],
+  pieces: { fr: ["CIN ou extrait du registre des parties", "Quitus fiscal du propriétaire", "Bail en au moins 3 exemplaires"], ar: ["بطاقات التعريف أو مضمون السجل للأطراف", "إبراء الذمة الجبائية للمالك", "العقد في 3 نظائر على الأقل"] },
+  ou: { fr: [LEG_OU.fr, "Recette des finances du lieu du local", "Registre national des entreprises (si création d'activité)"], ar: [LEG_OU.ar, "القباضة المالية لمكان المحل", "السجل الوطني للمؤسسات (عند بعث نشاط)"] },
+  pieges: { fr: ["Le bail commercial donne des droits particuliers au locataire (renouvellement, indemnité en cas de refus) : lisez bien la loi n° 77-37.", "Si le locataire est une société, écrivez le nom de la société et de son gérant, avec son matricule fiscal.", "Écrivez clairement l'activité permise : changer d'activité sans accord peut poser problème.", "Passé 60 jours, des pénalités s'ajoutent aux droits d'enregistrement."],
+            ar: ["يمنح الكراء التجاري حقوقا خاصة للمتسوّغ (التجديد، غرامة في صورة الرفض): اقرأ جيدا القانون عدد 37 لسنة 1977.", "إذا كان المتسوّغ شركة، اكتب اسم الشركة واسم مسيرها مع معرفها الجبائي.", "اكتب بوضوح النشاط المسموح به: تغيير النشاط دون موافقة قد يطرح إشكالا.", "بعد 60 يوما تضاف خطايا إلى معاليم التسجيل."] },
+  averifier: { fr: ["Taux de 1 % et minimum de 40 DT (à reconfirmer à chaque loi de finances).", "Montant des pénalités de retard.", "Règles d'augmentation du loyer prévues par la loi n° 77-37."], ar: ["نسبة 1 % والحد الأدنى 40 دينارا (يُعاد التثبت منهما مع كل قانون مالية).", "مبلغ خطايا التأخير.", "قواعد الترفيع في معين الكراء المنصوص عليها بالقانون عدد 37 لسنة 1977."] },
+  faq: [
+    { fr: ["Combien coûte l'enregistrement d'un bail commercial ?", "1 % du loyer annuel, avec un minimum de 40 DT, à la recette des finances (à confirmer sur place)."], ar: ["كم تبلغ معاليم تسجيل كراء محل تجاري؟", "1 % من معين الكراء السنوي، بحد أدنى 40 دينارا، بالقباضة المالية (يُتثبت منه بعين المكان)."] },
+    { fr: ["Quelle loi régit le bail commercial ?", "La loi n° 77-37 du 25 mai 1977."], ar: ["ما هو القانون المنظم للكراء التجاري؟", "القانون عدد 37 لسنة 1977 المؤرخ في 25 ماي 1977."] }
+  ],
+  sources: ["finances", "legislation", "rne"]
+});
+
 
 /* ---- Démarches expliquées : EXPLICATION SEULEMENT, aucun modèle à remplir (textes officiels vérifiés le 05/10/2026) ----
    Divorce et mariage : Code du statut personnel (art. 3, 5, 30 à 32), loi n° 57-3 (état civil), loi n° 64-46 (certificat prénuptial),
@@ -1376,7 +1431,7 @@ const GUIDES = [
   faq: [
     { fr: ["Un CDD est-il encore possible en Tunisie ?", "Oui, mais seulement dans les cas exceptionnels de l'article 6-4 nouveau du Code du travail (surcroît exceptionnel de travail, remplacement, travaux saisonniers, usage). Sinon, il devient un CDI."], ar: ["هل لا يزال العقد لمدة معينة ممكنا في تونس؟", "نعم، لكن فقط في الحالات الاستثنائية للفصل 6-4 جديد من مجلة الشغل (زيادة غير عادية في العمل، تعويض أجير، أعمال موسمية، العرف). وإلا يصبح عقدا لمدة غير معينة."] },
     { fr: ["Combien de temps dure la période d'essai ?", "6 mois au plus, renouvelable une fois pour la même durée, et seulement dans un CDI (loi n° 2025-9)."], ar: ["ما هي مدة فترة التجربة؟", "ستة أشهر على الأكثر، قابلة للتجديد مرة واحدة ولنفس المدة، وفقط في العقد غير معين المدة (القانون عدد 9 لسنة 2025)."] },
-    { fr: ["Pourquoi n'y a-t-il pas de modèle de contrat ?", "Un contrat de travail doit respecter la loi de 2025 et la convention collective du secteur : modèle seulement après relecture par un avocat."], ar: ["لماذا لا يوجد نموذج عقد؟", "يجب أن يحترم عقد الشغل قانون 2025 والاتفاقية المشتركة للقطاع: النموذج بعد مراجعته من قبل محام فقط."] }
+    { fr: ["Pourquoi n'y a-t-il pas de modèle de contrat ?", "Pas encore : un contrat de travail doit respecter la loi de 2025 et la convention collective de votre secteur. Le modèle sera ajouté au site."], ar: ["لماذا لا يوجد نموذج عقد؟", "ليس بعد: يجب أن يحترم عقد الشغل قانون 2025 والاتفاقية المشتركة لقطاعك. سيُضاف النموذج إلى الموقع."] }
   ],
   sources: ["arp", "social", "cnss", "legislation"]
 },

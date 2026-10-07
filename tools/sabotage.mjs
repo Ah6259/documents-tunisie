@@ -16,7 +16,7 @@ const SABOTAGES = [
   ["modèle arabe qui oublie le nom du mandataire", d => changer(d, "assets/documents.js", "<p>أوكل بمقتضى هذا ${idAR(v, \"d_\")}،</p>", "<p>أوكل بمقتضى هذا،</p>")],
   ["faute de frappe dans un champ (le document affiche « undefined »)", d => changer(d, "assets/documents.js", "N° d'immatriculation : ${v(\"immat\")}", "N° d'immatriculation : ${v.immat}")],
   ["montant en lettres faux (80 = « quatre-vingt »)", d => changer(d, "assets/modele.js", 'u === 0 ? "quatre-vingts"', 'u === 0 ? "quatre-vingt"')],
-  ["bail commercial publié avec un modèle (pas de modèle pour ce contrat)", d => changer(d, "assets/documents.js", 'slug: "bail-commercial", cat: "logement", contrat: true,', 'slug: "bail-commercial", cat: "logement", contrat: true, fr: v => "", ar: v => "",')],
+  ["bail commercial : loyer en lettres cassé (le contrat afficherait une erreur)", d => changer(d, "assets/documents.js", 'À la signature, le locataire remet au bailleur', 'À la signature, le locataire remet au bailleur ${v.lettre("x")}')],
   ["étape sans traduction arabe", d => changer(d, "assets/documents.js", 'ar: ["الاحتفاظ بالأصل داخل العربة", "مع البطاقة الرمادية وشهادة التأمين. احتفظ بنسخة في منزلك."]', 'ar: ["Garder l\'original"]')],
   ["source non officielle ajoutée", d => changer(d, "assets/documents.js", 'url: "https://www.intt.tn/"', 'url: "https://www.exemple.com/"')],
   ["nom d'un concurrent dans le README", d => changer(d, "README.md", "# Documents Tunisie", "# Documents Tunisie (inspiré de " + [..."nt.ecitsujolla"].reverse().join("") + ")")],  // nom écrit à l'envers : jamais en clair dans ce dépôt
@@ -33,7 +33,7 @@ const SABOTAGES = [
   ["prêt d'honneur : avertissement « modèle indicatif, dépôt en ligne seulement » retiré", d => changer(d, "assets/documents.js", "  attention: { fr:", "  attention0: { fr:")],
   ["prêt d'honneur : mots-clés de recherche (قرض الشرف, pret d'honneur…) oubliés", d => changer(d, "tools/generer.mjs", "x.motscles ? x.motscles.fr", "x.motscles0 ? x.motscles.fr")],
   ["clé secrète oubliée dans le code", d => changer(d, "assets/page.js", 'const SITE =', 'const api_key = "AIzaSyD-1234567890abcdefghijklmnopqrstu";\nconst SITE =')],
-  ["exemple du document retiré des pages de modèle", d => changer(d, "tools/generer.mjs", '<section class="carte" id="exemple">', '<section class="carte" id="exemple-retire">')],
+  ["exemple (spécimen) remis sur les pages de modèle", d => changer(d, "tools/generer.mjs", '      s += `<section class="carte" id="remplir">', '      s += `<section class="carte" id="exemple"></section>\n`;\n      s += `<section class="carte" id="remplir">')],
   ["exemple vidé (plus de données d'exemple, que des « ……… »)", d => changer(d, "assets/modele.js", "function feuilleExemple(doc, L) { return feuille(doc, valeursExemple(doc, L), L); }", "function feuilleExemple(doc, L) { return feuille(doc, {}, L); }")],
   ["étiquette « EXEMPLE » ajoutée dans le PDF", d => changer(d, "assets/modele.js", '<article class="feuille" lang="${L}"', '<article class="feuille" lang="${L}" data-x="EXEMPLE"')],
   ["règle [hidden] retirée (les éléments cachés par le JS restent visibles)", d => changer(d, "assets/style.css", "[hidden]{display:none!important}", "")],

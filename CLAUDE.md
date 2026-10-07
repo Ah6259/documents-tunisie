@@ -15,9 +15,10 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Adresse prévue : https://ah6259.github.io/documents-tunisie/ — dépôt `Ah6259/documents-tunisie` (GitHub Pages, main).
 - Couleur principale bordeaux `#8C2B3A`. Français + arabe (bouton, ou `?lang=ar`). Mobile d'abord.
 - **Le PDF ne porte AUCUNE mention du site** (décision d'Ahmed 05/10/2026 : c'est le document de la personne, on aide seulement à l'écrire ; l'avertissement « modèle indicatif / relisez » reste sur la page web). Test + sabotage le vérifient.
-- 19 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**), dont **3 grands contrats** (07/10/2026, demande
-  d'Ahmed : vente voiture, vente moto, location maison ; `grand: true`, rédigés d'après le COC, aucun texte copié ; pas de mention
-  « modèle indicatif » ajoutée, décision d'Ahmed) + 1 contrat en « étapes seulement » : **bail commercial** (pas de modèle)
+- 20 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**), dont **4 grands contrats** (07/10/2026, demande
+  d'Ahmed : vente voiture, vente moto, location maison, bail commercial ; `grand: true`, rédigés d'après le COC et la loi n° 77-37,
+  aucun texte copié). **Décision d'Ahmed (07/10/2026) : plus de règle « modèle seulement après relecture par un avocat »** ; pas de
+  mention « modèle indicatif » ajoutée. `CONTRATS` (étapes seulement) est vide.
   + 5 « démarches expliquées » (`GUIDES`, explication seulement, jamais de modèle, 05/10/2026) : divorce, mariage,
   contrat de travail CDI/CDD (loi n° 2025-9), CIVP/Karama/Service civil (décret n° 2019-542, ANETI), prêt d'honneur (06/10/2026), traite / lettre de change (07/10/2026 : remplir, accepter, endosser, échéance, protêt, pièges avant de signer ; pas de modèle, formulaire imprimé des banques).
 - Données : `assets/documents.js`. Pages fabriquées par `node tools/generer.mjs` (ne pas éditer les HTML à la main).
@@ -89,7 +90,9 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 ## Prêt d'honneur (06/10/2026)
 - Démarche `pret-d-honneur` + modèle `demande-pret-d-honneur` (textes communs `HONNEUR_*` dans documents.js ; champ `modele` d'un guide = lien vers un modèle, `attention` d'un modèle = encart « Important » avant le formulaire, `motscles` = mots de la recherche). Sources : décret n° 2026-148 (JORT, texte intégral non lu), **circulaire BCT n° 2026-08 lue** (dépôt UNIQUEMENT sur la plateforme en ligne de la banque depuis le 01/10/2026 : une lettre papier n'est pas prise en compte → la lettre sert à préparer), annonce BTS. Liens : annuaire des comptables + calculateur de crédit (événements `lien-comptables/…`, `lien-outils/…`). À revoir quand les banques publient leurs listes de pièces.
 
-## Exemple du document (06/10/2026, demande d'Ahmed)
+## Exemple du document — RETIRÉ le 07/10/2026 (demande d'Ahmed : on pouvait lire et recopier le document sans le télécharger)
+- La section `#exemple` n'existe plus (test + sabotage). Les données `exemple` restent dans documents.js : elles servent seulement aux tests (chaque modèle se remplit sans trou).
+## (historique) Exemple du document (06/10/2026)
 - Section `#exemple` AVANT « Remplir le modèle » : la lettre remplie avec des données **fictives** (champ `exemple` de chaque modèle : `{ id: valeur | [fr, ar] }` ; sinon `ex` du champ ; sinon libellé), même rendu que le PDF (`feuilleExemple` de modele.js, fabriquée par generer.mjs), FR ou AR selon la langue, étiquette + filigrane « EXEMPLE / مثال », réduite (60 % de l'écran) avec `<details>` « Agrandir l'exemple ». **Nouveau modèle → lui donner un `exemple`** (CIN « 0XXXXXXX », jamais de vraie personne). Jamais imprimée (seul `#impression` l'est), pas d'événement GoatCounter ; tests + 3 sabotages.
 
 ## Pass Journée — partie payante (accord écrit d'Ahmed, 06/10/2026, même logique que le Pass Examen du Code de la route)
