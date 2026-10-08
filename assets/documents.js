@@ -464,66 +464,6 @@ ${salutFR("Madame, Monsieur")}${signe("Signature")}`,
   ],
   sources: ["aneti", "portail"]
 },
-/* ======================================================================= CV (08/10/2026, demande d'Ahmed : CV et lettres de motivation) */
-{
-  slug: "cv", cat: "travail", rang: 4.1,
-  titre: { fr: "Curriculum vitae (CV)", ar: "السيرة الذاتية (CV)" },
-  court: { fr: "Votre CV d'une page, propre, en français ou en arabe.", ar: "سيرتك الذاتية في صفحة واحدة، بالعربية أو بالفرنسية." },
-  bref: { fr: "Un CV clair d'une seule page : vos coordonnées, le poste recherché, vos expériences, vos diplômes, vos compétences et vos langues. À joindre à votre lettre de motivation ou à votre demande d'emploi.",
-          ar: "سيرة ذاتية واضحة في صفحة واحدة: معطياتك، الخطة المطلوبة، خبراتك، شهائدك، مهاراتك واللغات. تُرفق برسالة الدوافع أو بمطلب الشغل." },
-  legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." }, delai: { fr: "Selon l'offre d'emploi.", ar: "حسب عرض الشغل." } },
-  // exemple affiché avant le formulaire (données FICTIVES)
-  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], titre: ["Technicien en maintenance informatique", "تقني في صيانة الإعلامية"], ville: ["Tunis", "تونس"], tel: "XX XXX XXX", email: "nom@exemple.tn", naissance: "1998-03-14",
-             profil: ["Technicien sérieux, quatre ans d'expérience en maintenance et en réseaux.", "تقني جدي، أربع سنوات خبرة في الصيانة والشبكات."],
-             experiences: ["2023 – 2025 : technicien de maintenance, Société Al Amal, Tunis\n2021 – 2023 : stage en réseaux, Société Nour, Sfax", "2023 – 2025: تقني صيانة، شركة الأمل، تونس\n2021 – 2023: تربص في الشبكات، شركة النور، صفاقس"],
-             formations: ["2021 : licence en informatique, Université de Sfax\n2018 : baccalauréat sciences techniques", "2021: إجازة في الإعلامية، جامعة صفاقس\n2018: باكالوريا علوم تقنية"],
-             competences: ["Réparation d'ordinateurs et d'imprimantes\nInstallation de réseaux\nWord, Excel", "إصلاح الحواسيب والطابعات\nتركيز الشبكات\nWord، Excel"],
-             langues: ["Arabe (langue maternelle), français (courant), anglais (bon niveau)", "العربية (اللغة الأم)، الفرنسية (جيد جدا)، الإنجليزية (جيد)"] },
-  champs: [
-    groupe("Vous", "أنت"), nom("nom"),
-    c("titre", "Poste recherché ou métier", "الخطة المطلوبة أو المهنة", ["Technicien en maintenance informatique", "تقني في صيانة الإعلامية"]),
-    c("ville", "Ville ou adresse", "المدينة أو العنوان", ["Tunis", "تونس"], { opt: true }),
-    c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
-    c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true, mode: "email" }),
-    date("naissance", "Date de naissance", "تاريخ الولادة", { opt: true, ex: "1998-03-14" }),
-    c("profil", "En deux lignes : qui êtes-vous ?", "في سطرين: من أنت؟", ["Technicien sérieux, quatre ans d'expérience en maintenance et en réseaux.", "تقني جدي، أربع سنوات خبرة في الصيانة والشبكات."], { opt: true, type: "textarea" }),
-    groupe("Votre parcours (une ligne par élément)", "مسيرتك (سطر لكل عنصر)"),
-    c("experiences", "Expériences : années, poste, entreprise, ville", "الخبرات: السنوات، الخطة، المؤسسة، المدينة", ["2023 – 2025 : technicien de maintenance, Société Al Amal, Tunis", "2023 – 2025: تقني صيانة، شركة الأمل، تونس"], { type: "textarea" }),
-    c("formations", "Diplômes et formations", "الشهائد والتكوين", ["2021 : licence en informatique, Université de Sfax", "2021: إجازة في الإعلامية، جامعة صفاقس"], { type: "textarea" }),
-    c("competences", "Compétences", "المهارات", ["Réparation d'ordinateurs, Word, Excel", "إصلاح الحواسيب، Word، Excel"], { type: "textarea" }),
-    c("langues", "Langues", "اللغات", ["Arabe (maternelle), français (courant)", "العربية (اللغة الأم)، الفرنسية (جيد جدا)"]),
-    c("interets", "Centres d'intérêt", "الاهتمامات", ["Football, bénévolat", "كرة القدم، العمل التطوعي"], { opt: true })
-  ],
-  fr: v => `<div class="d-cv"><p class="d-cv-nom">${v("nom")}</p><p class="d-cv-poste">${v("titre")}</p>
-<p class="d-cv-contact">${[v.has("ville") && v("ville"), "Tél. : " + v("tel"), v.has("email") && v("email"), v.has("naissance") && "Né(e) le " + v("naissance")].filter(Boolean).join(" · ")}</p>
-${v.has("profil") ? `<p class="d-cv-profil">${v("profil")}</p>` : ""}
-<p class="d-cv-rub">Expérience professionnelle</p><p class="d-cv-liste">${v("experiences")}</p>
-<p class="d-cv-rub">Formation</p><p class="d-cv-liste">${v("formations")}</p>
-<p class="d-cv-rub">Compétences</p><p class="d-cv-liste">${v("competences")}</p>
-<p class="d-cv-rub">Langues</p><p>${v("langues")}</p>
-${v.has("interets") ? `<p class="d-cv-rub">Centres d'intérêt</p><p>${v("interets")}</p>` : ""}</div>`,
-  ar: v => `<div class="d-cv"><p class="d-cv-nom">${v("nom")}</p><p class="d-cv-poste">${v("titre")}</p>
-<p class="d-cv-contact">${[v.has("ville") && v("ville"), "الهاتف: " + v("tel"), v.has("email") && v("email"), v.has("naissance") && "تاريخ الولادة: " + v("naissance")].filter(Boolean).join(" · ")}</p>
-${v.has("profil") ? `<p class="d-cv-profil">${v("profil")}</p>` : ""}
-<p class="d-cv-rub">الخبرة المهنية</p><p class="d-cv-liste">${v("experiences")}</p>
-<p class="d-cv-rub">التكوين والشهائد</p><p class="d-cv-liste">${v("formations")}</p>
-<p class="d-cv-rub">المهارات</p><p class="d-cv-liste">${v("competences")}</p>
-<p class="d-cv-rub">اللغات</p><p>${v("langues")}</p>
-${v.has("interets") ? `<p class="d-cv-rub">الاهتمامات</p><p>${v("interets")}</p>` : ""}</div>`,
-  etapes: [ETAPE_REMPLIR,
-    { ic: "verifier", fr: ["Relire et adapter", "Une seule page suffit. Pour chaque offre, adaptez le poste recherché et mettez en premier les compétences demandées."], ar: ["المراجعة والتكييف", "صفحة واحدة تكفي. لكل عرض، كيّف الخطة المطلوبة وضع في البداية المهارات المطلوبة."] },
-    { ic: "remettre", fr: ["Envoyer ou déposer", "Envoyez le PDF par e-mail, ou imprimez-le et joignez-le à votre lettre de motivation et à la copie de vos diplômes."], ar: ["الإرسال أو الإيداع", "أرسل ملف PDF عبر البريد الإلكتروني، أو اطبعه وأرفقه برسالة الدوافع ونسخة من شهائدك."] },
-    { ic: "garder", fr: ["Garder votre CV à jour", "Ajoutez chaque nouvelle expérience ou formation : le modèle se remplit en quelques minutes."], ar: ["تحيين السيرة الذاتية", "أضف كل خبرة أو تكوين جديد: يُعمَّر النموذج في دقائق."] }],
-  pieces: { fr: ["Lettre de motivation", "Copies des diplômes et attestations de travail ou de stage"], ar: ["رسالة الدوافع", "نسخ من الشهائد وشهائد العمل أو التربص"] },
-  ou: { fr: ["Service du personnel ou adresse e-mail indiquée dans l'offre", "Bureau de l'emploi et du travail indépendant (ANETI) le plus proche"], ar: ["مصلحة الأعوان أو البريد الإلكتروني المذكور في العرض", "أقرب مكتب للتشغيل والعمل المستقل"] },
-  pieges: { fr: ["N'inventez jamais un diplôme ou une expérience : l'employeur vérifie les attestations.", "Évitez une adresse e-mail fantaisiste : préférez prénom.nom."], ar: ["لا تذكر أبدا شهادة أو خبرة غير صحيحة: يتثبت المؤجر من الشهائد.", "تجنب بريدا إلكترونيا غير جدي: استعمل الاسم.اللقب."] },
-  averifier: { fr: [], ar: [] },
-  faq: [
-    { fr: ["Faut-il mettre une photo sur le CV ?", "Ce n'est pas obligatoire. Si l'offre la demande, joignez une photo d'identité récente."], ar: ["هل يجب وضع صورة في السيرة الذاتية؟", "ليس إجباريا. إذا طلبها العرض، أرفق صورة شمسية حديثة."] },
-    { fr: ["CV en arabe ou en français ?", "Suivez la langue de l'offre. Pour une administration, l'arabe est souvent préféré ; ce site fait les deux."], ar: ["سيرة ذاتية بالعربية أم بالفرنسية؟", "اتبع لغة العرض. بالنسبة إلى الإدارة، تُفضَّل العربية غالبا؛ هذا الموقع يصنع الاثنتين."] }
-  ],
-  sources: ["aneti", "portail"]
-},
 /* ======================================================================= Lettre de motivation (08/10/2026) */
 {
   slug: "lettre-de-motivation", cat: "travail", rang: 4.2,

@@ -140,14 +140,6 @@ input:focus,select:focus,textarea:focus{outline:0;border-color:var(--p);box-shad
 .d-liste li{margin-bottom:.3em}
 .d-libre{white-space:normal;background:#fafafa;border-inline-start:3px solid #ddd;padding:6px 10px}
 .d-fait{text-align:end;margin-top:1.8em!important}
-.d-cv{line-height:1.5}
-.d-cv .d-cv-nom{font-size:1.6em;font-weight:800;margin:0!important;letter-spacing:.02em}
-.d-cv .d-cv-poste{font-size:1.1em;font-weight:700;color:#2E5D8A;margin:.1em 0 .3em!important}
-.d-cv .d-cv-contact{font-size:.9em;color:#444;padding-bottom:.7em;border-bottom:2px solid #2E5D8A;margin-bottom:1em!important}
-.d-cv .d-cv-profil{font-style:italic}
-.feuille[lang="ar"] .d-cv .d-cv-profil{font-style:normal}
-.d-cv .d-cv-rub{font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:.85em;color:#2E5D8A;border-bottom:1px solid #C9D6E3;padding-bottom:.15em;margin:1.1em 0 .4em!important;break-after:avoid;page-break-after:avoid}
-.feuille[lang="ar"] .d-cv .d-cv-rub{letter-spacing:0;font-size:.95em}
 .d-signes{display:flex;justify-content:space-between;gap:24px;margin-top:1.6em;page-break-inside:avoid;break-inside:avoid}
 .d-signe{flex:1;text-align:center;font-weight:700;min-height:150px;font-size:.95em}
 .d-signe:only-child{flex:0 0 50%;margin-inline-start:auto}
