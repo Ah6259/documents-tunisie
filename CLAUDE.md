@@ -109,7 +109,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - `assets/pass.js` (chargé seulement par les 16 pages de modèle et pass/) ; `modele.js` appelle `PassJour.acces/bloquer/noter`.
   Statistique anonyme `pass-bloque/<slug>` (une fois par page ouverte) = mesure de la demande.
 - Bouton « Pass Journée » : **jamais sur l'accueil** (décision d'Ahmed) ; seulement près de « Télécharger le PDF » (nouvel onglet,
-  la saisie reste) et sur `pass/` (prix, avantages, « Paiement » D17/IZI/Wafacash 24 321 390, WhatsApp vert, formulaire Formspree
+  la saisie reste) et sur `pass/` (prix, avantages, « Paiement » D17/IZI 24 321 390, WhatsApp vert, formulaire Formspree
   `mwlpakqj` avec ligne `pour_activer`, « J'ai un code ») + `pass/conditions/` (vendeur « l'éditeur du site », jamais de nom de société,
   pas de TTC, pas de renouvellement automatique, aucune période payée remboursée, INPDP sans numéro). Pages fabriquées par generer.mjs.
 - Codes : dépôt **PRIVÉ** `Ah6259/documents-pass` (dossier `../pass (prive)`), bouton `pass` (paye / arret / liste) depuis
