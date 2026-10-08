@@ -133,3 +133,9 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
   gris) → section `#schema` (.protege) après « Explication seulement ». Traite : `assets/illustrations/traite-cases.svg`,
   dessin ORIGINAL (disposition de la traite normalisée observée sur des exemples publics, jamais leurs photos), marqué
   « SPÉCIMEN · نموذج », sans vrai RIB ni vrai nom (le test le vérifie). Défile horizontalement sur téléphone.
+
+## ANETI (08/10/2026, règle d'Ahmed)
+L'ANETI (emploi.nat.tn) refuse les connexions venant de l'étranger (GitHub, cloud) : elle est lue DEPUIS LE PC d'Ahmed par la tâche
+Windows « Concours-ANETI » du dépôt `alerte-concours-tunisie` (`tools/aneti_pc.py`, pages listées dans `tools/aneti_a_lire.json`).
+Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce site pourra y chercher de NOUVEAUX documents
+(formulaires, attestations, démarches) — à écrire dès le 1er relevé, en ajoutant au besoin les pages utiles dans aneti_a_lire.json.
