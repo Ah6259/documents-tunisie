@@ -202,7 +202,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
     ${formCode("code-modele")}
     </details>
   </div>`;
-  const dlPaiement = `<dl class="paie"><dt><a class="appli" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer">D17</a></dt><dd><bdi dir="ltr">24 321 390</bdi> · <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">iPhone</a></dd><dt><a class="appli" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer">IZI</a></dt><dd><bdi dir="ltr">24 321 390</bdi> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">iPhone</a></dd><dt>${bi("Comment payer", "طريقة الدفع")}</dt><dd>${bi("Touchez D17 ou IZI pour ouvrir l'application (sur iPhone : le lien « iPhone »). Dans D17 : « Transfert d'argent » puis « Transfert rapide » ; dans IZI : « Transfert ». Tapez le numéro 24 321 390 et le montant, puis « Envoyer ».", "اضغط على D17 أو IZI لفتح التطبيق (على آيفون: رابط « iPhone »). في D17: « تحويل الأموال » ثم « التحويل السريع »؛ في IZI: « تحويل ». أدخل الرقم ⁨24 321 390⁩ والمبلغ ثم « إرسال ».")}</dd><dt>${bi("Montant", "المبلغ")}</dt><dd>${bi("7 DT (Pass Journée, 24 heures)", "7 د (باقة اليوم، 24 ساعة)")}</dd><dt>${bi("Motif", "سبب الدفع")}</dt><dd>${bi("votre nom et votre téléphone", "اسمك ورقم هاتفك")}</dd></dl>`;
+  const dlPaiement = `<div class="paie"><ol class="paie-etapes"><li><span data-l="fr">Ouvrez l&#39;application :</span><span data-l="ar">افتح التطبيق:</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer">D17</a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer">IZI</a></span><br><span class="petit"><span data-l="fr">Sur iPhone :</span><span data-l="ar">على آيفون:</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li><li><span data-l="fr">Choisissez « Transfert rapide » (dans IZI : « Transfert ») et tapez le numéro</span><span data-l="ar">اختر « التحويل السريع » (في IZI: « تحويل ») وأدخل الرقم</span> <strong><bdi dir="ltr">24 321 390</bdi></strong>.<br><span data-l="fr">Montant :</span><span data-l="ar">المبلغ:</span> <strong>${bi("7 DT (Pass Journée, 24 heures)", "7 د (باقة اليوم، 24 ساعة)")}</strong></li><li><span data-l="fr">Motif :</span><span data-l="ar">سبب الدفع:</span> <strong>${bi("votre nom et votre téléphone", "اسمك ورقم هاتفك")}</strong>. <span data-l="fr">Puis envoyez la capture du paiement par WhatsApp (bouton vert).</span><span data-l="ar">ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li></ol><p class="paie-confiance"><span data-l="fr">Vous payez directement dans l&#39;application officielle de La Poste Tunisienne (D17) ou de Zitouna Paiement (IZI) : nous ne voyons jamais vos codes.</span><span data-l="ar">تدفع مباشرة في التطبيق الرسمي للبريد التونسي (D17) أو لزيتونة للدفع (IZI): لا نطّلع أبدًا على رموزك.</span></p></div>`;
   const btnWa = id => `<a class="btn-wa" id="${id}" href="https://wa.me/21624321390?text=${encodeURIComponent(PASS_WA)}" data-texte="${esc(PASS_WA)}" target="_blank" rel="noopener noreferrer">${WHATSAPP}${bi("Envoyer la preuve de paiement par WhatsApp", "أرسل إثبات الدفع عبر واتساب")}</a>`;
 
   const out = {};
@@ -438,7 +438,7 @@ ${pied}`;
   <p class="ruban">${bi("Sans abonnement", "دون اشتراك")}</p>
   <h2>${bi("Pass Journée", "باقة اليوم")}</h2>
   <div class="prix-pass"><b>${bi("7 DT", "7 د")}</b><span>${bi("tous les documents pendant 24 heures", "كل الوثائق طيلة 24 ساعة")}</span></div>
-  <ul class="avantages" data-l="fr">
+  <ul class="avantages masque-si-paiement" data-l="fr">
     <li><b>Tous les modèles en PDF</b>, autant que vous voulez, pendant 24 heures</li>
     <li>En <b>français, en arabe ou les deux</b></li>
     <li><b>Valable 24 heures à partir de l'envoi de votre code</b></li>
@@ -446,7 +446,7 @@ ${pied}`;
     <li><strong>Pas de renouvellement automatique</strong> : après 24 heures, retour au gratuit (1 document par jour)</li>
     <li>Vos documents sont toujours fabriqués dans votre téléphone : rien n'est envoyé</li>
   </ul>
-  <ul class="avantages" data-l="ar">
+  <ul class="avantages masque-si-paiement" data-l="ar">
     <li><b>كل النماذج بصيغة ⁨PDF⁩</b>، بقدر ما تريد، طيلة ⁨24⁩ ساعة</li>
     <li><b>بالعربية أو بالفرنسية أو بالاثنتين</b></li>
     <li><b>صالحة ⁨24⁩ ساعة ابتداءً من إرسال رمزك</b></li>
