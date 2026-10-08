@@ -139,3 +139,6 @@ L'ANETI (emploi.nat.tn) refuse les connexions venant de l'étranger (GitHub, clo
 Windows « Concours-ANETI » du dépôt `alerte-concours-tunisie` (`tools/aneti_pc.py`, pages listées dans `tools/aneti_a_lire.json`).
 Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce site pourra y chercher de NOUVEAUX documents
 (formulaires, attestations, démarches) — à écrire dès le 1er relevé, en ajoutant au besoin les pages utiles dans aneti_a_lire.json.
+- **Documents des ministères (08/10/2026)** : la veille hebdomadaire du site des concours (`robot/veille_ministeres.py`) relève aussi les
+  formulaires officiels des sites des ministères → liste `documents` de `alerte-concours-tunisie/donnees/ministeres.json`
+  (titre + lien officiel). Liste PROPOSÉE à Ahmed : on ne crée un document ici qu'avec son accord.
