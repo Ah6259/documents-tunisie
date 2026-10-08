@@ -202,7 +202,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
     ${formCode("code-modele")}
     </details>
   </div>`;
-  const dlPaiement = `<dl class="paie"><dt>D17</dt><dd><bdi dir="ltr">24 321 390</bdi></dd><dt>IZI</dt><dd><bdi dir="ltr">24 321 390</bdi></dd><dt>Wafacash</dt><dd><bdi dir="ltr">24 321 390</bdi></dd><dt>${bi("Montant", "المبلغ")}</dt><dd>${bi("7 DT (Pass Journée, 24 heures)", "7 د (باقة اليوم، 24 ساعة)")}</dd><dt>${bi("Motif", "سبب الدفع")}</dt><dd>${bi("votre nom et votre téléphone", "اسمك ورقم هاتفك")}</dd></dl>`;
+  const dlPaiement = `<dl class="paie"><dt><a class="appli" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer">D17</a></dt><dd><bdi dir="ltr">24 321 390</bdi> · <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">iPhone</a></dd><dt><a class="appli" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer">IZI</a></dt><dd><bdi dir="ltr">24 321 390</bdi> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">iPhone</a></dd><dt>${bi("Comment payer", "طريقة الدفع")}</dt><dd>${bi("Touchez D17 ou IZI pour ouvrir l'application (sur iPhone : le lien « iPhone »). Dans D17 : « Transfert d'argent » puis « Transfert rapide » ; dans IZI : « Transfert ». Tapez le numéro 24 321 390 et le montant, puis « Envoyer ».", "اضغط على D17 أو IZI لفتح التطبيق (على آيفون: رابط « iPhone »). في D17: « تحويل الأموال » ثم « التحويل السريع »؛ في IZI: « تحويل ». أدخل الرقم ⁨24 321 390⁩ والمبلغ ثم « إرسال ».")}</dd><dt>${bi("Montant", "المبلغ")}</dt><dd>${bi("7 DT (Pass Journée, 24 heures)", "7 د (باقة اليوم، 24 ساعة)")}</dd><dt>${bi("Motif", "سبب الدفع")}</dt><dd>${bi("votre nom et votre téléphone", "اسمك ورقم هاتفك")}</dd></dl>`;
   const btnWa = id => `<a class="btn-wa" id="${id}" href="https://wa.me/21624321390?text=${encodeURIComponent(PASS_WA)}" data-texte="${esc(PASS_WA)}" target="_blank" rel="noopener noreferrer">${WHATSAPP}${bi("Envoyer la preuve de paiement par WhatsApp", "أرسل إثبات الدفع عبر واتساب")}</a>`;
 
   const out = {};
@@ -466,13 +466,13 @@ ${pied}`;
   <h2>${bi("Comment ça marche ?", "كيف يعمل؟")}</h2>
   <ol class="etapes" data-l="fr">
     <li>Remplissez le formulaire ci-dessous (nom et téléphone WhatsApp).</li>
-    <li>Payez 7 DT par D17, IZI ou Wafacash au 24 321 390 et envoyez la preuve par WhatsApp.</li>
+    <li>Payez 7 DT par D17 ou IZI au 24 321 390 et envoyez la preuve par WhatsApp.</li>
     <li>Vous recevez votre <b>code d'accès</b> par WhatsApp. Le Pass dure 24 heures à partir de cet envoi.</li>
     <li>Tapez ce code une seule fois dans « J'ai un code » (ou sur la page du document) : tous les documents se téléchargent.</li>
   </ol>
   <ol class="etapes" data-l="ar">
     <li>املأ الاستمارة أسفله (الاسم وهاتف واتساب).</li>
-    <li>ادفع ⁨7⁩ د عبر ⁨D17⁩ أو ⁨IZI⁩ أو ⁨Wafacash⁩ على الرقم ⁨24 321 390⁩ وأرسل الإثبات عبر واتساب.</li>
+    <li>ادفع ⁨7⁩ د عبر ⁨D17⁩ أو ⁨IZI⁩ على الرقم ⁨24 321 390⁩ وأرسل الإثبات عبر واتساب.</li>
     <li>يصلك <b>رمز الدخول</b> عبر واتساب. تدوم الباقة ⁨24⁩ ساعة ابتداءً من هذا الإرسال.</li>
     <li>اكتب الرمز مرة واحدة في «لدي رمز» (أو في صفحة الوثيقة): تُحمَّل كل الوثائق.</li>
   </ol>
@@ -501,7 +501,7 @@ ${pied}`;
   </form>
   <div class="apres-abo" id="apres-pass" hidden>
     <h3>${bi("Merci, votre demande est bien reçue", "شكرًا، وصلنا طلبك")}</h3>
-    <p>${bi("Payez maintenant 7 DT par D17, IZI ou Wafacash, avec pour motif votre nom et votre téléphone, puis envoyez la preuve par WhatsApp. Vous recevrez votre code par WhatsApp : le Pass est valable 24 heures à partir de l'envoi de votre code.", "ادفع الآن 7 د عبر D17 أو IZI أو Wafacash مع ذكر اسمك ورقم هاتفك، ثم أرسل الإثبات عبر واتساب. سيصلك رمزك عبر واتساب: الباقة صالحة 24 ساعة ابتداءً من إرسال رمزك.")}</p>
+    <p>${bi("Payez maintenant 7 DT par D17 ou IZI, avec pour motif votre nom et votre téléphone, puis envoyez la preuve par WhatsApp. Vous recevrez votre code par WhatsApp : le Pass est valable 24 heures à partir de l'envoi de votre code.", "ادفع الآن 7 د عبر D17 أو IZI مع ذكر اسمك ورقم هاتفك، ثم أرسل الإثبات عبر واتساب. سيصلك رمزك عبر واتساب: الباقة صالحة 24 ساعة ابتداءً من إرسال رمزك.")}</p>
     ${dlPaiement}
     ${btnWa("pass-preuve-apres")}
     <p class="petit">${bi("Pas de renouvellement automatique. Quand vous avez le code, tapez-le plus haut dans « J'ai un code ».", "لا تجديد آلي. عندما يصلك الرمز، اكتبه أعلاه في «لدي رمز».")}</p>
@@ -528,7 +528,7 @@ ${art(1, "Le service", "الخدمة", "Le Pass Journée est vendu par l'éditeu
   "تُباع باقة اليوم من قبل ناشر موقع «وثائق تونس». وتمكّن، طيلة 24 ساعة، من تحميل كل نماذج الموقع بصيغة PDF، بالعربية أو بالفرنسية أو باللغتين. دون باقة، تبقى الصفحات والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم وعلى كل هاتف.")}
 ${art(2, "Prix", "السعر", "7 DT pour 24 heures, en dinars tunisiens. Le prix affiché au moment de la demande s'applique.", "7 د مقابل 24 ساعة، بالدينار التونسي. يُطبَّق السعر المعروض عند الطلب.")}
 ${art(3, "Durée", "المدة", "Le Pass est valable 24 heures à partir de l'envoi de votre code par WhatsApp. Le code marche quelques minutes après l'envoi (10 minutes au plus).", "الباقة صالحة 24 ساعة ابتداءً من إرسال رمزك عبر واتساب. يعمل الرمز بعد دقائق من إرساله (10 دقائق على الأكثر).")}
-${art(4, "Paiement", "الدفع", "Paiement par D17, IZI ou Wafacash au 24 321 390, avec pour motif le nom et le téléphone de l'acheteur, puis preuve envoyée par WhatsApp au même numéro. Le code est envoyé après réception du paiement.", "الدفع عبر D17 أو IZI أو Wafacash على الرقم 24 321 390 مع ذكر اسم المشتري ورقم هاتفه، ثم إرسال الإثبات عبر واتساب على نفس الرقم. يُرسل الرمز بعد وصول الدفع.")}
+${art(4, "Paiement", "الدفع", "Paiement par D17 ou IZI au 24 321 390, avec pour motif le nom et le téléphone de l'acheteur, puis preuve envoyée par WhatsApp au même numéro. Le code est envoyé après réception du paiement.", "الدفع عبر D17 أو IZI على الرقم 24 321 390 مع ذكر اسم المشتري ورقم هاتفه، ثم إرسال الإثبات عبر واتساب على نفس الرقم. يُرسل الرمز بعد وصول الدفع.")}
 ${art(5, "Pas de renouvellement automatique", "لا تجديد آلي", "Aucun renouvellement automatique : après 24 heures, le Pass s'arrête simplement et le site revient à la version gratuite (1 document PDF par jour). Pour un nouveau Pass, il faut une nouvelle demande.", "لا يوجد أي تجديد آلي: بعد 24 ساعة تتوقف الباقة ببساطة ويعود الموقع إلى النسخة المجانية (وثيقة PDF واحدة كل يوم). لباقة جديدة يجب تقديم طلب جديد.")}
 ${art(6, "Arrêt et remboursement", "الإيقاف والاسترجاع", "Aucune période payée n'est remboursée. Si votre code ne marche pas, écrivez-nous sur WhatsApp : nous vérifions et corrigeons.", "لا تُسترجع أي مدة مدفوعة. إذا لم يعمل رمزك، راسلنا عبر واتساب: نتثبت ونصلح.")}
 ${art(7, "Code d'accès", "رمز الدخول", "Le code d'accès est personnel : ne le publiez pas. Il est vérifié dans le téléphone et gardé sur l'appareil où il a été tapé. Un code publié ou revendu peut être désactivé.", "رمز الدخول شخصي: لا تنشره. يتم التثبت منه داخل الهاتف ويبقى محفوظًا على الجهاز الذي كُتب فيه. ويمكن تعطيل رمز منشور أو مُعاد بيعه.")}

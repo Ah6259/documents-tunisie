@@ -328,6 +328,7 @@ html[lang="fr"] [data-l="fr"],html[lang="ar"] [data-l="ar"]{display:revert}
 .paie{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:8px 0;background:var(--p-tres-clair);border-radius:12px;padding:12px 14px}
 .paie dt{font-weight:800}
 .paie dd{margin:0;font-weight:700;min-width:0}
+.paie a.appli{color:var(--p);font-weight:800;text-decoration:underline;text-underline-offset:2px}
 .etapes{padding-inline-start:20px;margin:0}
 .etapes li{margin:0 0 8px}
 .abo form{display:flex;flex-direction:column;gap:8px}
