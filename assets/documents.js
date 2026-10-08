@@ -20,7 +20,10 @@ const SOURCES = {
   aneti_prog: { fr: "ANETI : programmes d'encouragement à l'emploi (décret n° 2019-542)", ar: "الوكالة الوطنية للتشغيل: برامج التشجيع على التشغيل (الأمر الحكومي عدد 542 لسنة 2019)", url: "https://www.emploi.nat.tn/fo/Fr/global.php?menu1=160" },
   bct_honneur: { fr: "Banque centrale de Tunisie : circulaire aux banques n° 2026-08 du 1er septembre 2026 sur les crédits sur l'honneur (texte en arabe)", ar: "البنك المركزي التونسي: منشور إلى البنوك عدد 8 لسنة 2026 المؤرخ في 1 سبتمبر 2026 المتعلق بالقروض والتمويلات الصغرى على الشرف", url: "https://www.bct.gov.tn/bct/siteprod/documents/Cir_2026_08_ar.pdf" },
   jort: { fr: "Imprimerie officielle (JORT) : décret n° 2026-148 du 23 juillet 2026 (crédits sur l'honneur)", ar: "المطبعة الرسمية (الرائد الرسمي): الأمر عدد 148 لسنة 2026 المؤرخ في 23 جويلية 2026 (التمويلات الصغرى على الشرف)", url: "http://www.iort.gov.tn/WD120AWP/WD120Awp.exe/CONNECT/SITEIORT" },
-  bts: { fr: "Banque tunisienne de solidarité (BTS) : lancement du crédit sur l'honneur", ar: "البنك التونسي للتضامن: انطلاق القرض على الشرف", url: "https://www.bts.com.tn/actualites/la-bts-lance-le-dispositif-du-credit-sur-lhonneur-MTA" }
+  bts: { fr: "Banque tunisienne de solidarité (BTS) : lancement du crédit sur l'honneur", ar: "البنك التونسي للتضامن: انطلاق القرض على الشرف", url: "https://www.bts.com.tn/actualites/la-bts-lance-le-dispositif-du-credit-sur-lhonneur-MTA" },
+  inai: { fr: "Instance d'accès à l'information (INAI) : droit d'accès, recours, requêtes", ar: "هيئة النفاذ إلى المعلومة: الحق في النفاذ، التظلم، الدعاوى", url: "https://www.inai.tn/" },
+  pm_acces: { fr: "Présidence du gouvernement : formulaires officiels de demande d'accès à l'information et de recours", ar: "رئاسة الحكومة: المطبوعات الرسمية لمطلب النفاذ إلى المعلومة والتظلم", url: "https://www.pm.gov.tn/sites/default/files/2022-02/3-demande-acces.pdf" },
+  opf: { fr: "Ministère des Domaines de l'État et des Affaires foncières (Office national de la propriété foncière : titres fonciers)", ar: "وزارة أملاك الدولة والشؤون العقارية (الديوان الوطني للملكية العقارية: الرسوم العقارية)", url: "https://www.domainetat.tn/" }
 };
 
 const CATEGORIES = [
@@ -1114,6 +1117,353 @@ ${pj.length ? `<p><b>الوثائق المصاحبة:</b> ${pj.join("؛ ")}.</p>
     { fr: ["Faut-il légaliser la demande ?", "Non."], ar: ["هل يجب التعريف بالإمضاء؟", "لا."] }
   ],
   sources: HONNEUR_SOURCES
+},
+/* ======================================================================= 21-25 : formulaires officiels relevés sur les sites des ministères
+   (veille hebdomadaire du site des concours, accord d'Ahmed du 09/10/2026 : « ajoute 1, 2, 3 et 4 ») ; rubriques reprises des
+   formulaires officiels (Présidence du gouvernement, ministère de la Justice, INAI) ; loi organique n° 2016-22 du 24 mars 2016. */
+{
+  slug: "demande-acces-information", cat: "administration", rang: 21,
+  motscles: { fr: "accès à l'information demande administration document administratif loi 2016-22 transparence copie dossier", ar: "النفاذ إلى المعلومة مطلب نفاذ وثيقة إدارية القانون 22 لسنة 2016 الشفافية نسخة" },
+  titre: { fr: "Demande d'accès à l'information", ar: "مطلب نفاذ إلى معلومة" },
+  court: { fr: "Obtenir un document ou une information d'une administration (loi 2016-22).", ar: "الحصول على وثيقة أو معلومة من إدارة (القانون عدد 22 لسنة 2016)." },
+  bref: { fr: "Toute personne peut demander à une administration ou un organisme public une information ou un document qu'il détient, sans dire pourquoi. Ce modèle reprend les rubriques du formulaire officiel : qui demande, quelle information, sous quelle forme.",
+          ar: "يحق لكل شخص أن يطلب من إدارة أو هيكل عمومي معلومة أو وثيقة بحوزته، دون ذكر الأسباب. يتضمن هذا النموذج خانات المطبوعة الرسمية: من يطلب، أية معلومة، وبأية صيغة." },
+  legal: { legalisation: "non", enregistrement: "non",
+           cout: { fr: "Demande gratuite. Les frais de copie éventuels vous sont annoncés à l'avance.", ar: "المطلب مجاني. يُعلَم الطالب مسبقا بمصاريف النسخ إن وُجدت." },
+           delai: { fr: "L'administration répond en 20 jours au plus (48 heures si la vie ou la liberté d'une personne en dépend).", ar: "ترد الإدارة في أجل أقصاه 20 يوما (48 ساعة إذا تعلق الأمر بحياة شخص أو بحريته)." } },
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], tel: "XX XXX XXX",
+             structure: ["Municipalité de l'Ariana", "بلدية أريانة"], info: ["Copie du permis de bâtir délivré pour l'immeuble voisin, 5 rue des Roses", "نسخة من رخصة البناء المسلمة للعقار المجاور، 5 نهج الورود"],
+             forme: "papier", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
+  champs: [
+    groupe("Vous", "أنت"),
+    choix("qualite", "Vous êtes", "صفتك", [{ v: "physique", fr: "une personne (personne physique)", ar: "شخص طبيعي" }, { v: "morale", fr: "une société ou une association (personne morale)", ar: "شخص معنوي (شركة أو جمعية)" }]),
+    c("nom", "Nom et prénom (ou nom de la société / association)", "الاسم واللقب (أو التسمية الاجتماعية)", ["Mohamed Ben Salah", "محمد بن صالح"]),
+    adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
+    c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true }),
+    groupe("L'information demandée", "المعلومة المطلوبة"),
+    c("structure", "Administration ou organisme concerné", "الهيكل المعني", ["Municipalité de l'Ariana", "بلدية أريانة"]),
+    c("info", "Information ou document demandé (soyez précis)", "بيان المعلومة أو الوثيقة المطلوبة (بدقة)", ["Copie du permis de bâtir délivré pour l'immeuble voisin, 5 rue des Roses", "نسخة من رخصة البناء المسلمة للعقار المجاور، 5 نهج الورود"], { type: "textarea" }),
+    c("ref", "Référence (si vous la connaissez)", "المرجع (إن وُجد)", "2026/215", { opt: true }),
+    c("remarques", "Autres remarques", "ملاحظات أخرى", ["Les documents peuvent m'être envoyés par e-mail.", "يمكن إرسال الوثائق إلي عبر البريد الإلكتروني."], { opt: true }),
+    choix("forme", "Sous quelle forme ?", "صيغة النفاذ", [
+      { v: "papier", fr: "obtenir une copie papier", ar: "الحصول على نسخة ورقية من المعلومة" },
+      { v: "electronique", fr: "obtenir une copie électronique", ar: "الحصول على نسخة إلكترونية من المعلومة" },
+      { v: "consultation", fr: "consulter sur place", ar: "الاطلاع على المعلومة على عين المكان" },
+      { v: "extraits", fr: "obtenir des extraits", ar: "الحصول على مقتطفات من المعلومة" }]),
+    ...fin()
+  ],
+  fr: v => `<h1 class="d-titre">DEMANDE D'ACCÈS À L'INFORMATION</h1>
+<p style="text-align:center">(Loi organique n° 2016-22 du 24 mars 2016 relative au droit d'accès à l'information)</p>
+<p class="d-dest">À Madame, Monsieur le responsable de l'accès à l'information<br>${v("structure")}</p>
+<p><b>1. Le demandeur</b> (${v("qualite")})<br>${v("nom")}<br>Adresse : ${v("adresse")}<br>Téléphone : ${v("tel")}${v.has("email") ? `<br>E-mail : ${v("email")}` : ""}</p>
+<p><b>2. L'information demandée</b></p>
+<ul class="d-liste"><li>Information : ${v("info")}</li><li>Organisme concerné : ${v("structure")}</li>${v.has("ref") ? `<li>Référence : ${v("ref")}</li>` : ""}${v.has("remarques") ? `<li>Remarques : ${v("remarques")}</li>` : ""}</ul>
+<p><b>3. Forme d'accès demandée :</b> ${v("forme")}.</p>
+<p>Conformément à la loi, je ne suis pas tenu(e) d'indiquer les raisons de ma demande. Je vous prie de bien vouloir m'en accuser réception (date et numéro d'enregistrement).</p>
+${faitFR(v)}${signe("Signature du demandeur")}`,
+  ar: v => `<h1 class="d-titre">مطلب نفاذ إلى معلومة</h1>
+<p style="text-align:center">(القانون الأساسي عدد 22 لسنة 2016 المؤرخ في 24 مارس 2016 والمتعلق بالحق في النفاذ إلى المعلومة)</p>
+<p class="d-dest">إلى السيد(ة) المكلف(ة) بالنفاذ إلى المعلومة<br>${v("structure")}</p>
+<p><b>1. الإرشادات الخاصة بطالب النفاذ</b> (${v("qualite")})<br>${v("nom")}<br>العنوان: ${v("adresse")}<br>الهاتف: ${v("tel")}${v.has("email") ? `<br>العنوان الإلكتروني: ${v("email")}` : ""}</p>
+<p><b>2. المعلومة المطلوب النفاذ إليها</b></p>
+<ul class="d-liste"><li>بيان المعلومة: ${v("info")}</li><li>الهيكل المعني: ${v("structure")}</li>${v.has("ref") ? `<li>المرجع: ${v("ref")}</li>` : ""}${v.has("remarques") ? `<li>ملاحظات أخرى: ${v("remarques")}</li>` : ""}</ul>
+<p><b>3. صيغة النفاذ المطلوبة:</b> ${v("forme")}.</p>
+<p>لا يلزم طالب النفاذ بذكر الأسباب أو المصلحة من الحصول على المعلومة. أرجو تسليمي وصلا في الإيداع (التاريخ والرقم المرجعي).</p>
+${faitAR(v)}${signe("إمضاء الطالب")}`,
+  etapes: [ETAPE_REMPLIR, ETAPE_IMPRIMER(2),
+    { ic: "remettre", fr: ["Déposer la demande", "Au bureau d'ordre de l'organisme (demandez un reçu avec la date et le numéro), par lettre recommandée, ou par e-mail s'il en donne une adresse."], ar: ["إيداع المطلب", "بمكتب الضبط بالهيكل (اطلب وصلا بالتاريخ والرقم المرجعي)، أو برسالة مضمونة الوصول، أو بالبريد الإلكتروني إن وفّر الهيكل عنوانا لذلك."] },
+    { ic: "horloge", fr: ["Attendre la réponse", "20 jours au plus. Sans réponse, ou en cas de refus, faites un recours auprès du chef de l'organisme (modèle « Recours auprès du chef de l'organisme »)."], ar: ["انتظار الرد", "20 يوما على الأكثر. عند عدم الرد أو الرفض، قدّم تظلما لدى رئيس الهيكل (نموذج «مطلب تظلّم لدى رئيس الهيكل»)."] }],
+  pieces: { fr: ["Aucune pièce obligatoire", "Gardez une copie de la demande et le reçu de dépôt"], ar: ["لا وثيقة وجوبية", "احتفظ بنسخة من المطلب وبوصل الإيداع"] },
+  ou: { fr: ["Bureau d'ordre de l'administration ou de l'organisme public", "Chargé de l'accès à l'information de l'organisme (son nom est souvent sur le site de l'organisme)"], ar: ["مكتب الضبط بالإدارة أو الهيكل العمومي", "المكلف بالنفاذ إلى المعلومة بالهيكل (غالبا ما يُذكر اسمه بموقع الهيكل)"] },
+  pieges: { fr: ["Soyez précis : un document précis (date, numéro, objet) est plus facile à obtenir qu'une question vague.", "Gardez la preuve de la date de dépôt : les délais de recours se comptent à partir d'elle."], ar: ["كن دقيقا: الوثيقة المحددة (التاريخ، العدد، الموضوع) أسهل للحصول عليها من سؤال عام.", "احتفظ بما يثبت تاريخ الإيداع: آجال التظلم تُحتسب انطلاقا منه."] },
+  averifier: { fr: ["Certaines informations peuvent être refusées (défense, sécurité, vie privée, secret des affaires…) : le refus doit être motivé."], ar: ["يمكن رفض بعض المعلومات (الدفاع، الأمن، الحياة الخاصة، الأسرار التجارية…): ويجب أن يكون الرفض معللا."] },
+  faq: [
+    { fr: ["Faut-il expliquer pourquoi je demande l'information ?", "Non. La loi dit que le demandeur n'est pas tenu de donner les raisons ou l'intérêt de sa demande."], ar: ["هل يجب أن أبين سبب طلبي؟", "لا. ينص القانون على أن طالب النفاذ غير ملزم بذكر الأسباب أو المصلحة."] },
+    { fr: ["Le formulaire officiel est-il obligatoire ?", "La demande peut être faite sur le formulaire de l'organisme ou sur papier libre contenant les mêmes informations, comme ce modèle."], ar: ["هل المطبوعة الرسمية وجوبية؟", "يمكن تقديم المطلب على المطبوعة المعدة من الهيكل أو على ورق عادي يتضمن نفس البيانات، مثل هذا النموذج."] }
+  ],
+  sources: ["inai", "legislation", "pm_acces"]
+},
+{
+  slug: "recours-acces-information", cat: "administration", rang: 22,
+  motscles: { fr: "recours tazallom réclamation refus accès information chef de l'organisme loi 2016-22", ar: "تظلم رئيس الهيكل رفض مطلب نفاذ إلى المعلومة القانون 22 لسنة 2016" },
+  titre: { fr: "Recours auprès du chef de l'organisme (accès à l'information)", ar: "مطلب تظلّم لدى رئيس الهيكل (النفاذ إلى المعلومة)" },
+  court: { fr: "Contester un refus ou une absence de réponse à votre demande d'accès.", ar: "الاعتراض على رفض مطلب النفاذ أو عدم الرد عليه." },
+  bref: { fr: "Si l'administration refuse votre demande d'accès à l'information, ne répond pas dans les délais, ou ne vous donne pas l'information sous la forme demandée, vous pouvez faire un recours (tadhallom) auprès de son chef. Ce modèle reprend le formulaire officiel.",
+          ar: "إذا رفضت الإدارة مطلب النفاذ أو لم ترد في الآجال أو لم تمكنك من المعلومة وفق الصيغة المطلوبة، يمكنك تقديم تظلم لدى رئيسها. يتضمن هذا النموذج خانات المطبوعة الرسمية." },
+  legal: { legalisation: "non", enregistrement: "non",
+           cout: { fr: "Gratuit.", ar: "مجاني." },
+           delai: { fr: "Dans les 20 jours qui suivent le refus (ou la fin du délai de réponse) ; le chef de l'organisme répond en 10 jours.", ar: "في أجل 20 يوما من تاريخ الرفض (أو من انقضاء أجل الرد)؛ ويرد رئيس الهيكل في أجل 10 أيام." } },
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], tel: "XX XXX XXX",
+             structure: ["Municipalité de l'Ariana", "بلدية أريانة"], d_num: "2026/215", d_date: "2026-09-10", motif: "silence", lieu: ["Tunis", "تونس"], date: "2026-10-05" },
+  champs: [
+    groupe("Votre demande d'accès", "مطلب النفاذ"),
+    c("structure", "Administration ou organisme concerné", "الهيكل المعني", ["Municipalité de l'Ariana", "بلدية أريانة"]),
+    c("d_num", "Numéro de votre demande (sur le reçu)", "عدد مطلب النفاذ (بالوصل)", "2026/215"),
+    date("d_date", "Date de votre demande", "تاريخ مطلب النفاذ"),
+    groupe("Vous", "أنت"),
+    choix("qualite", "Vous êtes", "صفتك", [{ v: "physique", fr: "une personne (personne physique)", ar: "شخص طبيعي" }, { v: "morale", fr: "une société ou une association (personne morale)", ar: "شخص معنوي (شركة أو جمعية)" }]),
+    c("nom", "Nom et prénom (ou nom de la société / association)", "الاسم واللقب (أو التسمية الاجتماعية)", ["Mohamed Ben Salah", "محمد بن صالح"]),
+    adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }), c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true }),
+    groupe("Le motif du recours", "سبب التظلم"),
+    choix("motif", "Pourquoi faites-vous ce recours ?", "سبب التظلم", [
+      { v: "silence", fr: "absence de réponse dans les délais légaux", ar: "عدم الرد على المطلب في الآجال القانونية" },
+      { v: "refus", fr: "refus de la demande d'accès", ar: "رفض مطلب الحصول على المعلومة" },
+      { v: "non_motive", fr: "refus non motivé", ar: "عدم تعليل رفض إتاحة المعلومة" },
+      { v: "forme", fr: "information non fournie sous la forme demandée", ar: "عدم إتاحة المعلومة وفق الصيغة التي تم تحديدها في المطلب" },
+      { v: "frais", fr: "paiement de frais excessifs exigé", ar: "اشتراط دفع معلوم مجحف مقابل الحصول على المعلومة" },
+      { v: "autre", fr: "autre motif", ar: "سبب آخر" }]),
+    c("autre_motif", "Précisez", "اذكر السبب", ["Information incomplète : les plans annexés n'ont pas été fournis.", "المعلومة منقوصة: لم تُقدَّم المثالات المصاحبة."], { si: ["motif", "autre"] }),
+    ...fin()
+  ],
+  fr: v => `<h1 class="d-titre">RECOURS AUPRÈS DU CHEF DE L'ORGANISME</h1>
+<p style="text-align:center">(relatif à une demande d'accès à l'information — loi organique n° 2016-22 du 24 mars 2016)</p>
+<p class="d-dest">À Madame, Monsieur le chef de l'organisme<br>${v("structure")}</p>
+<p><b>1. Référence de la demande d'accès :</b> n° ${v("d_num")} du ${v("d_date")}.</p>
+<p><b>2. Auteur du recours</b> (${v("qualite")})<br>${v("nom")}<br>Adresse : ${v("adresse")}<br>Téléphone : ${v("tel")}${v.has("email") ? `<br>E-mail : ${v("email")}` : ""}</p>
+<p><b>3. Motif du recours :</b> ${v("motif")}${v.is("motif", "autre") ? ` : ${v("autre_motif")}` : ""}.</p>
+<p>Je vous prie de bien vouloir réexaminer ma demande et de me permettre d'accéder à l'information demandée, et de m'accuser réception du présent recours.</p>
+${faitFR(v)}${signe("Signature")}`,
+  ar: v => `<h1 class="d-titre">مطلب تظلّم لدى رئيس الهيكل</h1>
+<p style="text-align:center">(يتعلّق بمطلب نفاذ إلى معلومة — القانون الأساسي عدد 22 لسنة 2016 المؤرخ في 24 مارس 2016)</p>
+<p class="d-dest">إلى السيد(ة) رئيس(ة) الهيكل<br>${v("structure")}</p>
+<p><b>1. مرجع مطلب النفاذ إلى معلومة:</b> عدد ${v("d_num")} بتاريخ ${v("d_date")}.</p>
+<p><b>2. الإرشادات الخاصة بالمتظلّم</b> (${v("qualite")})<br>${v("nom")}<br>العنوان: ${v("adresse")}<br>الهاتف: ${v("tel")}${v.has("email") ? `<br>العنوان الإلكتروني: ${v("email")}` : ""}</p>
+<p><b>3. سبب التظلّم:</b> ${v("motif")}${v.is("motif", "autre") ? `: ${v("autre_motif")}` : ""}.</p>
+<p>أرجو التفضل بإعادة النظر في مطلبي وتمكيني من المعلومة المطلوبة، وتسليمي وصلا في إيداع هذا التظلم.</p>
+${faitAR(v)}${signe("إمضاء المتظلّم")}`,
+  etapes: [ETAPE_REMPLIR, ETAPE_IMPRIMER(2),
+    { ic: "remettre", fr: ["Déposer dans les 20 jours", "Au bureau d'ordre de l'organisme (reçu avec date et numéro) ou par lettre recommandée, dans les 20 jours qui suivent le refus ou la fin du délai de réponse."], ar: ["الإيداع في أجل 20 يوما", "بمكتب الضبط بالهيكل (وصل بالتاريخ والرقم) أو برسالة مضمونة الوصول، في أجل 20 يوما من تاريخ الرفض أو من انقضاء أجل الرد."] },
+    { ic: "horloge", fr: ["Attendre 10 jours", "Le chef de l'organisme répond en 10 jours. Sans réponse ou en cas de nouveau refus : requête auprès de l'Instance d'accès à l'information (modèle « Requête à l'INAI »)."], ar: ["انتظار 10 أيام", "يرد رئيس الهيكل في أجل 10 أيام. عند عدم الرد أو الرفض: عريضة دعوى لدى هيئة النفاذ إلى المعلومة (نموذج «عريضة دعوى لدى هيئة النفاذ إلى المعلومة»)."] }],
+  pieces: { fr: ["Copie de votre demande d'accès et de son reçu de dépôt", "Copie de la réponse de refus, s'il y en a une"], ar: ["نسخة من مطلب النفاذ ومن وصل إيداعه", "نسخة من قرار الرفض إن وُجد"] },
+  ou: { fr: ["Bureau d'ordre de l'organisme concerné"], ar: ["مكتب الضبط بالهيكل المعني"] },
+  pieges: { fr: ["Ne laissez pas passer les 20 jours : comptez-les à partir de la date du refus, ou de la fin du délai de réponse si l'organisme n'a rien répondu."], ar: ["لا تتجاوز أجل 20 يوما: احتسبه من تاريخ الرفض، أو من انقضاء أجل الرد إذا لم يجب الهيكل."] },
+  averifier: { fr: ["Délais tirés de la loi organique n° 2016-22 : vérifiez-les sur le portail de la législation ou auprès de l'INAI avant de déposer."], ar: ["الآجال مأخوذة من القانون الأساسي عدد 22 لسنة 2016: تثبت منها في بوابة التشريع أو لدى هيئة النفاذ إلى المعلومة قبل الإيداع."] },
+  faq: [
+    { fr: ["Le recours est-il obligatoire avant d'aller à l'INAI ?", "Il permet souvent d'obtenir l'information plus vite. Renseignez-vous auprès de l'INAI sur la possibilité de la saisir directement."], ar: ["هل التظلم وجوبي قبل اللجوء إلى الهيئة؟", "يمكّن غالبا من الحصول على المعلومة بسرعة أكبر. استفسر لدى الهيئة عن إمكانية رفع الدعوى مباشرة."] }
+  ],
+  sources: ["inai", "legislation", "pm_acces"]
+},
+{
+  slug: "requete-inai-acces-information", cat: "administration", rang: 23,
+  motscles: { fr: "INAI instance d'accès à l'information requête plainte recours refus administration", ar: "هيئة النفاذ إلى المعلومة عريضة دعوى شكوى رفض الإدارة" },
+  titre: { fr: "Requête à l'Instance d'accès à l'information (INAI)", ar: "عريضة دعوى لدى هيئة النفاذ إلى المعلومة" },
+  court: { fr: "Saisir l'INAI quand l'administration ne vous donne pas l'information.", ar: "رفع دعوى لدى الهيئة عندما لا تمكّنك الإدارة من المعلومة." },
+  bref: { fr: "L'Instance d'accès à l'information (INAI) est l'autorité indépendante qui juge les litiges d'accès à l'information. Si l'administration ne répond pas ou refuse, vous pouvez lui adresser cette requête (modèle publié par le ministère de la Justice).",
+          ar: "هيئة النفاذ إلى المعلومة هيئة مستقلة تبت في النزاعات المتعلقة بالنفاذ إلى المعلومة. إذا لم ترد الإدارة أو رفضت، يمكنك توجيه هذه العريضة إليها (أنموذج منشور بموقع وزارة العدل)." },
+  legal: { legalisation: "non", enregistrement: "non",
+           cout: { fr: "Gratuit.", ar: "مجاني." },
+           delai: { fr: "Dans les 20 jours qui suivent la décision du chef de l'organisme (ou la fin de son délai de réponse de 10 jours).", ar: "في أجل 20 يوما من تاريخ قرار رئيس الهيكل (أو من انقضاء أجل رده المحدد بـ10 أيام)." } },
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], cin: "0XXXXXXX", adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], tel: "XX XXX XXX",
+             structure: ["Municipalité de l'Ariana", "بلدية أريانة"], d_date: "2026-09-10", forme: "papier",
+             info: ["Copie du permis de bâtir délivré pour l'immeuble voisin, 5 rue des Roses", "نسخة من رخصة البناء المسلمة للعقار المجاور، 5 نهج الورود"], lieu: ["Tunis", "تونس"], date: "2026-10-05" },
+  champs: [
+    groupe("Vous", "أنت"), nom("nom"), cin("cin"), adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }), c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true }),
+    choix("handicap", "Êtes-vous porteur d'un handicap ?", "هل أنت حامل لإعاقة؟", [{ v: "non", fr: "non", ar: "لا" }, { v: "oui", fr: "oui", ar: "نعم" }]),
+    groupe("Votre demande restée sans suite", "المطلب الذي لم يُستجب له"),
+    c("structure", "Administration ou organisme concerné", "الهيكل المعني", ["Municipalité de l'Ariana", "بلدية أريانة"]),
+    date("d_date", "Date de votre demande d'accès", "تاريخ مطلب النفاذ"),
+    choix("forme", "Forme demandée", "الصيغة المطلوبة", [
+      { v: "papier", fr: "une copie papier", ar: "نسخة ورقية" }, { v: "electronique", fr: "une copie électronique", ar: "نسخة إلكترونية" }, { v: "consultation", fr: "la consultation sur place", ar: "الاطلاع على عين المكان" }]),
+    c("info", "Information demandée", "المعلومة المطلوبة", ["Copie du permis de bâtir délivré pour l'immeuble voisin, 5 rue des Roses", "نسخة من رخصة البناء المسلمة للعقار المجاور، 5 نهج الورود"], { type: "textarea" }),
+    ...fin()
+  ],
+  fr: v => `<p class="d-lieu-date">${v("lieu")}, le ${v("date")}</p>
+<p class="d-dest">À Monsieur le Président de l'Instance d'accès à l'information</p>
+<h1 class="d-titre">REQUÊTE</h1>
+<p class="d-objet"><b>Objet :</b> requête pour obtenir une information.<br><b>Pièce jointe :</b> la demande d'accès à l'information.</p>
+<p>Monsieur le Président,</p>
+<p>Je soussigné(e) ${v("nom")}, titulaire de la carte d'identité nationale n° ${v("cin")}, ai présenté une demande d'accès à l'information à ${v("structure")} le ${v("d_date")}, afin d'obtenir ${v("forme")} de l'information suivante :</p>
+<p class="d-libre">${v("info")}</p>
+<p>Je n'ai pas reçu de réponse favorable à ma demande malgré l'expiration du délai légal, ce qui m'amène à saisir votre honorable Instance, en vous demandant d'obliger l'organisme concerné à me donner accès à l'information demandée.</p>
+<p>Je vous prie d'agréer, Monsieur le Président, l'expression de mes salutations distinguées.</p>
+<p>${v("nom")}<br>Téléphone : ${v("tel")}${v.has("email") ? `<br>E-mail : ${v("email")}` : ""}<br>Adresse : ${v("adresse")}<br>Porteur d'un handicap : ${v("handicap")}</p>
+${signe("Signature")}`,
+  ar: v => `<p class="d-lieu-date">${v("lieu")} في ${v("date")}</p>
+<p class="d-dest">إلى السيّد رئيس هيئة النفاذ إلى المعلومة</p>
+<h1 class="d-titre">عريضة دعوى</h1>
+<p class="d-objet"><b>الموضوع:</b> دعوى للحصول على معلومة.<br><b>المصاحيب:</b> مطلب النفاذ إلى المعلومة.</p>
+<p>تحية وبعد،</p>
+<p>إني المدعو(ة) ${v("nom")} صاحب(ة) بطاقة التعريف الوطنية عدد ${v("cin")}، كنت تقدّمت بمطلب نفاذ إلى المعلومة إلى ${v("structure")} بتاريخ ${v("d_date")} قصد الحصول على ${v("forme")} من المعلومة التالية:</p>
+<p class="d-libre">${v("info")}</p>
+<p>غير أنّي لم أتلقّ ردّا على مطلبي المذكور رغم مرور الأجل القانوني، الأمر الذي دفعني للقيام بالدّعوى الماثلة لدى هيئتكم الموقّرة، طالبا(ة) إلزام الجهة المدّعى عليها بتمكيني من المطلوب.</p>
+<p>أرجو أن تتعهّدوا بقضيتي ولكم جزيل الشكر والسّلام.</p>
+<p>${v("nom")}<br>الهاتف: ${v("tel")}${v.has("email") ? `<br>العنوان الإلكتروني: ${v("email")}` : ""}<br>العنوان: ${v("adresse")}<br>حامل لإعاقة: ${v("handicap")}</p>
+${signe("الإمضاء")}`,
+  etapes: [ETAPE_REMPLIR, ETAPE_IMPRIMER(2),
+    { ic: "remettre", fr: ["Envoyer à l'INAI", "Joignez une copie de votre demande d'accès (et de votre recours, si vous en avez fait un). Déposez la requête au siège de l'INAI ou envoyez-la par lettre recommandée (adresse sur inai.tn)."], ar: ["الإرسال إلى الهيئة", "أرفق نسخة من مطلب النفاذ (ومن التظلم إن قدمته). أودع العريضة بمقر الهيئة أو أرسلها برسالة مضمونة الوصول (العنوان بموقع inai.tn)."] },
+    { ic: "horloge", fr: ["Suivre la décision", "L'INAI examine la requête et peut obliger l'organisme à vous donner l'information. Gardez la preuve de l'envoi."], ar: ["متابعة القرار", "تنظر الهيئة في العريضة ويمكنها إلزام الهيكل بتمكينك من المعلومة. احتفظ بما يثبت الإرسال."] }],
+  pieces: { fr: ["Copie de la demande d'accès à l'information et de son reçu", "Copie du recours auprès du chef de l'organisme et de la réponse, s'il y en a", "Copie de la CIN"], ar: ["نسخة من مطلب النفاذ إلى المعلومة ومن وصل إيداعه", "نسخة من التظلم لدى رئيس الهيكل ومن الرد إن وُجد", "نسخة من بطاقة التعريف"] },
+  ou: { fr: ["Instance d'accès à l'information (INAI), Tunis : adresse et contacts sur inai.tn"], ar: ["هيئة النفاذ إلى المعلومة، تونس: العنوان ووسائل الاتصال بموقع inai.tn"] },
+  pieges: { fr: ["Joignez toujours la copie de votre demande : c'est elle qui prouve la date et le contenu de ce que vous avez demandé."], ar: ["أرفق دائما نسخة من مطلبك: هي التي تثبت تاريخ ما طلبته ومحتواه."] },
+  averifier: { fr: ["Modes d'envoi acceptés (dépôt, poste, e-mail) et délai de décision de l'INAI : à vérifier sur inai.tn."], ar: ["طرق الإيداع المقبولة (مباشرة، بالبريد، بالبريد الإلكتروني) وأجل بت الهيئة: يُتثبت منها بموقع inai.tn."] },
+  faq: [
+    { fr: ["Peut-on contester la décision de l'INAI ?", "Oui, devant le tribunal administratif. Renseignez-vous sur le délai auprès de l'INAI ou d'un avocat."], ar: ["هل يمكن الطعن في قرار الهيئة؟", "نعم، لدى المحكمة الإدارية. استفسر عن الأجل لدى الهيئة أو لدى محام."] }
+  ],
+  sources: ["inai", "justice", "legislation"]
+},
+{
+  slug: "requisition-immatriculation-fonciere", cat: "logement", rang: 24,
+  motscles: { fr: "immatriculation foncière réquisition titre foncier terrain tribunal immobilier enregistrement propriété immatriculation facultative", ar: "مطلب تسجيل اختياري تسجيل عقار رسم عقاري المحكمة العقارية ملكية أرض" },
+  titre: { fr: "Réquisition d'immatriculation foncière (facultative)", ar: "مطلب تسجيل اختياري (تسجيل عقار)" },
+  court: { fr: "Demander au tribunal immobilier d'immatriculer votre terrain pour obtenir un titre foncier.", ar: "طلب تسجيل عقارك لدى المحكمة العقارية للحصول على رسم عقاري." },
+  bref: { fr: "Le propriétaire d'un terrain non immatriculé peut demander son immatriculation au tribunal immobilier : après bornage et publicité, le tribunal crée un titre foncier qui protège la propriété. Ce modèle reprend les rubriques de la réquisition officielle (demandeur, terrain, droits, justificatifs).",
+          ar: "يمكن لمالك عقار غير مسجل أن يطلب تسجيله لدى المحكمة العقارية: بعد التحديد والإشهار، تُحدث المحكمة رسما عقاريا يحمي الملكية. يتضمن هذا النموذج خانات المطلب الرسمي (طالب التسجيل، العقار، الحقوق، المؤيدات)." },
+  legal: { legalisation: "non", enregistrement: "non",
+           cout: { fr: "Frais d'immatriculation (cartes de taxes) payés à la recette des finances : montant donné au dépôt.", ar: "معاليم التسجيل (بطاقات المعاليم) تُدفع بالقباضة المالية: يُعلَم بمبلغها عند الإيداع." },
+           delai: { fr: "Aucun délai pour déposer ; la procédure (bornage, publicité, jugement) dure plusieurs mois.", ar: "لا أجل للإيداع؛ وتستغرق الإجراءات (التحديد، الإشهار، الحكم) عدة أشهر." } },
+  exemple: { nom: ["Ali Ben Ahmed Jlassi", "علي بن أحمد الجلاصي"], pere: ["Ahmed", "أحمد"], grandpere: ["Salah", "صالح"], naissance: ["10/03/1970, Kairouan", "10/03/1970، القيروان"],
+             nationalite: ["tunisienne", "تونسية"], profession: ["agriculteur", "فلاح"], adresse: ["Route de Sousse km 5, Kairouan", "طريق سوسة كلم 5، القيروان"],
+             tribunal: ["Kairouan", "القيروان"], gouv: ["Kairouan", "القيروان"], delegation: ["Kairouan Sud", "القيروان الجنوبية"], imada: ["El Mansoura", "المنصورة"],
+             nom_terrain: ["Henchir El Ain", "هنشير العين"], surface: ["2 ha 15 a 30 ca", "2 هك 15 آر 30 ص"], contenu: ["terre agricole avec puits et oliviers", "أرض فلاحية بها بئر وأشجار زيتون"],
+             situation: ["Route de Sousse km 5, à côté de la station de pompage", "طريق سوسة كلم 5، بجانب محطة الضخ"],
+             nord: ["terrain de Mohamed Ben Ali", "أرض محمد بن علي"], sud: ["piste agricole", "مسلك فلاحي"], est: ["oued El Merguellil", "وادي مرق الليل"], ouest: ["terrain des héritiers Salah", "أرض ورثة صالح"],
+             cause: ["héritage puis partage", "الإرث ثم القسمة"], justificatifs: ["Hojja (acte adoulaire) de 1995 ; acte de partage enregistré à la recette des finances de Kairouan le 12/05/2010", "حجة عادلة سنة 1995؛ عقد قسمة مسجل بالقباضة المالية بالقيروان في 12/05/2010"],
+             nom_futur: ["Henchir El Ain", "هنشير العين"], lieu: ["Kairouan", "القيروان"], date: "2026-10-05" },
+  champs: [
+    groupe("Le demandeur", "طالب التسجيل"),
+    c("nom", "Nom et prénom", "الاسم واللقب", ["Ali Ben Ahmed Jlassi", "علي بن أحمد الجلاصي"]),
+    c("pere", "Prénom du père", "اسم الأب", ["Ahmed", "أحمد"]), c("grandpere", "Prénom du grand-père paternel", "اسم الجد للأب", ["Salah", "صالح"]),
+    c("naissance", "Date et lieu de naissance", "تاريخ الولادة ومكانها", ["10/03/1970, Kairouan", "10/03/1970، القيروان"]),
+    c("nationalite", "Nationalité", "الجنسية", ["tunisienne", "تونسية"]), c("profession", "Profession", "المهنة", ["agriculteur", "فلاح"]),
+    choix("etat", "État civil", "الحالة المدنية", [{ v: "marie", fr: "marié(e)", ar: "متزوج(ة)" }, { v: "celib", fr: "célibataire", ar: "أعزب، عزباء" }, { v: "divorce", fr: "divorcé(e)", ar: "مطلق(ة)" }, { v: "veuf", fr: "veuf (veuve)", ar: "أرمل(ة)" }]),
+    choix("regime", "Régime des biens entre époux (si marié)", "النظام المالي للزوجين (للمتزوج)", [{ v: "separation", fr: "séparation des biens", ar: "نظام التفرقة في الملكية" }, { v: "communaute", fr: "communauté des biens", ar: "نظام الاشتراك في الملكية" }], { si: ["etat", "marie"] }),
+    choix("qualite", "Vous êtes", "الصفة", [{ v: "seul", fr: "seul propriétaire", ar: "مالك بمفرده" }, { v: "copro", fr: "copropriétaire", ar: "شريك في الملكية" }]),
+    c("coproprietaires", "Autres copropriétaires et leur part (nom complet, part)", "بقية الشركاء ومنابات كل منهم (الاسم الكامل، المناب)", ["Fatma Ben Ahmed Jlassi : 1/3 ; Hedi Ben Ahmed Jlassi : 1/3", "فاطمة بنت أحمد الجلاصي: الثلث؛ الهادي بن أحمد الجلاصي: الثلث"], { type: "textarea", si: ["qualite", "copro"] }),
+    c("representant", "Représenté par (mandataire, avocat…)", "النائب (وكيل، محام…)", ["Maître Sami Trabelsi, avocat", "الأستاذ سامي الطرابلسي، محام"], { opt: true }),
+    adresse("adresse", ["Route de Sousse km 5, Kairouan", "طريق سوسة كلم 5، القيروان"]),
+    groupe("Où se trouve le terrain", "موقع العقار"),
+    c("tribunal", "Tribunal cantonal de", "محكمة الناحية بـ", ["Kairouan", "القيروان"]), c("gouv", "Gouvernorat", "الولاية", ["Kairouan", "القيروان"]),
+    c("delegation", "Délégation", "المعتمدية", ["Kairouan Sud", "القيروان الجنوبية"]), c("imada", "Imada (secteur)", "العمادة", ["El Mansoura", "المنصورة"]),
+    groupe("Le terrain (état matériel)", "البيانات المتعلقة بالحالة المادية للعقار"),
+    c("nom_terrain", "Nom sous lequel le terrain est connu", "العقار المعروف باسم", ["Henchir El Ain", "هنشير العين"]),
+    c("surface", "Surface totale (ha, a, ca)", "جملة المساحة (هك، آر، ص)", ["2 ha 15 a 30 ca", "2 هك 15 آر 30 ص"]),
+    c("contenu", "Ce qu'il contient (terre agricole, construction, puits…)", "المحتوى (أرض فلاحية، بنايات، بئر…)", ["terre agricole avec puits et oliviers", "أرض فلاحية بها بئر وأشجار زيتون"]),
+    c("situation", "Situation précise (route, rue, repères)", "الموقع بدقة (الطريق، النهج، معالم)", ["Route de Sousse km 5, à côté de la station de pompage", "طريق سوسة كلم 5، بجانب محطة الضخ"]),
+    c("nord", "Limite nord (voisin, route…)", "الحد شمالا (الجار، الطريق…)", ["terrain de Mohamed Ben Ali", "أرض محمد بن علي"]),
+    c("sud", "Limite sud", "الحد جنوبا", ["piste agricole", "مسلك فلاحي"]), c("est", "Limite est", "الحد شرقا", ["oued El Merguellil", "وادي مرق الليل"]),
+    c("ouest", "Limite ouest", "الحد غربا", ["terrain des héritiers Salah", "أرض ورثة صالح"]),
+    c("valeur", "Valeur actuelle (DT)", "القيمة النقدية الحالية (د)", "120 000", { opt: true }),
+    c("droits", "Droits sur le terrain (location longue, servitude, hypothèque, promesse de vente…) et bénéficiaires", "الحقوق الموظفة على العقار (كراء طويل، ارتفاق، رهن، وعد بالبيع…) والمستحقون", ["Servitude de passage au profit du terrain de Mohamed Ben Ali", "حق ارتفاق بالمرور لفائدة أرض محمد بن علي"], { type: "textarea", opt: true }),
+    groupe("Les justificatifs", "المؤيدات"),
+    c("cause", "Comment vous êtes devenu propriétaire", "سبب اكتساب الملكية", ["héritage puis partage", "الإرث ثم القسمة"]),
+    c("justificatifs", "Justificatifs (hojja, acte écrit, acte administratif, jugement) avec leurs dates", "المؤيدات (حجة عادلة، كتب خطي، عقد إداري، حكم قضائي) وتواريخها", ["Hojja (acte adoulaire) de 1995 ; acte de partage enregistré à la recette des finances de Kairouan le 12/05/2010", "حجة عادلة سنة 1995؛ عقد قسمة مسجل بالقباضة المالية بالقيروان في 12/05/2010"], { type: "textarea" }),
+    c("nom_futur", "Nom que vous voulez donner au titre foncier", "الاسم الذي يريد تسمية العقار به مستقبلا", ["Henchir El Ain", "هنشير العين"]),
+    ...fin()
+  ],
+  fr: v => `<p class="d-entete">République tunisienne<br>Ministère de la Justice<br>Tribunal immobilier</p>
+<h1 class="d-titre">RÉQUISITION D'IMMATRICULATION FACULTATIVE</h1>
+<p>Tribunal cantonal de ${v("tribunal")} — Gouvernorat : ${v("gouv")} — Délégation : ${v("delegation")} — Imada : ${v("imada")}</p>
+<p><b>I. Le demandeur</b><br>Le soussigné déclare : ${v("nom")}, fils/fille de ${v("pere")}, petit-fils/petite-fille de ${v("grandpere")}, né(e) le ${v("naissance")}, de nationalité ${v("nationalite")}, ${v("profession")}, ${v("etat")}${v.is("etat", "marie") ? `, ${v("regime")}` : ""} ; qualité : ${v("qualite")}${v.has("representant") ? ` ; représenté par ${v("representant")}` : ""} ; adresse et domicile élu : ${v("adresse")}.</p>
+<p><b>II. État matériel du terrain</b><br>Le terrain connu sous le nom de « ${v("nom_terrain")} », d'une surface totale de ${v("surface")}${v.has("valeur") ? `, d'une valeur actuelle de ${v("valeur")} DT` : ""}, contenant : ${v("contenu")}.<br>Situation : ${v("situation")}.</p>
+<ul class="d-liste"><li>Nord : ${v("nord")}</li><li>Sud : ${v("sud")}</li><li>Est : ${v("est")}</li><li>Ouest : ${v("ouest")}</li></ul>
+<p><b>III. Droits sur le terrain</b><br>Propriété : ${v.is("qualite", "seul") ? `le terrain appartient au demandeur seul.` : `copropriété ; autres copropriétaires et parts : ${v("coproprietaires")}.`}<br>Droits réels ou charges : ${v.has("droits") ? v("droits") : "néant à la connaissance du demandeur."}</p>
+<p><b>IV. Justificatifs</b><br>Cause d'acquisition de la propriété : ${v("cause")}.<br>Justificatifs : ${v("justificatifs")}</p>
+<p>Le soussigné certifie l'exactitude des renseignements ci-dessus et demande l'immatriculation du terrain qu'il veut nommer « ${v("nom_futur")} ».</p>
+${faitFR(v)}${signe("Signature")}`,
+  ar: v => `<p class="d-entete">الجمهورية التونسية<br>وزارة العدل<br>المحكمة العقارية</p>
+<h1 class="d-titre">مطلب تسجيل اختياري</h1>
+<p>محكمة الناحية بـ${v("tribunal")} — الولاية: ${v("gouv")} — المعتمدية: ${v("delegation")} — العمادة: ${v("imada")}</p>
+<p><b>I. البيانات المتعلقة بطالب التسجيل</b><br>يصرح الممضي أسفله: ${v("nom")}، اسم الأب: ${v("pere")}، اسم الجد للأب: ${v("grandpere")}، تاريخ الولادة ومكانها: ${v("naissance")}، الجنسية: ${v("nationalite")}، المهنة: ${v("profession")}، الحالة المدنية: ${v("etat")}${v.is("etat", "marie") ? `، النظام المالي للزوجين: ${v("regime")}` : ""}؛ الصفة: ${v("qualite")}${v.has("representant") ? `؛ النائب: ${v("representant")}` : ""}؛ العنوان ومحل المخابرة: ${v("adresse")}.</p>
+<p><b>II. البيانات المتعلقة بالحالة المادية للعقار</b><br>أن العقار المعروف باسم «${v("nom_terrain")}» والذي جملة مساحته ${v("surface")}${v.has("valeur") ? `، وقيمته النقدية الحالية ${v("valeur")} د` : ""}، يشتمل على: ${v("contenu")}.<br>الموقع: ${v("situation")}.</p>
+<ul class="d-liste"><li>شمالا: ${v("nord")}</li><li>جنوبا: ${v("sud")}</li><li>شرقا: ${v("est")}</li><li>غربا: ${v("ouest")}</li></ul>
+<p><b>III. البيانات المتعلقة بالحالة الاستحقاقية للعقار</b><br>حق الملكية: ${v.is("qualite", "seul") ? `العقار على ملك طالب التسجيل بمفرده.` : `ملكية مشتركة؛ بقية الشركاء ومناباتهم: ${v("coproprietaires")}.`}<br>الحقوق الموظفة على العقار: ${v.has("droits") ? v("droits") : "لا شيء حسب علم طالب التسجيل."}</p>
+<p><b>IV. البيانات المتعلقة بالمؤيدات</b><br>إن سبب اكتساب الملكية هو: ${v("cause")}.<br>المؤيدات: ${v("justificatifs")}</p>
+<p>يقر الممضي أسفله بصحة البيانات أعلاه ويطلب تسجيل العقار الذي يريد تسميته مستقبلا باسم «${v("nom_futur")}».</p>
+${faitAR(v)}${signe("الإمضاء")}`,
+  etapes: [ETAPE_REMPLIR,
+    { ic: "liste", fr: ["Rassembler les justificatifs", "Originaux et copies des titres de propriété (hojja, actes, jugements), plan du terrain si vous en avez un, copie de la CIN."], ar: ["جمع المؤيدات", "أصول ونسخ من مؤيدات الملكية (حجج، عقود، أحكام)، مثال العقار إن وُجد، نسخة من بطاقة التعريف."] },
+    { ic: "remettre", fr: ["Déposer au tribunal immobilier", "Au siège ou à la section du tribunal immobilier dont dépend le terrain. On vous remet les cartes de taxes à payer à la recette des finances."], ar: ["الإيداع بالمحكمة العقارية", "بمقر المحكمة العقارية أو فرعها الذي يرجع إليه العقار بالنظر. تُسلَّم إليك بطاقات المعاليم لخلاصها بالقباضة المالية."] },
+    { ic: "horloge", fr: ["Suivre la procédure", "Bornage du terrain par les services de la topographie, publicité de la réquisition (les voisins peuvent faire opposition), puis jugement d'immatriculation et création du titre foncier."], ar: ["متابعة الإجراءات", "تحديد العقار من قبل مصالح قيس الأراضي، إشهار المطلب (يمكن للمجاورين الاعتراض)، ثم الحكم بالتسجيل وإحداث الرسم العقاري."] }],
+  pieces: { fr: ["Justificatifs de propriété (hojja, actes écrits, actes administratifs, jugements), originaux et copies", "Plan du terrain, s'il existe", "Copie de la CIN du demandeur (et des copropriétaires)", "Procuration du représentant, s'il y en a un"],
+            ar: ["مؤيدات الملكية (حجج عادلة، كتائب خطية، عقود إدارية، أحكام)، أصولا ونسخا", "مثال العقار إن وُجد", "نسخة من بطاقة تعريف طالب التسجيل (والشركاء)", "توكيل النائب إن وُجد"] },
+  ou: { fr: ["Tribunal immobilier (siège ou section régionale) dont dépend le terrain", "Recette des finances : paiement des frais (cartes de taxes)"], ar: ["المحكمة العقارية (المقر أو الفرع الجهوي) التي يرجع إليها العقار بالنظر", "القباضة المالية: خلاص المعاليم (بطاقات المعاليم)"] },
+  pieges: { fr: ["Décrivez les limites avec les noms des voisins : ils seront avertis et pourront faire opposition.", "En cas de copropriété, indiquez tous les copropriétaires et leurs parts exactes.", "Gardez les originaux de vos actes : déposez des copies sauf si le tribunal demande les originaux."],
+            ar: ["صِف الحدود بأسماء المجاورين: سيتم إعلامهم ويمكنهم الاعتراض.", "في صورة الملكية المشتركة، اذكر جميع الشركاء ومناباتهم بدقة.", "احتفظ بأصول عقودك: أودع نسخا إلا إذا طلبت المحكمة الأصول."] },
+  averifier: { fr: ["Le tribunal peut demander de remplir son propre formulaire imprimé (réf. 03-06.01-02) : ce modèle reprend ses rubriques, demandez au greffe s'il l'accepte.", "Montant des frais et pièces exactes : à demander au tribunal immobilier."],
+               ar: ["قد تطلب المحكمة تعمير مطبوعتها الخاصة (المرجع 03-06.01-02): يتضمن هذا النموذج نفس الخانات، اسأل كتابة المحكمة إن كانت تقبله.", "مبلغ المعاليم والوثائق الدقيقة: يُسأل عنها لدى المحكمة العقارية."] },
+  faq: [
+    { fr: ["Pourquoi immatriculer son terrain ?", "Le titre foncier est définitif : il protège la propriété, facilite la vente, le partage et l'obtention d'un crédit avec hypothèque."], ar: ["لماذا يُسجَّل العقار؟", "الرسم العقاري نهائي: يحمي الملكية ويسهل البيع والقسمة والحصول على قرض برهن."] },
+    { fr: ["Où trouver le formulaire officiel ?", "Au tribunal immobilier, ou en PDF sur le site du ministère de la Justice (rubrique formulaires)."], ar: ["أين أجد المطبوعة الرسمية؟", "بالمحكمة العقارية، أو في شكل PDF بموقع وزارة العدل (ركن المطبوعات)."] }
+  ],
+  sources: ["justice", "opf", "legislation"]
+},
+{
+  slug: "demande-mise-a-jour-titre-foncier", cat: "logement", rang: 25,
+  motscles: { fr: "mise à jour titre foncier titre gelé tribunal immobilier inscription vente héritage propriété foncière", ar: "مطلب تحيين رسم عقاري رسوم مجمدة المحكمة العقارية ترسيم بيع إرث الملكية العقارية" },
+  titre: { fr: "Demande de mise à jour d'un titre foncier", ar: "مطلب تحيين رسم عقاري" },
+  court: { fr: "Faire inscrire sur un titre foncier « gelé » les ventes, héritages ou partages non encore inscrits.", ar: "ترسيم البيوعات أو الإرث أو القسمة غير المرسمة على رسم عقاري «مجمد»." },
+  bref: { fr: "Quand les ventes, héritages ou partages successifs d'un terrain immatriculé n'ont pas été inscrits, le titre foncier ne correspond plus à la réalité (« titre gelé »). La demande de mise à jour, déposée au tribunal immobilier, permet de régulariser. Ce modèle reprend les rubriques du formulaire officiel.",
+          ar: "عندما لا تُرسَّم البيوعات أو الإرث أو القسمة المتتالية على عقار مسجل، يصبح الرسم العقاري غير مطابق للواقع («رسم مجمد»). يمكّن مطلب التحيين المودع بالمحكمة العقارية من تسوية الوضعية. يتضمن هذا النموذج خانات المطبوعة الرسمية." },
+  legal: { legalisation: "non", enregistrement: "non",
+           cout: { fr: "Frais éventuels : à demander au tribunal immobilier.", ar: "المعاليم المحتملة: يُسأل عنها لدى المحكمة العقارية." },
+           delai: { fr: "Aucun délai pour déposer ; le tribunal statue après examen des pièces.", ar: "لا أجل للإيداع؛ وتبت المحكمة بعد دراسة الوثائق." } },
+  exemple: { nom: ["Sonia Ben Mahmoud", "سنية بن محمود"], naissance: "05/07/1978", profession: ["enseignante", "أستاذة"], nationalite: ["tunisienne", "تونسية"],
+             qualite_dem: ["héritière du propriétaire inscrit", "وارثة المالك المرسم"], adresse: ["8 rue de Carthage, Ben Arous", "8 نهج قرطاج، بن عروس"],
+             titres: "54321", tribunal: ["Ben Arous", "بن عروس"], delegation: ["Mégrine", "مقرين"], objet: "titre",
+             documents: ["Acte de vente du 14/02/1990 enregistré à la recette des finances de Ben Arous ; certificat d'hérédité du 03/01/2015", "عقد بيع مؤرخ في 14/02/1990 مسجل بالقباضة المالية ببن عروس؛ حجة وفاة وإرث مؤرخة في 03/01/2015"],
+             operations: ["Inscription de la vente de 1990, puis de la transmission par héritage aux héritiers", "ترسيم بيع سنة 1990 ثم انتقال الملكية بالإرث إلى الورثة"], lieu: ["Ben Arous", "بن عروس"], date: "2026-10-05" },
+  champs: [
+    groupe("Le demandeur", "طالب التحيين"),
+    c("nom", "Nom et prénom", "الاسم واللقب", ["Sonia Ben Mahmoud", "سنية بن محمود"]),
+    c("naissance", "Date de naissance", "تاريخ الولادة", "05/07/1978"), c("profession", "Profession", "المهنة", ["enseignante", "أستاذة"]),
+    c("nationalite", "Nationalité", "الجنسية", ["tunisienne", "تونسية"]),
+    c("qualite_dem", "Votre qualité (acheteur, héritier, copropriétaire…)", "الصفة (مشتر، وارث، شريك…)", ["héritière du propriétaire inscrit", "وارثة المالك المرسم"]),
+    c("regime", "Régime des biens entre époux (si marié)", "النظام المالي للزوجين (للمتزوج)", ["séparation des biens", "نظام التفرقة في الملكية"], { opt: true }),
+    adresse("adresse", ["8 rue de Carthage, Ben Arous", "8 نهج قرطاج، بن عروس"]),
+    groupe("Le titre foncier", "الرسم العقاري"),
+    c("titres", "Numéro du (des) titre(s) foncier(s)", "عدد الرسم أو الرسوم العقارية", "54321"),
+    c("tribunal", "Tribunal cantonal dont dépend le terrain", "محكمة الناحية الكائن بدائرتها العقار", ["Ben Arous", "بن عروس"]),
+    c("delegation", "Délégation où se trouve le terrain", "المعتمدية الكائن بدائرتها العقار", ["Mégrine", "مقرين"]),
+    choix("objet", "La demande porte sur", "موضوع مطلب التحيين", [
+      { v: "titre", fr: "le titre foncier entier", ar: "كامل الرسم العقاري" },
+      { v: "part_titre", fr: "une part indivise du titre", ar: "منابات مشاعة من الرسم العقاري" },
+      { v: "parcelle", fr: "une ou plusieurs parcelles du titre", ar: "قطعة أو قطع من الرسم العقاري" },
+      { v: "part_parcelle", fr: "une part indivise d'une ou plusieurs parcelles", ar: "منابات مشاعة من القطعة أو القطع" }]),
+    c("parcelles", "Numéros des parcelles ou parts concernées", "أعداد القطع أو المنابات المعنية", ["parcelle n° 3 ; part de 1/4", "القطعة عدد 3؛ مناب الربع"], { si: ["objet", "parcelle"] }),
+    c("parts", "Parts indivises concernées", "المنابات المشاعة المعنية", ["1/4 du titre", "الربع من الرسم"], { si: ["objet", "part_titre"] }),
+    c("parts_parcelle", "Parcelles et parts indivises concernées", "القطع والمنابات المشاعة المعنية", ["1/2 de la parcelle n° 2", "النصف من القطعة عدد 2"], { si: ["objet", "part_parcelle"] }),
+    groupe("Ce que vous demandez", "المطلوب"),
+    c("documents", "Documents sur lesquels vous vous appuyez (type, date, enregistrement)", "الوثائق المستند إليها (نوعها، تاريخها، تسجيلها)", ["Acte de vente du 14/02/1990 enregistré à la recette des finances de Ben Arous ; certificat d'hérédité du 03/01/2015", "عقد بيع مؤرخ في 14/02/1990 مسجل بالقباضة المالية ببن عروس؛ حجة وفاة وإرث مؤرخة في 03/01/2015"], { type: "textarea" }),
+    c("operations", "Droits et opérations à inscrire (vente, partage, héritage, hypothèque…)", "نوع الحقوق والعمليات المطلوب إدراجها (بيع، قسمة، إرث، رهن…)", ["Inscription de la vente de 1990, puis de la transmission par héritage aux héritiers", "ترسيم بيع سنة 1990 ثم انتقال الملكية بالإرث إلى الورثة"], { type: "textarea" }),
+    c("difficultes", "Difficultés ou erreurs dans les documents (si vous les connaissez)", "الصعوبات أو الإخلالات المتعلقة بالوثائق (إن وُجدت)", ["Le nom du vendeur est mal orthographié dans l'acte de 1990.", "اسم البائع مكتوب بصفة غير صحيحة بعقد سنة 1990."], { type: "textarea", opt: true }),
+    ...fin()
+  ],
+  fr: v => `<p class="d-entete">République tunisienne<br>Ministère de la Justice<br>Tribunal immobilier</p>
+<h1 class="d-titre">DEMANDE DE MISE À JOUR</h1>
+<p><b>Le demandeur</b><br>Nom et prénom : ${v("nom")} — Date de naissance : ${v("naissance")} — Profession : ${v("profession")} — Nationalité : ${v("nationalite")}<br>Qualité : ${v("qualite_dem")}${v.has("regime") ? ` — Régime des biens entre époux : ${v("regime")}` : ""}<br>Adresse (domicile élu) : ${v("adresse")}</p>
+<p><b>Le titre foncier</b><br>Titre(s) foncier(s) n° ${v("titres")} — Tribunal cantonal de ${v("tribunal")} — Délégation : ${v("delegation")}</p>
+<p><b>Objet de la demande :</b> ${v("objet")}${v.is("objet", "parcelle") ? ` (${v("parcelles")})` : ""}${v.is("objet", "part_titre") ? ` (${v("parts")})` : ""}${v.is("objet", "part_parcelle") ? ` (${v("parts_parcelle")})` : ""}.</p>
+<p><b>Documents à l'appui :</b> ${v("documents")}</p>
+<p><b>Droits et opérations dont l'inscription est demandée :</b> ${v("operations")}</p>
+${v.has("difficultes") ? `<p><b>Difficultés ou erreurs relevées dans les documents :</b> ${v("difficultes")}</p>` : ""}
+<p>Je vous prie de bien vouloir procéder à la mise à jour du titre foncier ci-dessus et à l'inscription des droits et opérations demandés.</p>
+${faitFR(v)}${signe("Signature")}`,
+  ar: v => `<p class="d-entete">الجمهورية التونسية<br>وزارة العدل<br>المحكمة العقارية</p>
+<h1 class="d-titre">مطلب تحيين</h1>
+<p><b>طالب التحيين</b><br>الاسم واللقب: ${v("nom")} — تاريخ الولادة: ${v("naissance")} — المهنة: ${v("profession")} — الجنسية: ${v("nationalite")}<br>الصفة: ${v("qualite_dem")}${v.has("regime") ? ` — النظام المالي للزوجين: ${v("regime")}` : ""}<br>المقر المعين: ${v("adresse")}</p>
+<p><b>الرسم العقاري</b><br>عدد الرسم أو الرسوم العقارية المعنية بالتحيين: ${v("titres")} — محكمة الناحية بـ${v("tribunal")} — المعتمدية: ${v("delegation")}</p>
+<p><b>موضوع مطلب التحيين:</b> ${v("objet")}${v.is("objet", "parcelle") ? ` (${v("parcelles")})` : ""}${v.is("objet", "part_titre") ? ` (${v("parts")})` : ""}${v.is("objet", "part_parcelle") ? ` (${v("parts_parcelle")})` : ""}.</p>
+<p><b>الوثائق المستند إليها:</b> ${v("documents")}</p>
+<p><b>نوع الحقوق والعمليات المطلوب إدراجها:</b> ${v("operations")}</p>
+${v.has("difficultes") ? `<p><b>الصعوبات أو الإخلالات المتعلقة بالوثائق المقدمة للترسيم:</b> ${v("difficultes")}</p>` : ""}
+<p>أرجو التفضل بتحيين الرسم العقاري المذكور أعلاه وإدراج الحقوق والعمليات المطلوبة.</p>
+${faitAR(v)}${signe("الإمضاء")}`,
+  etapes: [ETAPE_REMPLIR,
+    { ic: "liste", fr: ["Rassembler les pièces", "Deux copies de chaque document invoqué (actes, hojja, certificat d'hérédité, jugement…), une copie récente du titre foncier, et votre CIN."], ar: ["جمع الوثائق", "نسختان من كل وثيقة مستند إليها (عقود، حجج، حجة وفاة وإرث، حكم…)، نسخة حديثة من الرسم العقاري، وبطاقة التعريف."] },
+    { ic: "remettre", fr: ["Déposer au tribunal immobilier", "Au tribunal immobilier dont dépend le terrain (ou à sa section régionale). Demandez un reçu avec le numéro de la demande."], ar: ["الإيداع بالمحكمة العقارية", "بالمحكمة العقارية التي يرجع إليها العقار بالنظر (أو بفرعها الجهوي). اطلب وصلا بعدد المطلب."] },
+    { ic: "horloge", fr: ["Suivre la demande", "Le tribunal examine les pièces et ordonne les inscriptions possibles. Répondez vite s'il vous demande un complément."], ar: ["متابعة المطلب", "تدرس المحكمة الوثائق وتأذن بالترسيمات الممكنة. أجب بسرعة إذا طُلب منك استكمال الملف."] }],
+  pieces: { fr: ["Deux copies de chaque document invoqué (vente, partage, hojja, certificat d'hérédité, jugement)", "Copie récente du titre foncier (ou certificat de propriété)", "Copie de la CIN ; pour une société : statuts, extrait du RNE et pouvoir du représentant"],
+            ar: ["نسختان من كل الوثائق المستند إليها (بيع، قسمة، حجة، حجة وفاة وإرث، حكم)", "نسخة حديثة من الرسم العقاري (أو شهادة ملكية)", "نسخة من بطاقة التعريف؛ بالنسبة إلى الشركة: العقد التأسيسي ومضمون من السجل الوطني للمؤسسات وتفويض الممثل القانوني"] },
+  ou: { fr: ["Tribunal immobilier (siège ou section régionale) dont dépend le terrain", "Office national de la propriété foncière : copie du titre foncier"], ar: ["المحكمة العقارية (المقر أو الفرع الجهوي) التي يرجع إليها العقار بالنظر", "الديوان الوطني للملكية العقارية: نسخة من الرسم العقاري"] },
+  pieges: { fr: ["Faites d'abord enregistrer à la recette des finances les actes qui ne l'ont pas été : un acte non enregistré ne peut pas être inscrit.", "Indiquez toutes les opérations dans l'ordre (vente, puis héritage…) : chaque étape manquante bloque la mise à jour."],
+            ar: ["سجل أولا بالقباضة المالية العقود غير المسجلة: العقد غير المسجل لا يمكن ترسيمه.", "اذكر جميع العمليات حسب ترتيبها (بيع ثم إرث…): كل حلقة ناقصة تعطل التحيين."] },
+  averifier: { fr: ["Le tribunal peut demander de remplir son propre formulaire imprimé (réf. 03-06.33-02) : ce modèle reprend ses rubriques, demandez au greffe s'il l'accepte.", "Frais, délais et pièces exactes : à demander au tribunal immobilier."],
+               ar: ["قد تطلب المحكمة تعمير مطبوعتها الخاصة (المرجع 03-06.33-02): يتضمن هذا النموذج نفس الخانات، اسأل كتابة المحكمة إن كانت تقبله.", "المعاليم والآجال والوثائق الدقيقة: يُسأل عنها لدى المحكمة العقارية."] },
+  faq: [
+    { fr: ["Qu'est-ce qu'un titre foncier « gelé » ?", "Un titre sur lequel les changements de propriétaire (ventes, héritages, partages) n'ont pas été inscrits : il ne montre plus les vrais propriétaires."], ar: ["ما هو الرسم العقاري «المجمد»؟", "رسم لم تُرسَّم عليه التغييرات في الملكية (بيوعات، إرث، قسمة): فلم يعد يُظهر المالكين الحقيقيين."] },
+    { fr: ["Où trouver le formulaire officiel ?", "Au tribunal immobilier, ou en PDF sur le site du ministère de la Justice (rubrique formulaires)."], ar: ["أين أجد المطبوعة الرسمية؟", "بالمحكمة العقارية، أو في شكل PDF بموقع وزارة العدل (ركن المطبوعات)."] }
+  ],
+  sources: ["justice", "opf", "legislation"]
 }
 ];
 

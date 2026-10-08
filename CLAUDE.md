@@ -15,7 +15,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Adresse prévue : https://ah6259.github.io/documents-tunisie/ — dépôt `Ah6259/documents-tunisie` (GitHub Pages, main).
 - Couleur principale bordeaux `#8C2B3A`. Français + arabe (bouton, ou `?lang=ar`). Mobile d'abord.
 - **Le PDF ne porte AUCUNE mention du site** (décision d'Ahmed 05/10/2026 : c'est le document de la personne, on aide seulement à l'écrire ; l'avertissement « modèle indicatif / relisez » reste sur la page web). Test + sabotage le vérifient.
-- 20 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**), dont **4 grands contrats** (07/10/2026, demande
+- 25 modèles à remplir (PDF par l'impression du navigateur, **rien n'est envoyé**), dont **4 grands contrats** (07/10/2026, demande
   d'Ahmed : vente voiture, vente moto, location maison, bail commercial ; `grand: true`, rédigés d'après le COC et la loi n° 77-37,
   aucun texte copié). **Décision d'Ahmed (07/10/2026) : plus de règle « modèle seulement après relecture par un avocat »** ; pas de
   mention « modèle indicatif » ajoutée. `CONTRATS` (étapes seulement) est vide.
@@ -142,3 +142,8 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 - **Documents des ministères (08/10/2026)** : la veille hebdomadaire du site des concours (`robot/veille_ministeres.py`) relève aussi les
   formulaires officiels des sites des ministères → liste `documents` de `alerte-concours-tunisie/donnees/ministeres.json`
   (titre + lien officiel). Liste PROPOSÉE à Ahmed : on ne crée un document ici qu'avec son accord.
+- **5 formulaires officiels ajoutés (09/10/2026, « ajoute 1, 2, 3 et 4 » d'Ahmed)**, rubriques reprises des formulaires des ministères
+  (relevés par la veille du site des concours) : `demande-acces-information`, `recours-acces-information` (tadhallom auprès du chef
+  de l'organisme), `requete-inai-acces-information` (le « modèle de requête » de la Justice est en fait la requête à l'INAI),
+  `requisition-immatriculation-fonciere` (مطلب تسجيل اختياري, réf. 03-06.01-02) et `demande-mise-a-jour-titre-foncier` (مطلب تحيين,
+  réf. 03-06.33-02). Sources ajoutées : `inai`, `pm_acces`, `opf` (Domaines de l'État / ONPF). Délais de la loi 2016-22 marqués « à vérifier ».
