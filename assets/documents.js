@@ -464,6 +464,123 @@ ${salutFR("Madame, Monsieur")}${signe("Signature")}`,
   ],
   sources: ["aneti", "portail"]
 },
+/* ======================================================================= CV (08/10/2026, demande d'Ahmed : CV et lettres de motivation) */
+{
+  slug: "cv", cat: "travail", rang: 4.1,
+  titre: { fr: "Curriculum vitae (CV)", ar: "السيرة الذاتية (CV)" },
+  court: { fr: "Votre CV d'une page, propre, en français ou en arabe.", ar: "سيرتك الذاتية في صفحة واحدة، بالعربية أو بالفرنسية." },
+  bref: { fr: "Un CV clair d'une seule page : vos coordonnées, le poste recherché, vos expériences, vos diplômes, vos compétences et vos langues. À joindre à votre lettre de motivation ou à votre demande d'emploi.",
+          ar: "سيرة ذاتية واضحة في صفحة واحدة: معطياتك، الخطة المطلوبة، خبراتك، شهائدك، مهاراتك واللغات. تُرفق برسالة الدوافع أو بمطلب الشغل." },
+  legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." }, delai: { fr: "Selon l'offre d'emploi.", ar: "حسب عرض الشغل." } },
+  // exemple affiché avant le formulaire (données FICTIVES)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], titre: ["Technicien en maintenance informatique", "تقني في صيانة الإعلامية"], ville: ["Tunis", "تونس"], tel: "XX XXX XXX", email: "nom@exemple.tn", naissance: "1998-03-14",
+             profil: ["Technicien sérieux, quatre ans d'expérience en maintenance et en réseaux.", "تقني جدي، أربع سنوات خبرة في الصيانة والشبكات."],
+             experiences: ["2023 – 2025 : technicien de maintenance, Société Al Amal, Tunis\n2021 – 2023 : stage en réseaux, Société Nour, Sfax", "2023 – 2025: تقني صيانة، شركة الأمل، تونس\n2021 – 2023: تربص في الشبكات، شركة النور، صفاقس"],
+             formations: ["2021 : licence en informatique, Université de Sfax\n2018 : baccalauréat sciences techniques", "2021: إجازة في الإعلامية، جامعة صفاقس\n2018: باكالوريا علوم تقنية"],
+             competences: ["Réparation d'ordinateurs et d'imprimantes\nInstallation de réseaux\nWord, Excel", "إصلاح الحواسيب والطابعات\nتركيز الشبكات\nWord، Excel"],
+             langues: ["Arabe (langue maternelle), français (courant), anglais (bon niveau)", "العربية (اللغة الأم)، الفرنسية (جيد جدا)، الإنجليزية (جيد)"] },
+  champs: [
+    groupe("Vous", "أنت"), nom("nom"),
+    c("titre", "Poste recherché ou métier", "الخطة المطلوبة أو المهنة", ["Technicien en maintenance informatique", "تقني في صيانة الإعلامية"]),
+    c("ville", "Ville ou adresse", "المدينة أو العنوان", ["Tunis", "تونس"], { opt: true }),
+    c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
+    c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true, mode: "email" }),
+    date("naissance", "Date de naissance", "تاريخ الولادة", { opt: true, ex: "1998-03-14" }),
+    c("profil", "En deux lignes : qui êtes-vous ?", "في سطرين: من أنت؟", ["Technicien sérieux, quatre ans d'expérience en maintenance et en réseaux.", "تقني جدي، أربع سنوات خبرة في الصيانة والشبكات."], { opt: true, type: "textarea" }),
+    groupe("Votre parcours (une ligne par élément)", "مسيرتك (سطر لكل عنصر)"),
+    c("experiences", "Expériences : années, poste, entreprise, ville", "الخبرات: السنوات، الخطة، المؤسسة، المدينة", ["2023 – 2025 : technicien de maintenance, Société Al Amal, Tunis", "2023 – 2025: تقني صيانة، شركة الأمل، تونس"], { type: "textarea" }),
+    c("formations", "Diplômes et formations", "الشهائد والتكوين", ["2021 : licence en informatique, Université de Sfax", "2021: إجازة في الإعلامية، جامعة صفاقس"], { type: "textarea" }),
+    c("competences", "Compétences", "المهارات", ["Réparation d'ordinateurs, Word, Excel", "إصلاح الحواسيب، Word، Excel"], { type: "textarea" }),
+    c("langues", "Langues", "اللغات", ["Arabe (maternelle), français (courant)", "العربية (اللغة الأم)، الفرنسية (جيد جدا)"]),
+    c("interets", "Centres d'intérêt", "الاهتمامات", ["Football, bénévolat", "كرة القدم، العمل التطوعي"], { opt: true })
+  ],
+  fr: v => `<div class="d-cv"><p class="d-cv-nom">${v("nom")}</p><p class="d-cv-poste">${v("titre")}</p>
+<p class="d-cv-contact">${[v.has("ville") && v("ville"), "Tél. : " + v("tel"), v.has("email") && v("email"), v.has("naissance") && "Né(e) le " + v("naissance")].filter(Boolean).join(" · ")}</p>
+${v.has("profil") ? `<p class="d-cv-profil">${v("profil")}</p>` : ""}
+<p class="d-cv-rub">Expérience professionnelle</p><p class="d-cv-liste">${v("experiences")}</p>
+<p class="d-cv-rub">Formation</p><p class="d-cv-liste">${v("formations")}</p>
+<p class="d-cv-rub">Compétences</p><p class="d-cv-liste">${v("competences")}</p>
+<p class="d-cv-rub">Langues</p><p>${v("langues")}</p>
+${v.has("interets") ? `<p class="d-cv-rub">Centres d'intérêt</p><p>${v("interets")}</p>` : ""}</div>`,
+  ar: v => `<div class="d-cv"><p class="d-cv-nom">${v("nom")}</p><p class="d-cv-poste">${v("titre")}</p>
+<p class="d-cv-contact">${[v.has("ville") && v("ville"), "الهاتف: " + v("tel"), v.has("email") && v("email"), v.has("naissance") && "تاريخ الولادة: " + v("naissance")].filter(Boolean).join(" · ")}</p>
+${v.has("profil") ? `<p class="d-cv-profil">${v("profil")}</p>` : ""}
+<p class="d-cv-rub">الخبرة المهنية</p><p class="d-cv-liste">${v("experiences")}</p>
+<p class="d-cv-rub">التكوين والشهائد</p><p class="d-cv-liste">${v("formations")}</p>
+<p class="d-cv-rub">المهارات</p><p class="d-cv-liste">${v("competences")}</p>
+<p class="d-cv-rub">اللغات</p><p>${v("langues")}</p>
+${v.has("interets") ? `<p class="d-cv-rub">الاهتمامات</p><p>${v("interets")}</p>` : ""}</div>`,
+  etapes: [ETAPE_REMPLIR,
+    { ic: "verifier", fr: ["Relire et adapter", "Une seule page suffit. Pour chaque offre, adaptez le poste recherché et mettez en premier les compétences demandées."], ar: ["المراجعة والتكييف", "صفحة واحدة تكفي. لكل عرض، كيّف الخطة المطلوبة وضع في البداية المهارات المطلوبة."] },
+    { ic: "remettre", fr: ["Envoyer ou déposer", "Envoyez le PDF par e-mail, ou imprimez-le et joignez-le à votre lettre de motivation et à la copie de vos diplômes."], ar: ["الإرسال أو الإيداع", "أرسل ملف PDF عبر البريد الإلكتروني، أو اطبعه وأرفقه برسالة الدوافع ونسخة من شهائدك."] },
+    { ic: "garder", fr: ["Garder votre CV à jour", "Ajoutez chaque nouvelle expérience ou formation : le modèle se remplit en quelques minutes."], ar: ["تحيين السيرة الذاتية", "أضف كل خبرة أو تكوين جديد: يُعمَّر النموذج في دقائق."] }],
+  pieces: { fr: ["Lettre de motivation", "Copies des diplômes et attestations de travail ou de stage"], ar: ["رسالة الدوافع", "نسخ من الشهائد وشهائد العمل أو التربص"] },
+  ou: { fr: ["Service du personnel ou adresse e-mail indiquée dans l'offre", "Bureau de l'emploi et du travail indépendant (ANETI) le plus proche"], ar: ["مصلحة الأعوان أو البريد الإلكتروني المذكور في العرض", "أقرب مكتب للتشغيل والعمل المستقل"] },
+  pieges: { fr: ["N'inventez jamais un diplôme ou une expérience : l'employeur vérifie les attestations.", "Évitez une adresse e-mail fantaisiste : préférez prénom.nom."], ar: ["لا تذكر أبدا شهادة أو خبرة غير صحيحة: يتثبت المؤجر من الشهائد.", "تجنب بريدا إلكترونيا غير جدي: استعمل الاسم.اللقب."] },
+  averifier: { fr: [], ar: [] },
+  faq: [
+    { fr: ["Faut-il mettre une photo sur le CV ?", "Ce n'est pas obligatoire. Si l'offre la demande, joignez une photo d'identité récente."], ar: ["هل يجب وضع صورة في السيرة الذاتية؟", "ليس إجباريا. إذا طلبها العرض، أرفق صورة شمسية حديثة."] },
+    { fr: ["CV en arabe ou en français ?", "Suivez la langue de l'offre. Pour une administration, l'arabe est souvent préféré ; ce site fait les deux."], ar: ["سيرة ذاتية بالعربية أم بالفرنسية؟", "اتبع لغة العرض. بالنسبة إلى الإدارة، تُفضَّل العربية غالبا؛ هذا الموقع يصنع الاثنتين."] }
+  ],
+  sources: ["aneti", "portail"]
+},
+/* ======================================================================= Lettre de motivation (08/10/2026) */
+{
+  slug: "lettre-de-motivation", cat: "travail", rang: 4.2,
+  titre: { fr: "Lettre de motivation", ar: "رسالة الدوافع (Lettre de motivation)" },
+  court: { fr: "Lettre qui explique pourquoi vous êtes la bonne personne pour le poste.", ar: "رسالة تشرح لماذا أنت الشخص المناسب للخطة." },
+  bref: { fr: "Plus complète qu'une simple demande d'emploi : elle répond à une annonce (ou propose une candidature spontanée), présente votre diplôme, votre expérience et vos qualités, et vos disponibilités.",
+          ar: "أكمل من مطلب الشغل البسيط: تجيب على إعلان (أو ترشح تلقائي)، وتقدم شهادتك وخبرتك وصفاتك وموعد توفرك." },
+  legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." }, delai: { fr: "Selon l'offre d'emploi.", ar: "حسب عرض الشغل." } },
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], tel: "XX XXX XXX", email: "nom@exemple.tn", org: ["Société Al Amal", "شركة الأمل"],
+             poste: ["technicien en informatique", "تقني في الإعلامية"], annonce: ["votre annonce publiée sur le site de l'ANETI", "إعلانكم المنشور على موقع الوكالة الوطنية للتشغيل"],
+             diplome: ["une licence en informatique", "إجازة في الإعلامية"], experience: ["deux ans de maintenance d'ordinateurs et de réseaux dans une entreprise de services", "سنتان في صيانة الحواسيب والشبكات في مؤسسة خدمات"],
+             atouts: ["rigoureux, ponctuel et à l'aise avec les clients", "دقيق ومنضبط في المواعيد وأحسن التعامل مع الحرفاء"], dispo: ["immédiatement", "فورا"], lieu: ["Tunis", "تونس"], date: "2026-10-05" },
+  champs: [
+    groupe("Vous", "أنت"), nom("nom"), adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
+    c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true, mode: "email" }),
+    groupe("Le poste", "الخطة"), c("org", "Entreprise ou administration", "المؤسسة أو الإدارة", ["Société Al Amal", "شركة الأمل"]),
+    c("poste", "Poste demandé", "الخطة المطلوبة", ["technicien en informatique", "تقني في الإعلامية"]),
+    c("annonce", "Annonce (vide = candidature spontanée)", "الإعلان (فارغ = ترشح تلقائي)", ["votre annonce publiée sur le site de l'ANETI", "إعلانكم المنشور على موقع الوكالة الوطنية للتشغيل"], { opt: true }),
+    groupe("Vous en quelques mots", "أنت في كلمات"),
+    c("diplome", "Diplôme", "الشهادة العلمية", ["une licence en informatique", "إجازة في الإعلامية"]),
+    c("experience", "Votre expérience", "خبرتك", ["deux ans de maintenance d'ordinateurs et de réseaux", "سنتان في صيانة الحواسيب والشبكات"], { type: "textarea" }),
+    c("atouts", "Vos qualités (après « Je suis »)", "صفاتك (بعد « أنا »)", ["rigoureux, ponctuel et à l'aise avec les clients", "دقيق ومنضبط في المواعيد"]),
+    c("dispo", "Disponible à partir de", "متاح(ة) ابتداءً من", ["immédiatement", "فورا"], { opt: true }),
+    ...fin()
+  ],
+  fr: v => `${expediteur(v, [v("nom"), v("adresse"), "Tél. : " + v("tel"), v.has("email") && v("email")])}
+<p class="d-dest">À l'attention du responsable du recrutement<br>${v("org")}</p><p class="d-lieu-date">${v("lieu")}, le ${v("date")}</p>
+<p class="d-objet"><b>Objet :</b> candidature au poste de ${v("poste")}</p>
+<p>Madame, Monsieur,</p>
+<p>${v.has("annonce") ? `Suite à ${v("annonce")}, j'ai le plaisir de vous présenter ma candidature au poste de ${v("poste")}.` : `Je vous adresse ma candidature spontanée au poste de ${v("poste")} au sein de ${v("org")}.`}</p>
+<p>Titulaire de ${v("diplome")}, j'ai acquis l'expérience suivante : ${v("experience")}.</p>
+<p>Je suis ${v("atouts")}. Rejoindre ${v("org")} me permettrait de mettre ces qualités au service de votre équipe.${v.has("dispo") ? ` Je suis disponible ${v("dispo")}.` : ""}</p>
+<p>Vous trouverez ci-joint mon curriculum vitae. Je reste à votre disposition pour un entretien.</p>
+${salutFR("Madame, Monsieur")}${signe("Signature")}`,
+  ar: v => `${expediteur(v, [v("nom"), v("adresse"), "الهاتف: " + v("tel"), v.has("email") && v("email")])}
+<p class="d-dest">إلى السيد(ة) المسؤول(ة) عن الانتداب<br>${v("org")}</p><p class="d-lieu-date">${v("lieu")} في ${v("date")}</p>
+<p class="d-objet"><b>الموضوع:</b> ترشح لخطة ${v("poste")}</p>
+<p>تحية طيبة وبعد،</p>
+<p>${v.has("annonce") ? `إثر ${v("annonce")}، يشرفني أن أتقدم إليكم بترشحي لخطة ${v("poste")}.` : `يشرفني أن أتقدم إليكم بترشح تلقائي لخطة ${v("poste")} بـ${v("org")}.`}</p>
+<p>وأنا متحصل(ة) على ${v("diplome")}، ولدي الخبرة التالية: ${v("experience")}.</p>
+<p>أنا ${v("atouts")}، وانضمامي إلى ${v("org")} سيمكنني من وضع هذه الصفات على ذمة فريقكم.${v.has("dispo") ? ` وأنا متاح(ة) ${v("dispo")}.` : ""}</p>
+<p>تجدون صحبة هذا سيرتي الذاتية، وأبقى على ذمتكم لإجراء مقابلة.</p>
+${salutAR}${signe("الإمضاء")}`,
+  etapes: [ETAPE_REMPLIR,
+    { ic: "verifier", fr: ["Personnaliser", "Citez l'entreprise et le poste exacts, et une qualité utile pour ce poste. Une lettre copiée partout se remarque."], ar: ["التخصيص", "اذكر المؤسسة والخطة بدقة، وصفة مفيدة لهذه الخطة. الرسالة المنسوخة في كل مكان تُلاحَظ."] },
+    ETAPE_IMPRIMER(0),
+    { ic: "remettre", fr: ["Envoyer le dossier", "Lettre + CV + copies des diplômes, par e-mail ou déposés contre décharge."], ar: ["إرسال الملف", "الرسالة + السيرة الذاتية + نسخ الشهائد، عبر البريد الإلكتروني أو تُودع مقابل وصل."] }],
+  pieces: { fr: ["CV à jour", "Copies des diplômes et attestations de travail ou de stage"], ar: ["سيرة ذاتية محينة", "نسخ من الشهائد وشهائد العمل أو التربص"] },
+  ou: { fr: ["Service du personnel ou adresse e-mail indiquée dans l'offre", "Bureau de l'emploi et du travail indépendant (ANETI) le plus proche"], ar: ["مصلحة الأعوان أو البريد الإلكتروني المذكور في العرض", "أقرب مكتب للتشغيل والعمل المستقل"] },
+  pieges: { fr: ["Pour un concours de la fonction publique, suivez l'avis officiel du concours : il a ses propres formulaires et délais."], ar: ["بالنسبة إلى مناظرات الوظيفة العمومية، اتبع بلاغ المناظرة الرسمي: له استماراته وآجاله الخاصة."] },
+  averifier: { fr: [], ar: [] },
+  faq: [
+    { fr: ["Lettre de motivation ou demande d'emploi : quelle différence ?", "La demande d'emploi est très courte. La lettre de motivation explique en plus votre expérience et vos qualités : elle est préférée par les entreprises."], ar: ["رسالة الدوافع أم مطلب الشغل: ما الفرق؟", "مطلب الشغل قصير جدا. أما رسالة الدوافع فتشرح أيضا خبرتك وصفاتك: تفضلها المؤسسات."] },
+    { fr: ["Faut-il légaliser la lettre ?", "Non."], ar: ["هل يجب التعريف بالإمضاء؟", "لا."] }
+  ],
+  sources: ["aneti", "portail"]
+},
 /* ======================================================================= 6 */
 {
   slug: "autorisation-de-voyage-mineur", cat: "famille", rang: 6,
