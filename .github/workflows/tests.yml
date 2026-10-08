@@ -14,6 +14,7 @@ jobs:
         with: { node-version: 20 }
       - run: npm install --no-save --no-package-lock jsdom
       - run: MUET=1 node tools/test_site.mjs
+      - run: node tools/sabotage.mjs
       - run: node tools/test_sw.mjs
       - run: node tools/test_video.mjs
       - run: node tools/test_avis.mjs
