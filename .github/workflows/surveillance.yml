@@ -40,6 +40,7 @@ jobs:
           git config user.name "robot-documents"
           git config user.email "robot-documents@users.noreply.github.com"
           git commit --allow-empty -m "Battement de coeur : sources verifiees le $(date +%d/%m/%Y)"
+          git pull -q --rebase --autostash
           git push
       - name: Fermer les alertes résolues
         if: steps.verif.outputs.code == '0'
