@@ -137,7 +137,7 @@ for (const d of DOCS) {
 }
 {
   const w = await page(DOCS[0].slug + "/index.html", "ar"), doc = w.document;
-  check("page en arabe : lang=ar, dir=rtl, bouton « Français »", doc.documentElement.lang === "ar" && doc.documentElement.dir === "rtl" && doc.querySelector(".langue").textContent === "Français");
+  check("page en arabe : lang=ar, dir=rtl, bouton court « Fr » (titre « Français »)", doc.documentElement.lang === "ar" && doc.documentElement.dir === "rtl" && doc.querySelector(".langue").textContent === "Fr" && doc.querySelector(".langue").title === "Français");
   check("page en arabe : aperçu du document en arabe par défaut", doc.querySelector('#apercu .feuille[lang="ar"]') && !doc.querySelector('#apercu .feuille[lang="fr"]'));
   // (jsdom ne charge pas la feuille de style : on vérifie la structure + la règle CSS qui cache l'autre langue)
   check("page en arabe : exemples des champs en arabe", ARABE.test(doc.querySelector("#formulaire input[type=text]").placeholder));
