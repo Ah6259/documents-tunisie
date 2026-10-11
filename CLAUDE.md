@@ -147,3 +147,5 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   de l'organisme), `requete-inai-acces-information` (le « modèle de requête » de la Justice est en fait la requête à l'INAI),
   `requisition-immatriculation-fonciere` (مطلب تسجيل اختياري, réf. 03-06.01-02) et `demande-mise-a-jour-titre-foncier` (مطلب تحيين,
   réf. 03-06.33-02). Sources ajoutées : `inai`, `pm_acces`, `opf` (Domaines de l'État / ONPF). Délais de la loi 2016-22 marqués « à vérifier ».
+
+- **Adresse depuis le 11/10/2026 : https://documents.clicvia.com/** (domaine clicvia.com d'Ahmed, ligne DNS `CNAME documents → ah6259.github.io` nuage gris, fichier `CNAME`). L'ancienne adresse ah6259.github.io/documents-tunisie/ redirige seule. Site à la racine « / » : `BASE_SITE` de assets/page.js (sw.js, vidéo) ; GoatCounter garde le préfixe `/documents-tunisie`. Si l'outil vidéo réécrit le bloc VIDEO_SITE, remettre `"base": BASE_SITE` et l'ORIGINE documents.clicvia.com.

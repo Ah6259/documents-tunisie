@@ -1,6 +1,6 @@
 /* Documents Tunisie — langue (français / arabe), en-tête et pied communs, protection légère, recherche de l'accueil */
 const MAJ = "05/10/2026";   // date UNIQUE de la dernière vérification des fiches (changée par le robot surveillance.yml)
-const SITE = "https://ah6259.github.io/documents-tunisie/";
+const SITE = "https://documents.clicvia.com/";
 
 /* --- anti-cadre : le site ne s'affiche pas dans la page d'un autre site --- */
 // La mémoire du navigateur est PARTAGÉE par tous les sites d'ah6259.github.io : n'accepter que « fr » ou « ar »
@@ -57,7 +57,7 @@ const SITE = "https://ah6259.github.io/documents-tunisie/";
     // bouton Partager (demande d'Ahmed) : menu de partage du téléphone, sinon WhatsApp avec le lien de la page
     document.querySelectorAll(".partager").forEach(b => b.addEventListener("click", async () => {
       const url = location.href.split("#")[0].replace(/[?&]lang=(fr|ar)/, ""), titre = document.title.split(" | ")[0];
-      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage" + location.pathname.replace("/documents-tunisie/", "/"), title: "Partage", event: true }); } catch (e) {}
+      try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: "partage" + location.pathname.replace(/^\/documents-tunisie\//, "/"), title: "Partage", event: true }); } catch (e) {}
       return window.partagerLien();
     }));
     document.querySelectorAll("[data-maj]").forEach(x => x.textContent = MAJ);
@@ -159,18 +159,23 @@ document.addEventListener("DOMContentLoaded", () => {
    Seulement en https (jamais en file: pendant les tests locaux). */
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", () => {
-    try { navigator.serviceWorker.register("/documents-tunisie/sw.js", { scope: "/documents-tunisie/" }).catch(() => {}); } catch (e) { /* rien : le site marche sans */ }
+    try { navigator.serviceWorker.register(BASE_SITE + "sw.js", { scope: BASE_SITE }).catch(() => {}); } catch (e) { /* rien : le site marche sans */ }
   });
 }
 
 /* >>> vidéo de présentation : page video/ partagée par le bouton « Partager » (outil vidéos d'Ahmed) */
-window.VIDEO_SITE = {"base": "/documents-tunisie/", "defaut": "ar", "nom": {"fr": "Documents Tunisie", "ar": "وثائق تونس"}};
+/* Adresse du site (11 octobre 2026) : documents.clicvia.com (racine « / ») ; l'ancienne adresse ah6259.github.io/documents-tunisie/ redirige
+   vers elle. BASE_SITE = dossier du site selon l'adresse ; GoatCounter garde le préfixe /documents-tunisie (compteur commun). */
+var BASE_SITE = /\.github\.io$/.test(location.hostname) ? "/documents-tunisie/" : "/";
+window.goatcounter = window.goatcounter || {};
+window.goatcounter.path = function (p) { return BASE_SITE === "/" ? "/documents-tunisie" + p : p; };
+window.VIDEO_SITE = {"base": BASE_SITE, "defaut": "ar", "nom": {"fr": "Documents Tunisie", "ar": "وثائق تونس"}};
 /* Bouton « Partager » (demande d'Ahmed, octobre 2026) : partage un LIEN vers la page vidéo du site (qui montre la vidéo
    de présentation, avec un gros bouton « Ouvrir le site ») + l'adresse du site dans le texte. WhatsApp et Facebook
    affichent l'aperçu de la page vidéo (grande image, vidéo lisible sur Facebook). Menu de partage du téléphone, sinon WhatsApp.
    Espace professionnels des annuaires : page « video-pro/ ». Réglages : window.VIDEO_SITE (juste au-dessus). */
 (function () {
-  var S = window.VIDEO_SITE, ORIGINE = "https://ah6259.github.io";
+  var S = window.VIDEO_SITE, ORIGINE = S.base === "/" ? "https://documents.clicvia.com" : "https://ah6259.github.io";
   function langue() { return document.documentElement.lang || S.defaut; }
   function M(o) { return o[langue()] || o[S.defaut] || o.fr; }
   // page vidéo à partager (et page du site correspondante) selon la page où l'on est

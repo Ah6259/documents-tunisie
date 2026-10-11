@@ -104,7 +104,7 @@ async function page(chemin, lang = "fr") {
   const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
     (_, a, src) => `<script>${readFileSync(join(dossier, src), "utf8")}</script>`);
   const vc = new VirtualConsole(); vc.on("jsdomError", e => { if (!/Not implemented/.test(e.message)) { console.log("   erreur JS :", chemin, e.message); erreurs++; } });
-  const dom = new JSDOM(html, { url: `https://ah6259.github.io/documents-tunisie/${chemin.replace("index.html", "")}?lang=${lang}`,
+  const dom = new JSDOM(html, { url: `https://documents.clicvia.com/${chemin.replace("index.html", "")}?lang=${lang}`,
     runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc });
   dom.window.__imprime = 0; dom.window.print = () => dom.window.__imprime++;
   await new Promise(ok => dom.window.addEventListener("load", ok));
@@ -244,7 +244,7 @@ async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois =
   const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
     (_, a, src) => `<script>${readFileSync(join(dossier, src), "utf8")}</script>`);
   const vc = new VirtualConsole(); vc.on("jsdomError", e => { if (!/Not implemented/.test(e.message)) { console.log("   erreur JS :", chemin, e.message); erreurs++; } });
-  const dom = new JSDOM(html, { url: `https://ah6259.github.io/documents-tunisie/${chemin.replace("index.html", "")}`, runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc,
+  const dom = new JSDOM(html, { url: `https://documents.clicvia.com/${chemin.replace("index.html", "")}`, runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc,
     beforeParse(w) {
       try { if (!w.localStorage.getItem("langue")) w.localStorage.setItem("langue", "fr"); } catch (e) {}  // ces scénarios lisent les textes français
       const Vraie = w.Date;
@@ -453,9 +453,9 @@ for (const p of ["index.html", DOCS[0].slug + "/index.html"]) {
   b?.click(); await new Promise(ok => setTimeout(ok, 0));
   // partage par lien (demande d'Ahmed) : page vidéo du site + adresse du site, dans la langue de la page (arabe par défaut)
   const lg = doc.documentElement.lang, q = lg === "ar" ? "" : "?lang=" + lg;
-  const adresse = "https://ah6259.github.io/documents-tunisie/video/" + q;
+  const adresse = "https://documents.clicvia.com/video/" + q;
   check(`${p} : sans navigator.share, le clic ouvre wa.me avec la page vidéo + l'adresse du site`, ouverts.length === 1 && ouverts[0][0].startsWith("https://wa.me/?text=")
-    && decodeURIComponent(ouverts[0][0].slice(20)).endsWith(" " + adresse) && decodeURIComponent(ouverts[0][0]).includes("https://ah6259.github.io/documents-tunisie/" + q) && ouverts[0][1] === "_blank");
+    && decodeURIComponent(ouverts[0][0].slice(20)).endsWith(" " + adresse) && decodeURIComponent(ouverts[0][0]).includes("https://documents.clicvia.com/" + q) && ouverts[0][1] === "_blank");
 }
 check("même version ?v= sur toutes les pages", V.size === 1);
 // les pages publiées sont à jour par rapport aux données
@@ -463,7 +463,7 @@ const gen = await import("file://" + join(root, "tools/generer.mjs").replace(/\\
 const attendu = gen.pages(root);
 const perimees = Object.entries(attendu).filter(([f, s]) => !existsSync(join(root, f)) || lire(f).replace(/\r\n/g, "\n") !== s).map(([f]) => f);
 check(`pages à jour (sinon : node tools/generer.mjs)${perimees.length ? " — " + perimees.join(", ") : ""}`, !perimees.length);
-check("plan du site : au moins 29 pages (dont pass/ et la page vidéo)", (lire("sitemap.xml").match(/<loc>/g) || []).length >= 29 && lire("sitemap.xml").includes("/documents-tunisie/pass/</loc>") && lire("sitemap.xml").includes("/documents-tunisie/video/</loc>"));
+check("plan du site : au moins 29 pages (dont pass/ et la page vidéo)", (lire("sitemap.xml").match(/<loc>/g) || []).length >= 29 && lire("sitemap.xml").includes("documents.clicvia.com/pass/</loc>") && lire("sitemap.xml").includes("documents.clicvia.com/video/</loc>"));
 
 // photos : licence libre, crédit, preuves
 const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
@@ -514,7 +514,7 @@ check("image d'aperçu 1200×630 présente", (([l, h]) => l === 1200 && h === 63
 // manifeste : id UNIQUE = chemin du site (sinon Chrome croit le site « déjà installé » : tous les sites partagent ah6259.github.io)
 let man = {}; try { man = JSON.parse(lire("manifest.webmanifest")); } catch (e) {}
 check("manifeste présent, id unique = chemin du site, start_url/scope ./, icônes 192, 512 et maskable existantes",
-  man.id === "/documents-tunisie/" && man.start_url === "./" && man.scope === "./" && man.display === "standalone" && !!man.name && !!man.short_name
+  man.id === "/" && man.start_url === "./" && man.scope === "./" && man.display === "standalone" && !!man.name && !!man.short_name
   && ["192x192", "512x512"].every(t => man.icons?.some(i => i.sizes === t)) && man.icons?.some(i => i.purpose === "maskable")
   && man.icons.every(i => existsSync(join(root, i.src))) && existsSync(join(root, "assets/icons/apple-touch-icon.png")));
 check("toutes les pages : lien vers le manifeste, icône iPhone et theme-color", fichiers.every(p => { const s = lire(p), r = "../".repeat(p.split("/").length - 1);

@@ -8,7 +8,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createRequire } from "module";
 
-export const UA = "Mozilla/5.0 (compatible; DocumentsTunisie-verification/1.0; +https://ah6259.github.io/documents-tunisie/)";
+export const UA = "Mozilla/5.0 (compatible; DocumentsTunisie-verification/1.0; +https://documents.clicvia.com/)";
 const pause = ms => new Promise(r => setTimeout(r, ms));
 
 // Une source est « en panne » si elle ne répond pas, répond par une erreur (4xx/5xx) ou renvoie une page presque vide.

@@ -15,7 +15,7 @@ export function pages(root) {
   delete req.cache[req.resolve(join(root, "assets/modele.js"))];
   const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
-  const URL = "https://ah6259.github.io/documents-tunisie/";
+  const URL = "https://documents.clicvia.com/";
   // ?v= : empreinte des fichiers communs (fins de ligne normalisées, pour que Windows et GitHub soient d'accord)
   const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js", "assets/avis.js", "assets/pass.js"]
     .map(f => lire(f).replace(/\r\n/g, "\n")).join("\n")).digest("hex").slice(0, 10);
