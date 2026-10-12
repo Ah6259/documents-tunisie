@@ -93,8 +93,8 @@ export function pages(root) {
   // Annuaires gratuits d'Ahmed (05/10/2026) : encart sur les grands contrats et les pages à risque, JAMAIS dans le PDF
   // (il est dans <main>, caché à l'impression). Profession réglementée : texte neutre, pas de « meilleur », pas de classement.
   // Clic compté anonymement par page.js (attribut data-annuaire → événement GoatCounter).
-  const AVOCATS = "https://ah6259.github.io/avocats-notaires-tunisie/", MARIAGE = "https://ah6259.github.io/mariage-tunisie/";
-  const COMPTABLES = "https://ah6259.github.io/comptables-tunisie/", CREDIT = "https://ah6259.github.io/outils-pratiques-tunisie/credit/";
+  const AVOCATS = "https://avocats.clicvia.com/", MARIAGE = "https://mariage.clicvia.com/";
+  const COMPTABLES = "https://comptables.clicvia.com/", CREDIT = "https://outils.clicvia.com/credit/";
   const AIDE_HONNEUR = ["Se faire aider pour le dossier : trouver un comptable près de chez vous (annuaire gratuit)", "المساعدة في إعداد الملف: إيجاد محاسب قريب منك (دليل مجاني)", COMPTABLES, "lien-comptables"];
   const CALCUL_CREDIT = ["Comparer avec un crédit bancaire classique (calculateur gratuit)", "المقارنة مع قرض بنكي عادي (حاسبة مجانية)", CREDIT, "lien-outils"];
   const RELIRE = ["Faire relire ce contrat par un avocat ou un notaire près de chez vous (annuaire gratuit)", "مراجعة هذا العقد من قبل محام أو عدل إشهاد قريب منك (دليل مجاني)"];

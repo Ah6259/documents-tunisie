@@ -158,7 +158,7 @@ const HONNEUR = ["pret-d-honneur", "demande-pret-d-honneur"];   // prêt d'honne
 const AVEC_ANNUAIRE = [...CONTRATS, ...GUIDES].map(d => d.slug).filter(s => !HONNEUR.includes(s)).concat("reconnaissance-de-dette");
 for (const slug of AVEC_ANNUAIRE) {
   const w = await page(slug + "/index.html"), doc = w.document;
-  const liens = [...doc.querySelectorAll('#annuaire a[href^="https://ah6259.github.io/avocats-notaires-tunisie/"]')];
+  const liens = [...doc.querySelectorAll('#annuaire a[href^="https://avocats.clicvia.com/"]')];
   check(`${slug} : lien vers l'annuaire des avocats et notaires (FR + AR, clic compté, hors du PDF)`, liens.length === 2
     && liens.every(a => a.dataset.annuaire === "lien-avocats/" + slug && /noopener/.test(a.rel)) && !doc.querySelector("#annuaire").closest("#impression, .feuille"));
   check(`${slug} : texte neutre (pas de « meilleur », pas de classement)`, !/meilleur|top \d|أفضل/i.test(doc.getElementById("annuaire").textContent));
@@ -168,8 +168,8 @@ for (const slug of AVEC_ANNUAIRE) {
 }
 for (const slug of HONNEUR) {
   const w = await page(slug + "/index.html"), doc = w.document;
-  const compta = [...doc.querySelectorAll('#annuaire a[href^="https://ah6259.github.io/comptables-tunisie/"]')];
-  const calc = [...doc.querySelectorAll('#annuaire a[href^="https://ah6259.github.io/outils-pratiques-tunisie/credit/"]')];
+  const compta = [...doc.querySelectorAll('#annuaire a[href^="https://comptables.clicvia.com/"]')];
+  const calc = [...doc.querySelectorAll('#annuaire a[href^="https://outils.clicvia.com/credit/"]')];
   check(`${slug} : liens vers l'annuaire des comptables et le calculateur de crédit (FR + AR, clic compté, noopener)`, compta.length === 2 && calc.length === 2
     && compta.every(a => a.dataset.annuaire === "lien-comptables/" + slug && /noopener/.test(a.rel)) && calc.every(a => a.dataset.annuaire === "lien-outils/" + slug));
   check(`${slug} : dépôt en ligne seulement (circulaire BCT n° 2026-08) et « À vérifier » daté`, /uniquement sur la plateforme en ligne/.test(doc.body.textContent) && /Situation au \d{2}\/\d{2}\/2026/.test(doc.getElementById("a-verifier").textContent)
@@ -194,8 +194,8 @@ for (const slug of HONNEUR) {
   check("traite : le schéma est un SPÉCIMEN dessiné par nous (mention « SPÉCIMEN · نموذج », numéros 1 à 14, aucun vrai RIB ni vrai nom)",
     /SPÉCIMEN · نموذج/.test(svgT) && /Dessin original de Documents Tunisie/.test(svgT) && [...Array(14)].every((_, i) => nums.includes(i + 1)) && !/\d{6,}/.test(svgT.replace(/<[^>]+>/g, " ")));
 }
-check("mariage : second lien vers l'annuaire des prestataires de mariage", /href="https:\/\/ah6259\.github\.io\/mariage-tunisie\/"[^>]*data-annuaire="lien-mariage\/mariage"/.test(lire("mariage/index.html")));
-check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "ar"].every(L => !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques/.test(M.feuille(d, valeursEx(d), L)))));
+check("mariage : second lien vers l'annuaire des prestataires de mariage", /href="https:\/\/mariage\.clicvia\.com\/"[^>]*data-annuaire="lien-mariage\/mariage"/.test(lire("mariage/index.html")));
+check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "ar"].every(L => !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques|clicvia\.com/.test(M.feuille(d, valeursEx(d), L)))));
 {
   const w = await page("index.html"), doc = w.document;
   check(`accueil : ${TOUS.length} cartes de documents (une par document, contrat et démarche)`, doc.querySelectorAll("[data-cherche]").length === TOUS.length);
@@ -205,7 +205,7 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   // bouton vers l'annuaire « Avocats et notaires » (demande d'Ahmed du 06/10/2026) : fin de la rangée des catégories, bordure dorée
   const av = doc.querySelector(".cats > a.cat-annuaire");
   check("accueil : bouton « Avocats et notaires » / « محامون وعدول » à la fin de la rangée des catégories, avec le logo de l'annuaire (copié dans le site)",
-    av && av === doc.querySelector(".cats").lastElementChild && av.getAttribute("href") === "https://ah6259.github.io/avocats-notaires-tunisie/" && /noopener/.test(av.rel)
+    av && av === doc.querySelector(".cats").lastElementChild && av.getAttribute("href") === "https://avocats.clicvia.com/" && /noopener/.test(av.rel)
     && /Avocats et notaires/.test(av.textContent) && /محامون وعدول/.test(av.textContent) && av.querySelector('img[src="assets/logo-avocats-notaires.svg"]')
     && existsSync(join(root, "assets/logo-avocats-notaires.svg")) && /\.cat-annuaire\{[^}]*border:2px solid #F2B33D/.test(lire("assets/style.css")));
   { let c = null; w.goatcounter = { count: o => { c = o; } }; av.addEventListener("click", e => e.preventDefault()); av.click();
@@ -438,7 +438,7 @@ for (const p of fichiers) {
   { const morts = tuilesSansLien(new JSDOM(s).window.document); check(`${p} : aucune carte avec une icône sans lien (pas de faux bouton)${morts.length ? " → " + morts.join(" | ") : ""}`, !morts.length); }
   const w = await page(p), doc = w.document, pied = doc.getElementById("pied").textContent;
   check(`${p} : translate="no" gardé par le JavaScript (français puis arabe)`, doc.documentElement.getAttribute("translate") === "no" && (doc.querySelector(".langue")?.click(), doc.documentElement.lang === "ar" && doc.documentElement.getAttribute("translate") === "no"));
-  check(`${p} : en-tête avec logo et lien « Avocats et notaires », pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && !!doc.querySelector("#entete a.entete-annuaire[href^=\"https://ah6259.github.io/avocats-notaires-tunisie/\"] img") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
+  check(`${p} : en-tête avec logo et lien « Avocats et notaires », pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && !!doc.querySelector("#entete a.entete-annuaire[href^=\"https://avocats.clicvia.com/\"] img") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
   check(`${p} : bouton « Partager » dans l'en-tête (arabe : « شارك هذه الصفحة »)`, doc.querySelector('#entete button.partager[aria-label="شارك هذه الصفحة"] svg'));
   check(`${p} : dates « vérifié le » = la constante MAJ`, [...doc.querySelectorAll("[data-maj]")].every(x => x.textContent === w.eval("MAJ")));
   const ld = [...s.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(x => JSON.parse(x[1]));

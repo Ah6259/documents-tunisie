@@ -31,7 +31,7 @@ const SITE = "https://documents.clicvia.com/";
           <span class="logo-nom">${T("Documents Tunisie", "وثائق تونس")}
             <small>${T("1 PDF gratuit par jour · français et arabe", "PDF مجاني كل يوم · بالعربية والفرنسية")}</small></span>
         </a>
-        <a class="entete-annuaire" href="https://ah6259.github.io/avocats-notaires-tunisie/${html.lang === "ar" ? "?lang=ar" : ""}" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats" aria-label="${T("Avocats et notaires (annuaire gratuit)", "محامون وعدول (دليل مجاني)")}"><img src="${racine}assets/logo-avocats-notaires.svg" alt="" width="22" height="22"><span>${T("Avocats et notaires", "محامون وعدول")}</span></a>
+        <a class="entete-annuaire" href="https://avocats.clicvia.com/${html.lang === "ar" ? "?lang=ar" : ""}" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats" aria-label="${T("Avocats et notaires (annuaire gratuit)", "محامون وعدول (دليل مجاني)")}"><img src="${racine}assets/logo-avocats-notaires.svg" alt="" width="22" height="22"><span>${T("Avocats et notaires", "محامون وعدول")}</span></a>
         <button class="partager" type="button" aria-label="${T("Partager cette page", "شارك هذه الصفحة")}" title="${T("Partager", "شارك")}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg></button>
         <button class="langue" type="button" aria-label="${T("Lire en arabe", "Lire en français")}" title="${T("العربية", "Français")}">${T("ع", "Fr")}</button>
       </div>`;
@@ -43,9 +43,10 @@ const SITE = "https://documents.clicvia.com/";
           <a href="${racine || "./"}">${T("Tous les documents", "كل الوثائق")}</a>
           <a href="${racine}vente-voiture/">${T("Vendre une voiture", "بيع سيارة")}</a>
           <a href="${racine}location-maison/">${T("Louer un logement", "كراء مسكن")}</a>
-          <a href="https://ah6259.github.io/avocats-notaires-tunisie/" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats">${T("Avocats et notaires", "محامون وعدول")}</a>
+          <a href="https://avocats.clicvia.com/" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats">${T("Avocats et notaires", "محامون وعدول")}</a>
           <a href="${racine}a-propos/">${T("À propos et méthode", "من نحن والمنهجية")}</a>
           <a href="${racine}#avis">${T("Votre avis", "رأيك")}</a>
+        <a href="https://clicvia.com/" rel="noopener" target="_blank">${T("Tous nos services", "كل خدماتنا")}</a>
         </nav>
         <p>${T(`Informations vérifiées le ${MAJ} à partir des sources officielles citées sur chaque page.`, `معلومات تم التثبت منها في ${MAJ} انطلاقا من المصادر الرسمية المذكورة في كل صفحة.`)}</p>
         <p>${T("Site non officiel : modèles indicatifs qui ne remplacent pas un avocat. Le PDF est fabriqué dans votre téléphone : aucune donnée n'est envoyée.",
