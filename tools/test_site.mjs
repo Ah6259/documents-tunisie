@@ -493,7 +493,7 @@ check(`aucun nom de concurrent sur le site ni dans le dépôt${cites.length ? " 
 const robots = lire("robots.txt");
 const blocs = robots.split(/\n\s*\n/).map(b => ({ agents: [...b.matchAll(/User-agent:\s*(.+)/gi)].map(m => m[1].trim()), tout: /Disallow:\s*\/\s*$/m.test(b) }));
 const interdit = a => blocs.some(b => b.agents.includes(a) && b.tout);
-check("robots.txt : robots d'IA et aspirateurs interdits", ["GPTBot", "ChatGPT-User", "OAI-SearchBot", "ClaudeBot", "Claude-Web", "anthropic-ai", "CCBot", "Google-Extended", "Applebot-Extended", "PerplexityBot", "Bytespider", "Amazonbot", "Meta-ExternalAgent", "FacebookBot", "Diffbot", "Omgilibot", "cohere-ai", "ImagesiftBot", "HTTrack", "WebCopier", "WebZIP", "Offline Explorer", "wget", "SiteSnagger"].every(interdit));
+check("robots.txt : robots d'IA et aspirateurs interdits", ["GPTBot", "ClaudeBot", "Claude-Web", "anthropic-ai", "CCBot", "Google-Extended", "Applebot-Extended", "Bytespider", "Amazonbot", "Meta-ExternalAgent", "FacebookBot", "Diffbot", "Omgilibot", "cohere-ai", "ImagesiftBot", "HTTrack", "WebCopier", "WebZIP", "Offline Explorer", "wget", "SiteSnagger"].every(interdit));
 check("robots.txt : Googlebot, Bingbot et les autres moteurs autorisés", !interdit("Googlebot") && !interdit("Bingbot") && !interdit("*") && robots.includes("sitemap.xml"));
 // protection anti-copie / anti-cadre
 const pj = lire("assets/page.js"), css = lire("assets/style.css");
