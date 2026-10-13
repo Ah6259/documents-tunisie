@@ -467,6 +467,69 @@ ${salutFR("Madame, Monsieur")}${signe("Signature")}`,
   ],
   sources: ["aneti", "portail"]
 },
+/* ======================================================================= 26 */
+{
+  slug: "demande-de-stage", cat: "travail", rang: 26,
+  titre: { fr: "Demande de stage", ar: "مطلب تربص" },
+  court: { fr: "Lettre d'un étudiant ou d'un élève pour demander un stage dans une entreprise ou une administration.", ar: "رسالة من طالب أو تلميذ لطلب تربص بمؤسسة أو إدارة." },
+  bref: { fr: "Lettre courte à remettre à l'entreprise ou à l'administration, avec votre CV. Si votre établissement vous a donné une lettre d'affectation ou une convention de stage, joignez-la.",
+          ar: "رسالة قصيرة تُسلَّم إلى المؤسسة أو الإدارة مع سيرتك الذاتية. إذا سلّمتك مؤسستك التعليمية رسالة توجيه أو اتفاقية تربص، أرفقها." },
+  legal: { legalisation: "non", enregistrement: "non", cout: { fr: "Gratuit.", ar: "مجاني." },
+           delai: { fr: "Déposez-la un à deux mois avant le début souhaité : les places partent vite avant l'été.", ar: "قدّمه قبل شهر أو شهرين من التاريخ المطلوب: الأماكن تُحجز سريعا قبل الصيف." } },
+  // exemple affiché avant le formulaire (données FICTIVES ; [fr, ar] ou valeur commune ; champ absent = son « ex »)
+  exemple: { nom: ["Mohamed Ben Salah", "محمد بن صالح"], adresse: ["12 rue de Marseille, Tunis", "12 نهج مرسيليا، تونس"], tel: "XX XXX XXX", email: "nom@exemple.tn",
+             niveau: ["étudiant en 2e année de licence en informatique", "طالب بالسنة الثانية إجازة في الإعلامية"], etab: ["Institut supérieur d'informatique", "المعهد العالي للإعلامية"],
+             org: ["Société Al Amal", "شركة الأمل"], type: "ete", debut: "2027-07-01", fin: "2027-07-31", service: ["le service informatique", "مصلحة الإعلامية"],
+             lieu: ["Tunis", "تونس"], date: "2026-10-13" },
+  champs: [
+    groupe("Vous", "أنت"), nom("nom"), adresse("adresse"), c("tel", "Téléphone", "الهاتف", "20 123 456", { mode: "tel" }),
+    c("email", "E-mail", "البريد الإلكتروني", "nom@exemple.tn", { opt: true, mode: "email" }),
+    groupe("Vos études", "دراستك"),
+    c("niveau", "Vous êtes… (niveau et spécialité)", "أنت… (المستوى والاختصاص)", ["étudiant en 2e année de licence en informatique", "طالب بالسنة الثانية إجازة في الإعلامية"]),
+    c("etab", "Établissement (faculté, institut, centre de formation)", "المؤسسة التعليمية (كلية، معهد، مركز تكوين)", ["Institut supérieur d'informatique", "المعهد العالي للإعلامية"]),
+    groupe("Le stage", "التربص"), c("org", "Entreprise ou administration", "المؤسسة أو الإدارة", ["Société Al Amal", "شركة الأمل"]),
+    choix("type", "Type de stage", "نوع التربص", [{ v: "ete", fr: "d'été", ar: "صيفي" }, { v: "obligatoire", fr: "obligatoire", ar: "إجباري" },
+      { v: "pfe", fr: "de fin d'études", ar: "ختم الدروس" }, { v: "initiation", fr: "d'initiation", ar: "تمهيدي" }]),
+    date("debut", "Premier jour souhaité", "أول يوم مطلوب", { ex: "2027-07-01" }), date("fin", "Dernier jour souhaité", "آخر يوم مطلوب", { ex: "2027-07-31" }),
+    c("service", "Service souhaité", "المصلحة المطلوبة", ["le service informatique", "مصلحة الإعلامية"], { opt: true }),
+    ...fin()
+  ],
+  fr: v => `${expediteur(v, [v("nom"), v("adresse"), "Tél. : " + v("tel"), v.has("email") && v("email")])}
+<p class="d-dest">À l'attention de la direction<br>${v("org")}</p><p class="d-lieu-date">${v("lieu")}, le ${v("date")}</p>
+<p class="d-objet"><b>Objet :</b> demande de stage ${v("type")}</p>
+<p>Madame, Monsieur,</p>
+<p>Actuellement ${v("niveau")} à ${v("etab")}, j'ai l'honneur de solliciter un stage ${v("type")} au sein de ${v("org")}${v.has("service") ? `, dans ${v("service")}` : ""}, du ${v("debut")} au ${v("fin")}.</p>
+<p>Ce stage me permettrait de mettre en pratique ce que j'ai appris et de découvrir le travail de votre établissement. Je m'engage à respecter son règlement et ses horaires.</p>
+<p>Vous trouverez ci-joint mon curriculum vitae. Je reste à votre disposition pour un entretien.</p>
+${salutFR("Madame, Monsieur")}${signe("Signature")}`,
+  ar: v => `${expediteur(v, [v("nom"), v("adresse"), "الهاتف: " + v("tel"), v.has("email") && v("email")])}
+<p class="d-dest">إلى السيد(ة) المدير(ة)<br>${v("org")}</p><p class="d-lieu-date">${v("lieu")} في ${v("date")}</p>
+<p class="d-objet"><b>الموضوع:</b> مطلب تربص ${v("type")}</p>
+<p>تحية طيبة وبعد،</p>
+<p>إني الممضي(ة) أسفله، ${v("niveau")} بـ${v("etab")}، يشرفني أن أتقدم إليكم بمطلبي هذا قصد إجراء تربص ${v("type")} بـ${v("org")}${v.has("service") ? `، بـ${v("service")}` : ""}، من ${v("debut")} إلى ${v("fin")}.</p>
+<p>يمكّنني هذا التربص من تطبيق ما تعلمته والتعرف على عمل مؤسستكم، وألتزم باحترام نظامها الداخلي وأوقات عملها.</p>
+<p>تجدون صحبة هذا سيرتي الذاتية، وأبقى على ذمتكم لإجراء مقابلة.</p>
+<p>وفي انتظار ردكم الإيجابي، تقبلوا مني فائق عبارات الاحترام والتقدير.</p>${signe("الإمضاء")}`,
+  etapes: [ETAPE_REMPLIR, ETAPE_IMPRIMER(0),
+    { ic: "remettre", fr: ["Joindre le dossier", "CV, copie de la carte d'étudiant ou du certificat d'inscription et, si vous l'avez, la lettre d'affectation ou la convention de stage de votre établissement."], ar: ["إرفاق الملف", "السيرة الذاتية، نسخة من بطاقة الطالب أو شهادة الترسيم، وإن وُجدت، رسالة التوجيه أو اتفاقية التربص من مؤسستك."] },
+    { ic: "remettre", fr: ["Déposer ou envoyer", "Déposez la lettre au service du personnel contre décharge, ou envoyez-la par e-mail avec le CV en pièce jointe."], ar: ["الإيداع أو الإرسال", "أودع الرسالة بمصلحة الأعوان مقابل وصل، أو أرسلها بالبريد الإلكتروني مع السيرة الذاتية."] },
+    { ic: "garder", fr: ["Demander l'attestation à la fin", "À la fin du stage, demandez à l'entreprise une attestation de stage signée et tamponnée : votre établissement la demandera."], ar: ["طلب الشهادة عند النهاية", "عند نهاية التربص، اطلب من المؤسسة شهادة تربص ممضاة ومختومة: ستطلبها منك مؤسستك التعليمية."] }],
+  pieces: { fr: ["CV à jour", "Copie de la carte d'étudiant ou du certificat d'inscription", "Lettre d'affectation ou convention de stage de votre établissement, si elle existe"],
+            ar: ["سيرة ذاتية محينة", "نسخة من بطاقة الطالب أو شهادة الترسيم", "رسالة التوجيه أو اتفاقية التربص من مؤسستك، إن وُجدت"] },
+  ou: { fr: ["Service du personnel / ressources humaines de l'entreprise ou de l'administration visée", "Service des stages de votre établissement : il peut avoir sa propre lettre ou sa convention"],
+        ar: ["مصلحة الأعوان / الموارد البشرية بالمؤسسة أو الإدارة المعنية", "مصلحة التربصات بمؤسستك التعليمية: قد يكون لها رسالتها أو اتفاقيتها الخاصة"] },
+  pieges: { fr: ["Pour un stage obligatoire ou de fin d'études, demandez d'abord à votre établissement sa lettre d'affectation ou sa convention : beaucoup d'entreprises l'exigent.",
+                 "Ce modèle n'est pas un contrat de stage rémunéré (CIVP, contrat Karama) : ces programmes passent par le bureau de l'emploi (ANETI)."],
+            ar: ["بالنسبة إلى التربص الإجباري أو تربص ختم الدروس، اطلب أولا من مؤسستك رسالة التوجيه أو الاتفاقية: مؤسسات كثيرة تشترطها.",
+                 "هذا النموذج ليس عقد تربص مدفوع الأجر (عقد التربص للإعداد للحياة المهنية، عقد الكرامة): هذه البرامج تمر عبر مكتب التشغيل."] },
+  averifier: { fr: [], ar: [] },
+  faq: [
+    { fr: ["Faut-il légaliser une demande de stage ?", "Non."], ar: ["هل يجب التعريف بالإمضاء في مطلب التربص؟", "لا."] },
+    { fr: ["Le stage est-il payé ?", "Cela dépend de l'entreprise : un stage d'études n'est pas forcément rémunéré. Posez la question avant de commencer."], ar: ["هل التربص مدفوع الأجر؟", "حسب المؤسسة: تربص الدراسة ليس مدفوع الأجر بالضرورة. اسأل قبل البدء."] },
+    { fr: ["Quand déposer ma demande pour un stage d'été ?", "Le plus tôt possible, un à deux mois avant : les places sont peu nombreuses."], ar: ["متى أودع مطلب التربص الصيفي؟", "في أقرب وقت، قبل شهر أو شهرين: الأماكن محدودة."] }
+  ],
+  sources: ["aneti", "portail"]
+},
 /* ======================================================================= Lettre de motivation (08/10/2026) */
 {
   slug: "lettre-de-motivation", cat: "travail", rang: 4.2,
