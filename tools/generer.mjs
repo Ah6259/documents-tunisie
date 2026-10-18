@@ -138,7 +138,7 @@ export function pages(root) {
 <meta property="og:title" content="${esc(titre)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${URL}${chemin}">
-<meta property="og:locale" content="fr_TN"><meta property="og:locale:alternate" content="ar_TN">
+<meta property="og:locale" content="fr_FR"><meta property="og:locale:alternate" content="ar_AR">
 <meta property="og:image" content="${URL}assets/og-image-v3.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
