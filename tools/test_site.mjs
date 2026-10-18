@@ -27,6 +27,19 @@ check("au moins 20 documents à remplir (dont 4 grands contrats) et 6 démarches
 const GRANDS = ["vente-voiture", "vente-moto", "location-maison", "bail-commercial"];
 for (const slug of GRANDS) { const d = DOCS.find(x => x.slug === slug);
   check(`${slug} : modèle de contrat à remplir (formulaire + texte FR et AR), même adresse qu'avant`, !!d && d.grand === true && !d.contrat && d.champs.length > 10 && typeof d.fr === "function" && typeof d.ar === "function"); }
+// lieux (règle commune § 11.11, 18/10/2026) : toute liste de gouvernorats = les 24 de La Poste, rien d'autre (dans les deux sens) ;
+// la liste des commissariats régionaux de l'éducation (champ « delegation ») = un par gouvernorat, sauf Tunis et Sfax coupés en 1 et 2
+// (exceptions relues à la main : ce ne sont pas des délégations administratives)
+{ const OFFICIELS = ["ariana", "beja", "ben arous", "bizerte", "gabes", "gafsa", "jendouba", "kairouan", "kasserine", "kebili", "kef", "mahdia",
+    "manouba", "medenine", "monastir", "nabeul", "sfax", "sidi bouzid", "siliana", "sousse", "tataouine", "tozeur", "tunis", "zaghouan"];
+  const norm = s => String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/-/g, " ").replace(/^(la|le) /, "").trim();
+  const exact = (l, att) => { const n = l.map(norm); return n.length === att.length && new Set(n).size === n.length && att.every(o => n.includes(o)) && n.every(x => att.includes(x)); };
+  const CRE = [...OFFICIELS.filter(g => g !== "tunis" && g !== "sfax"), "tunis 1", "tunis 2", "sfax 1", "sfax 2"];
+  const champs = TOUS.flatMap(d => (d.champs || []).map(c => [d.slug, c]));
+  const gouv = champs.filter(([, c]) => c.type === "select" && /^gouv/.test(c.id)), cre = champs.filter(([, c]) => c.type === "select" && c.id === "delegation");
+  check(`lieux : chaque liste « Gouvernorat » (${gouv.length}) = les 24 gouvernorats officiels, rien d'autre`, gouv.length > 0 && gouv.every(([, c]) => exact(c.options.map(o => o.fr), OFFICIELS)));
+  check(`lieux : chaque liste « Commissariat régional de l'éducation » (${cre.length}) = un par gouvernorat (Tunis 1/2, Sfax 1/2), rien d'autre`, cre.every(([, c]) => exact(c.options.map(o => o.fr), CRE)));
+  check("lieux : aucun autre champ ne propose une liste de lieux non vérifiée (délégation, ville, quartier)", champs.filter(([, c]) => c.type === "select" && /deleg|ville|quartier|localite|region/i.test(c.id) && c.id !== "delegation").length === 0); }
 check("adresses (slug) uniques", new Set(TOUS.map(d => d.slug)).size === TOUS.length);
 const bil = o => o && o.fr && o.ar && ARABE.test(JSON.stringify(o.ar)) && JSON.stringify(o.fr).length > 4;
 for (const d of TOUS) {

@@ -164,3 +164,5 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   recherche ni catégorie. Tests FR + AR dans test_site.mjs ; 2 scénarios du visiteur simulé (groupe « recherche-compte » : « contrat » ≥ « procuration »).
 
 - **18/10/2026 (Pass : case du code, leçon de l'immobilier)** : sur `pass/`, la carte « J'ai un code » (`#code-acces`, formulaire `#code-pass`, champ `#code-pass-saisie`) est maintenant EN HAUT, juste sous `#pass-etat`, avant l'offre (gabarit dans `tools/generer.mjs`) — visible quel que soit l'état du téléphone ; un code tapé remplace l'ancien (`dt-pass-v1`). Ce site n'a PAS d'essai gratuit (test : aucun « essai gratuit » dans pass/, conditions, pass.js). Tests « Pass : … » dans test_site.mjs.
+
+- **Lieux officiels (18/10/2026, règle commune § 11.11)** : test_site.mjs vérifie que toute liste « Gouvernorat » = les 24 de La Poste, rien d'autre ; la liste des commissariats régionaux de l'éducation (champ `delegation`) = un par gouvernorat avec Tunis 1/2 et Sfax 1/2 (exceptions relues) ; aucune autre liste de lieux (ville = texte libre).
