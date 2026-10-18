@@ -235,7 +235,7 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
     const vus = [...doc.querySelectorAll("[data-cherche]:not([hidden])")].map(x => x.getAttribute("href"));
     check(`accueil : la recherche « ${mot} » trouve le prêt d'honneur et son modèle`, vus.includes("pret-d-honneur/") && vus.includes("demande-pret-d-honneur/"));
   }
-  r.value = "zzzz"; r.dispatchEvent(new w.Event("input"));
+  r.value = "zzzzqqq"; r.dispatchEvent(new w.Event("input"));   // (« zzzz » seul = « z » au son : trouverait les mots en z)
   check("accueil : « aucun document » si rien ne correspond", !doc.getElementById("aucun").hidden);
   // VS.5 (18/10/2026) : nombre de résultats affiché = nombre de cartes visibles, avec le bon singulier / pluriel
   const cpt = doc.getElementById("compte-recherche"), visibles = () => doc.querySelectorAll("[data-cherche]:not([hidden])").length;
@@ -258,10 +258,10 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
       paires.every(([a, b]) => chercher(a).join() === chercher(b).join()) &&
       paires.every(([a, b]) => S.trouve(S.cle("Commune de " + a), b) && S.trouve(S.cle("Commune de " + b), a)));
     // paires tirées des VRAIS documents : « procuration » écrit « procurration », « attestation » écrit « atestation »
-    check("recherche au son : « procurration » = « procuration », « atestation » = « attestation », « demmission » = « démission »",
+    check("recherche au son : « procurration » = « procuration », « atestation » = « attestation », « demmission » = « demisssion » = « démission »",
       chercher("procurration").join() === chercher("procuration").join() && chercher("procuration").length === 2
       && chercher("atestation").join() === chercher("attestation").join() && chercher("attestation").length >= 2
-      && chercher("demmission").join() === chercher("démission").join() && chercher("démission").length >= 1);
+      && chercher("demmission").join() === chercher("démission").join() && chercher("demisssion").join() === chercher("démission").join() && chercher("démission").length >= 1);
     check("recherche au son : une recherche absurde (« zzzzqqq ») ne trouve toujours rien", chercher("zzzzqqq").length === 0); }
   r.value = ""; r.dispatchEvent(new w.Event("input"));
   check("accueil (VS.5) : recherche vide → compteur caché", cpt.hidden);
@@ -272,7 +272,7 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   r.value = "procuration"; r.dispatchEvent(new w.Event("input"));
   const n = doc.querySelectorAll("[data-cherche]:not([hidden])").length;
   check("accueil en arabe (VS.5) : compteur « عدد الوثائق: N » avec le chiffre (= cartes visibles) ; « لا توجد أي وثيقة » sans résultat", cpt.textContent === "عدد الوثائق: " + n
-    && (r.value = "zzzz", r.dispatchEvent(new w.Event("input")), cpt.textContent === "لا توجد أي وثيقة"));
+    && (r.value = "zzzzqqq", r.dispatchEvent(new w.Event("input")), cpt.textContent === "لا توجد أي وثيقة"));
   doc.querySelector('.cat[data-cat="logement"]').click();
   check("accueil : la catégorie Logement filtre", [...doc.querySelectorAll("[data-cherche]:not([hidden])")].every(x => x.dataset.cat === "logement"));
 }
