@@ -14,7 +14,7 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,3 +26,7 @@ jobs:
       - run: node tools/test_video.mjs
       - run: node tools/test_avis.mjs
       - run: node tools/test_robot.mjs
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Visiteur simule (comme un visiteur sur telephone, avant le vrai visiteur - regle generale du 18/10/2026)
+        run: python tools/visiteur_simule.py
