@@ -158,3 +158,7 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 
 ## Visiteur simulé (18/10/2026, règle générale)
 - `python tools/visiteur_simule.py` (outil COMMUN, copie identique dans chaque site : ne pas le modifier ici) : liens/images morts, puis Chromium à 390 px (page trop large, image cassée, « NaN/undefined », page vide) + scénarios `tools/scenarios-visiteur.json` (recherche, filtres, résultat affiché, groupes « croissant »). Lancé par tests.yml. Nouvelle recherche, nouveau filtre ou nouveau formulaire → ajouter un scénario. Page `video/` : `preload="none"` (la couverture reste affichée ; la page finit de charger sans attendre la vidéo, moins de données sur téléphone ; le visiteur simulé la voyait « non chargée » avec `metadata`).
+
+- **18/10/2026 (VS.5, « Fais » d'Ahmed)** : la recherche de l'accueil affiche le nombre de résultats (`#compte-recherche`, page.js `afficherCompte`) :
+  « 3 documents », « 1 document », « Aucun document » ; en arabe « عدد الوثائق: N » (toujours le chiffre) / « لا توجد أي وثيقة » ; caché sans
+  recherche ni catégorie. Tests FR + AR dans test_site.mjs ; 2 scénarios du visiteur simulé (groupe « recherche-compte » : « contrat » ≥ « procuration »).

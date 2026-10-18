@@ -356,6 +356,7 @@ ${pied}`;
     s += `\n<main class="wrap chevauche">
 <div class="recherche">${svg(ICONES.loupe)}<input type="search" id="recherche" aria-label="Rechercher un document" autocomplete="off"></div>
 <div class="cats">${CATEGORIES.map(k => `<button type="button" class="cat" data-cat="${k.id}">${svg(k.svg)}${bi(k.fr, k.ar)}</button>`).join("")}${LIEN_AVOCATS}</div>
+<p class="compte-recherche" id="compte-recherche" role="status" aria-live="polite" hidden></p>
 <p class="vide-recherche" id="aucun" hidden>${bi("Aucun document trouvé. Essayez un autre mot. Votre recherche est notée : les documents les plus demandés sont ajoutés au site.", "لم يتم العثور على أي وثيقة. جرّب كلمة أخرى. تم تسجيل بحثك: نضيف إلى الموقع الوثائق الأكثر طلبًا.")}</p>
 <section class="bloc-docs"><h2 class="titre-section">${bi("Les documents les plus demandés", "الوثائق الأكثر طلبا")}</h2>
 <div class="docs">${DOCS.filter(x => !x.grand).sort((a, b) => a.rang - b.rang).map(x => carteDoc(x, "")).join("")}</div></section>

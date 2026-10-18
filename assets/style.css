@@ -205,6 +205,7 @@ a.doc:hover{border-color:var(--p);transform:translateY(-2px)}
 .doc .ic{width:42px;height:42px}
 .titre-section{font-size:18px;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
 .vide-recherche{color:var(--doux);text-align:center;padding:14px}
+.compte-recherche{margin:0 0 10px;font-weight:700;font-size:15px;color:var(--doux)}
 .comment{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-size:13.5px;font-weight:700}
 .comment .ic{margin:0 auto 6px;border-radius:50%}
 

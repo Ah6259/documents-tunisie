@@ -224,7 +224,27 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   }
   r.value = "zzzz"; r.dispatchEvent(new w.Event("input"));
   check("accueil : « aucun document » si rien ne correspond", !doc.getElementById("aucun").hidden);
+  // VS.5 (18/10/2026) : nombre de résultats affiché = nombre de cartes visibles, avec le bon singulier / pluriel
+  const cpt = doc.getElementById("compte-recherche"), visibles = () => doc.querySelectorAll("[data-cherche]:not([hidden])").length;
+  check("accueil (VS.5) : recherche sans résultat → « Aucun document »", !cpt.hidden && cpt.textContent === (doc.documentElement.lang === "ar" ? "لا توجد أي وثيقة" : "Aucun document"));
+  r.value = "procuration"; r.dispatchEvent(new w.Event("input"));
+  const nP = visibles();
+  check(`accueil (VS.5) : « procuration » → « 2 documents » (= cartes visibles)`, nP === 2 && !cpt.hidden && cpt.textContent === "2 documents");
+  const un = ["reçu de loyer", "recu loyer", "lettre de change", "traite"].map(m => { r.value = m; r.dispatchEvent(new w.Event("input")); return [m, visibles(), cpt.textContent]; }).find(([, n]) => n === 1);
+  check(`accueil (VS.5) : une recherche à 1 résultat → « 1 document » (au singulier)${un ? " — « " + un[0] + " »" : ""}`, !!un && un[2] === "1 document");
+  r.value = "contrat"; r.dispatchEvent(new w.Event("input"));
+  const nC = visibles();
+  check(`accueil (VS.5) : « contrat » → « ${nC} documents » (= cartes visibles)`, nC > 2 && cpt.textContent === `${nC} documents`);
   r.value = ""; r.dispatchEvent(new w.Event("input"));
+  check("accueil (VS.5) : recherche vide → compteur caché", cpt.hidden);
+}
+{
+  const w = await page("index.html", "ar"), doc = w.document;
+  const r = doc.getElementById("recherche"), cpt = doc.getElementById("compte-recherche");
+  r.value = "procuration"; r.dispatchEvent(new w.Event("input"));
+  const n = doc.querySelectorAll("[data-cherche]:not([hidden])").length;
+  check("accueil en arabe (VS.5) : compteur « عدد الوثائق: N » avec le chiffre (= cartes visibles) ; « لا توجد أي وثيقة » sans résultat", cpt.textContent === "عدد الوثائق: " + n
+    && (r.value = "zzzz", r.dispatchEvent(new w.Event("input")), cpt.textContent === "لا توجد أي وثيقة"));
   doc.querySelector('.cat[data-cat="logement"]').click();
   check("accueil : la catégorie Logement filtre", [...doc.querySelectorAll("[data-cherche]:not([hidden])")].every(x => x.dataset.cat === "logement"));
 }

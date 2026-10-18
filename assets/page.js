@@ -123,9 +123,22 @@ document.addEventListener("DOMContentLoaded", () => {
       c.hidden = !ok; if (ok) n++;
     }
     document.getElementById("aucun").hidden = n > 0;
+    afficherCompte(mots.length > 0 || !!cat, n);
     document.querySelectorAll(".bloc-docs").forEach(b => b.hidden = !b.querySelector("[data-cherche]:not([hidden])"));
     noterSiVide(n);
   }
+  /* Nombre de résultats (VS.5, 18/10/2026) : « 3 documents », « 1 document », « Aucun document » ; caché sans recherche ni catégorie */
+  const compte = document.getElementById("compte-recherche");
+  let dernier = null;
+  function afficherCompte(actif, n) {
+    dernier = actif ? n : null;
+    if (!compte) return;
+    compte.hidden = !actif;
+    if (!actif) { compte.textContent = ""; return; }
+    // en arabe, « عدد الوثائق: N » : toujours le chiffre, sans accord du nombre (duel, pluriel) qui le ferait disparaître
+    compte.textContent = n === 0 ? T("Aucun document", "لا توجد أي وثيقة") : T(n + (n === 1 ? " document" : " documents"), "عدد الوثائق: " + n);
+  }
+  document.addEventListener("langue", () => { if (dernier !== null) afficherCompte(true, dernier); });
   /* Recherche sans résultat : on note le mot cherché (anonyme, statistique GoatCounter), pour ajouter les documents
      manquants. Seulement après 2 s sans frappe, une fois par mot ; les chiffres sont retirés (jamais de n° CIN/téléphone). */
   const notes = new Set(); let minuteur;
