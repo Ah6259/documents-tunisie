@@ -162,3 +162,5 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 - **18/10/2026 (VS.5, « Fais » d'Ahmed)** : la recherche de l'accueil affiche le nombre de résultats (`#compte-recherche`, page.js `afficherCompte`) :
   « 3 documents », « 1 document », « Aucun document » ; en arabe « عدد الوثائق: N » (toujours le chiffre) / « لا توجد أي وثيقة » ; caché sans
   recherche ni catégorie. Tests FR + AR dans test_site.mjs ; 2 scénarios du visiteur simulé (groupe « recherche-compte » : « contrat » ≥ « procuration »).
+
+- **18/10/2026 (Pass : case du code, leçon de l'immobilier)** : sur `pass/`, la carte « J'ai un code » (`#code-acces`, formulaire `#code-pass`, champ `#code-pass-saisie`) est maintenant EN HAUT, juste sous `#pass-etat`, avant l'offre (gabarit dans `tools/generer.mjs`) — visible quel que soit l'état du téléphone ; un code tapé remplace l'ancien (`dt-pass-v1`). Ce site n'a PAS d'essai gratuit (test : aucun « essai gratuit » dans pass/, conditions, pass.js). Tests « Pass : … » dans test_site.mjs.

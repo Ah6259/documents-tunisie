@@ -49,6 +49,16 @@
 </section>
 <main class="wrap chevauche">
 <section class="carte pass-etat" id="pass-etat" role="status" hidden></section>
+<section class="carte abo code-haut" id="code-acces">
+  <h2><span data-l="fr">J'ai un code</span><span data-l="ar">لدي رمز</span></h2>
+  <form class="code-form" id="code-pass" novalidate>
+      <label class="abo-etiquette" for="code-pass-saisie"><span data-l="fr">Votre code d'accès (8 caractères)</span><span data-l="ar">رمز الدخول (⁨8⁩ حروف وأرقام)</span></label>
+      <input type="text" id="code-pass-saisie" name="code" required maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button type="submit" class="btn-pro"><span data-l="fr">Activer mon Pass</span><span data-l="ar">تفعيل الباقة</span></button>
+      <p class="code-status" role="status" aria-live="polite"></p>
+    </form>
+  <p class="petit"><span data-l="fr">Le code est vérifié dans votre téléphone : il n'est envoyé à personne. Il reste gardé sur ce téléphone jusqu'à la fin du Pass.</span><span data-l="ar">يتم التثبت من الرمز داخل هاتفك: لا يُرسل إلى أحد. ويبقى محفوظًا على هذا الهاتف إلى نهاية الباقة.</span></p>
+</section>
 <section class="offre-pro" id="offre">
   <p class="ruban"><span data-l="fr">Sans abonnement</span><span data-l="ar">دون اشتراك</span></p>
   <h2><span data-l="fr">Pass Journée</span><span data-l="ar">باقة اليوم</span></h2>
@@ -91,16 +101,6 @@
     <li>يصلك <b>رمز الدخول</b> عبر واتساب. تدوم الباقة ⁨24⁩ ساعة ابتداءً من هذا الإرسال.</li>
     <li>اكتب الرمز مرة واحدة في «لدي رمز» (أو في صفحة الوثيقة): تُحمَّل كل الوثائق.</li>
   </ol>
-</section>
-<section class="carte abo" id="code-acces">
-  <h2><span data-l="fr">J'ai un code</span><span data-l="ar">لدي رمز</span></h2>
-  <form class="code-form" id="code-pass" novalidate>
-      <label class="abo-etiquette" for="code-pass-saisie"><span data-l="fr">Votre code d'accès (8 caractères)</span><span data-l="ar">رمز الدخول (⁨8⁩ حروف وأرقام)</span></label>
-      <input type="text" id="code-pass-saisie" name="code" required maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false">
-      <button type="submit" class="btn-pro"><span data-l="fr">Activer mon Pass</span><span data-l="ar">تفعيل الباقة</span></button>
-      <p class="code-status" role="status" aria-live="polite"></p>
-    </form>
-  <p class="petit"><span data-l="fr">Le code est vérifié dans votre téléphone : il n'est envoyé à personne. Il reste gardé sur ce téléphone jusqu'à la fin du Pass.</span><span data-l="ar">يتم التثبت من الرمز داخل هاتفك: لا يُرسل إلى أحد. ويبقى محفوظًا على هذا الهاتف إلى نهاية الباقة.</span></p>
 </section>
 <section class="carte abo" id="inscription" aria-labelledby="pass-titre">
   <h2 id="pass-titre"><span data-l="fr">Demander mon Pass Journée</span><span data-l="ar">طلب باقة اليوم</span></h2>

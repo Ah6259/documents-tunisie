@@ -435,6 +435,11 @@ ${pied}`;
                 "كل الوثائق بصيغة PDF طيلة 24 ساعة، مقابل 7 د. دون باقة، تبقى وثيقة PDF واحدة مجانية كل يوم، وتبقى الصفحات والمراحل مجانية.") });
     s += `\n<main class="wrap chevauche">
 <section class="carte pass-etat" id="pass-etat" role="status" hidden></section>
+<section class="carte abo code-haut" id="code-acces">
+  <h2>${bi("J'ai un code", "لدي رمز")}</h2>
+  ${formCode("code-pass")}
+  <p class="petit">${bi("Le code est vérifié dans votre téléphone : il n'est envoyé à personne. Il reste gardé sur ce téléphone jusqu'à la fin du Pass.", "يتم التثبت من الرمز داخل هاتفك: لا يُرسل إلى أحد. ويبقى محفوظًا على هذا الهاتف إلى نهاية الباقة.")}</p>
+</section>
 <section class="offre-pro" id="offre">
   <p class="ruban">${bi("Sans abonnement", "دون اشتراك")}</p>
   <h2>${bi("Pass Journée", "باقة اليوم")}</h2>
@@ -477,11 +482,6 @@ ${pied}`;
     <li>يصلك <b>رمز الدخول</b> عبر واتساب. تدوم الباقة ⁨24⁩ ساعة ابتداءً من هذا الإرسال.</li>
     <li>اكتب الرمز مرة واحدة في «لدي رمز» (أو في صفحة الوثيقة): تُحمَّل كل الوثائق.</li>
   </ol>
-</section>
-<section class="carte abo" id="code-acces">
-  <h2>${bi("J'ai un code", "لدي رمز")}</h2>
-  ${formCode("code-pass")}
-  <p class="petit">${bi("Le code est vérifié dans votre téléphone : il n'est envoyé à personne. Il reste gardé sur ce téléphone jusqu'à la fin du Pass.", "يتم التثبت من الرمز داخل هاتفك: لا يُرسل إلى أحد. ويبقى محفوظًا على هذا الهاتف إلى نهاية الباقة.")}</p>
 </section>
 <section class="carte abo" id="inscription" aria-labelledby="pass-titre">
   <h2 id="pass-titre">${bi("Demander mon Pass Journée", "طلب باقة اليوم")}</h2>

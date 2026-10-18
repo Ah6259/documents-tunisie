@@ -388,6 +388,33 @@ async function taperCode(w, code) {
   await new Promise(r => setTimeout(r, 100));
   check("hors connexion : le Pass gardé marche jusqu'à son heure de fin", w.PassJour.actif() && !w.document.getElementById("pass-actif").hidden);
 
+  // 18/10/2026 (problème vu sur l'immobilier : code payé impossible à taper quand le téléphone gardait un autre code)
+  // la case du code est TOUJOURS visible, EN HAUT de pass/, quel que soit l'état gardé ; le code tapé remplace l'ancien ;
+  // aucun « essai gratuit » annoncé (ce site n'en a pas : 1 document gratuit par jour, puis Pass Journée)
+  {
+    H.t = now;
+    const visible = (wx, el) => { for (let e = el; e; e = e.parentElement) if (e.hidden || wx.getComputedStyle(e).display === "none") return false; return !!el; };
+    const ETATS = {
+      "aucun code": {},
+      "un autre code non payé gardé": { "dt-pass-v1": JSON.stringify({ code: "ZZZZ2222", fin: new Date(now + 5 * 36e5).toISOString(), verifie: 0 }) },
+      "un code payé gardé": { "dt-pass-v1": JSON.stringify({ code: "ABCD2345", fin: new Date(now + 20 * 36e5).toISOString(), verifie: now }) },
+      "un code expiré gardé": { "dt-pass-v1": JSON.stringify({ code: "PXRM2345", fin: new Date(now - 36e5).toISOString(), verifie: 0 }) }
+    };
+    const mal = [];
+    for (const [nom, stockage] of Object.entries(ETATS)) {
+      const wx = await pagePass("pass/index.html", { horloge: H, stockage }), dx = wx.document;
+      const bloc = dx.getElementById("code-acces"), champ = bloc && bloc.querySelector("input[name=code]"), bouton = bloc && bloc.querySelector("button[type=submit]");
+      if (!visible(wx, champ) || !visible(wx, bouton) || !(bloc.compareDocumentPosition(dx.getElementById("offre")) & 4)) mal.push(nom);
+    }
+    check(`Pass : case du code visible EN HAUT de pass/ (avant l'offre) dans tous les états ${mal}`, mal.length === 0);
+    const wx = await pagePass("pass/index.html", { horloge: H, stockage: ETATS["un autre code non payé gardé"], liste });
+    const stx = await taperCode(wx, "abcd-2345"), garde = JSON.parse(wx.localStorage.getItem("dt-pass-v1") || "{}");
+    check("Pass : le code tapé REMPLACE l'ancien code gardé (nouveau code, nouvelle heure de fin, Pass actif)",
+      /Code accepté/.test(stx.textContent) && garde.code === "ABCD2345" && garde.fin === liste.codes[0].fin && wx.PassJour.actif());
+    const pagesPass = ["pass/index.html", "pass/conditions/index.html", "assets/pass.js"].map(lire).join(" ");
+    check("Pass : aucun « essai gratuit » annoncé (ce site n'en propose pas)", !/essai gratuit|période d'essai|تجربة مجانية/i.test(pagesPass));
+  }
+
   // page pass/ : prix, paiement, WhatsApp, formulaire, conditions
   const envois = [];
   w = await pagePass("pass/index.html", { horloge: H, envois }); doc = w.document;
