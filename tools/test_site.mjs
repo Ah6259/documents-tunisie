@@ -248,6 +248,21 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   r.value = "contrat"; r.dispatchEvent(new w.Event("input"));
   const nC = visibles();
   check(`accueil (VS.5) : « contrat » → « ${nC} documents » (= cartes visibles)`, nC > 2 && cpt.textContent === `${nC} documents`);
+  // Recherche « au son » (règle commune § 27, 18/10/2026, demande d'Ahmed) : deux écritures d'un même nom = même résultat
+  { const S = w.sonRecherche, chercher = t => { r.value = t; r.dispatchEvent(new w.Event("input")); return [...doc.querySelectorAll("[data-cherche]:not([hidden])")].map(x => x.getAttribute("href")); };
+    const commun = join(root, "..", "projets-ahmed", "outils communs", "recherche-au-son", "son.js");
+    check("recherche au son : assets/son.js chargé sur l'accueil (copie identique de l'outil commun quand il est présent)", !!S
+      && /<script defer src="assets\/son\.js\?v=/.test(lire("index.html")) && (!existsSync(commun) || readFileSync(commun, "utf8") === lire("assets/son.js")));
+    const paires = [["Djerba", "Jerba"], ["Kairouan", "Qairouan"], ["Hammamet", "Hamamet"], ["Houmt Souk", "Houmet Essouk"]];
+    check("recherche au son : Djerba = Jerba, Kairouan = Qairouan, Hammamet = Hamamet, Houmt Souk = Houmet Essouk (même résultat)",
+      paires.every(([a, b]) => chercher(a).join() === chercher(b).join()) &&
+      paires.every(([a, b]) => S.trouve(S.cle("Commune de " + a), b) && S.trouve(S.cle("Commune de " + b), a)));
+    // paires tirées des VRAIS documents : « procuration » écrit « procurration », « attestation » écrit « atestation »
+    check("recherche au son : « procurration » = « procuration », « atestation » = « attestation », « demmission » = « démission »",
+      chercher("procurration").join() === chercher("procuration").join() && chercher("procuration").length === 2
+      && chercher("atestation").join() === chercher("attestation").join() && chercher("attestation").length >= 2
+      && chercher("demmission").join() === chercher("démission").join() && chercher("démission").length >= 1);
+    check("recherche au son : une recherche absurde (« zzzzqqq ») ne trouve toujours rien", chercher("zzzzqqq").length === 0); }
   r.value = ""; r.dispatchEvent(new w.Event("input"));
   check("accueil (VS.5) : recherche vide → compteur caché", cpt.hidden);
 }

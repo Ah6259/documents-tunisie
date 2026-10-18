@@ -113,13 +113,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!champ) return;
   const cartes = [...document.querySelectorAll("[data-cherche]")];
   const sansAccent = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[إأآا]/g, "ا").replace(/ة/g, "ه").replace(/ى/g, "ي");
+  const SON = window.sonRecherche;   // assets/son.js, chargé sur l'accueil seulement
   let cat = "";
   function filtrer() {
     const mots = sansAccent(champ.value.trim()).split(/\s+/).filter(Boolean);
     let n = 0;
     for (const c of cartes) {
       const t = sansAccent(c.dataset.cherche);
-      const ok = (!cat || c.dataset.cat === cat) && mots.every(m => t.includes(m));
+      // recherche « au son » (règle commune § 27, 18/10/2026) : Djerba = Jerba, Qairouan = Kairouan… (assets/son.js, outil commun)
+      if (SON && c._son === undefined) c._son = SON.cle(c.dataset.cherche);
+      const ok = (!cat || c.dataset.cat === cat) && (mots.every(m => t.includes(m)) || (!!SON && SON.trouve(c._son, champ.value)));
       c.hidden = !ok; if (ok) n++;
     }
     document.getElementById("aucun").hidden = n > 0;

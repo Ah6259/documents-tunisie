@@ -17,7 +17,7 @@ export function pages(root) {
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
   const URL = "https://documents.clicvia.com/";
   // ?v= : empreinte des fichiers communs (fins de ligne normalisées, pour que Windows et GitHub soient d'accord)
-  const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js", "assets/avis.js", "assets/pass.js"]
+  const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js", "assets/avis.js", "assets/pass.js", "assets/son.js"]
     .map(f => lire(f).replace(/\r\n/g, "\n")).join("\n")).digest("hex").slice(0, 10);
 
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -348,7 +348,7 @@ ${pied}`;
     const faq = { "@context": "https://schema.org", "@type": "WebSite", name: "Documents Tunisie", url: URL, inLanguage: ["fr", "ar"] };
     let s = tete({ titre: "Documents Tunisie — modèles à remplir, 1 PDF gratuit par jour (français et arabe) – نماذج وثائق تونسية",
       desc: "Modèles tunisiens à remplir sur téléphone : procuration, attestation de travail, demande de congé, autorisation de voyage… 1 PDF gratuit par jour en français ou en arabe, et les étapes officielles gratuites. نماذج بالعربية.",
-      chemin: "", racine: "", scripts: ["page.js", "avis.js"], jsonld: [faq] });
+      chemin: "", racine: "", scripts: ["son.js", "page.js", "avis.js"], jsonld: [faq] });
     s += corpsDebut() + "\n";
     s += hero({ photo: "accueil", racine: "", h1: bi("Modèles de documents tunisiens à remplir sur téléphone", "نماذج وثائق تونسية تُعمّر من الهاتف"),
       intro: bi("Remplissez, téléchargez le PDF en français ou en arabe, puis suivez les étapes officielles : municipalité, recette des finances, ATTT… 1 document gratuit par jour, étapes gratuites, sans inscription, rien n'est envoyé.",
