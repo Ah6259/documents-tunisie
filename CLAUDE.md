@@ -168,3 +168,5 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 - **Lieux officiels (18/10/2026, règle commune § 11.11)** : test_site.mjs vérifie que toute liste « Gouvernorat » = les 24 de La Poste, rien d'autre ; la liste des commissariats régionaux de l'éducation (champ `delegation`) = un par gouvernorat avec Tunis 1/2 et Sfax 1/2 (exceptions relues) ; aucune autre liste de lieux (ville = texte libre).
 
 - **Recherche « au son » (18/10/2026, règle commune § 27)** : la recherche de l'accueil utilise `assets/son.js` (outil commun de projets-ahmed, copié TEL QUEL, chargé sur l'accueil seulement, compté dans le `?v=` de generer.mjs) : Djerba = Jerba, « procurration » = « procuration » (l'ancienne recherche « mot contenu » reste valable). Test dans test_site.mjs (paires + « zzzzqqq » = 0).
+
+- **19/10/2026 — Visiteur simulé : contrôle des ESPACES (règle commune § 29)** : nouvelle copie commune installée, 0 anomalie, aucun défaut d'espace sur ce site.
