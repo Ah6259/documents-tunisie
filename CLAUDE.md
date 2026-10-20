@@ -170,3 +170,9 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 - **Recherche « au son » (18/10/2026, règle commune § 27)** : la recherche de l'accueil utilise `assets/son.js` (outil commun de projets-ahmed, copié TEL QUEL, chargé sur l'accueil seulement, compté dans le `?v=` de generer.mjs) : Djerba = Jerba, « procurration » = « procuration » (l'ancienne recherche « mot contenu » reste valable). Test dans test_site.mjs (paires + « zzzzqqq » = 0).
 
 - **19/10/2026 — Visiteur simulé : contrôle des ESPACES (règle commune § 29)** : nouvelle copie commune installée, 0 anomalie, aucun défaut d'espace sur ce site.
+
+- **20/10/2026 — Rappel de fin du Pass Journée (demande d'Ahmed ; pas de Telegram ni d'e-mail, la page parle au client)** : `afficherRappel()` de
+  `assets/pass.js` (pages de modèle + pages Pass) met sous l'en-tête un bandeau `#rappel-pass` dans les 6 dernières heures (dernier quart des 24 h),
+  au plus 1 fois par jour (mémoire `dt-pass-rappel-v1`) : « Merci pour votre inscription ! Votre Pass Journée se termine le JJ/MM/AAAA à HH:MM »,
+  bouton doré « Renouveler mon Pass » (`pass/#offre`), lien « Donner mon avis » (`#avis` de l'accueil), croix ; après la fin (≤ 30 jours) :
+  « terminé — merci ! » une fois. FR + AR (redessiné au changement de langue), tests « rappel du Pass » dans test_site.mjs ; ?v= refait par generer.mjs.

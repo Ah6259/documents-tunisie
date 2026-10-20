@@ -400,7 +400,7 @@ async function taperCode(w, code) {
   check("avec un code valide : PDF autorisé", w.__imprime === 1);
   check("avec le Pass : le document gratuit du jour n'est pas consommé", JSON.parse(w.localStorage.getItem("dt-gratuit-v1")).doc === A.slug);
   const avecPass = stock(w);
-  check("appareil : seul le code est gardé (aucun nom, aucun téléphone)", Object.keys(avecPass).every(k => ["dt-pass-v1", "dt-gratuit-v1", "langue"].includes(k)));
+  check("appareil : seul le code est gardé (aucun nom, aucun téléphone)", Object.keys(avecPass).every(k => ["dt-pass-v1", "dt-gratuit-v1", "dt-pass-rappel-v1", "langue"].includes(k)));
   // 24 heures plus tard : le Pass ne marche plus, retour au gratuit
   H.t = now + 21 * 36e5;
   w = await pagePass(DOCS[2].slug + "/index.html", { horloge: H, stockage: { ...avecPass, "dt-gratuit-v1": JSON.stringify({ jour: "2026-10-07", doc: A.slug }) }, liste }); doc = w.document;
@@ -473,6 +473,40 @@ async function taperCode(w, code) {
   check("conditions : vendeur « l'éditeur du site », pas de renouvellement automatique, aucune période payée remboursée, INPDP, 24 heures",
     /vendu par l'éditeur du site/.test(cond) && /Aucun renouvellement automatique/.test(cond) && /Aucune période payée n'est remboursée/.test(cond) && /INPDP/.test(cond) && /24 heures à partir de l'envoi de votre code/.test(cond));
   check("conditions : aucun nom de société, prix non annoncés TTC, aucun numéro de déclaration inventé", !/\b(SARL|SUARL|S\.A\.|société|TTC|déclaration n°)/i.test(cond));
+  // -- 20/10/2026 (demande d'Ahmed) : rappel de fin du Pass (merci, heure de fin, Renouveler, Donner mon avis), puis message après la fin
+  {
+    const RH = { t: new Date(2026, 9, 20, 9, 0).getTime() }, T0 = RH.t;
+    const garde = (finMs, extra = {}) => ({ "dt-pass-v1": JSON.stringify({ code: "ABCD2345", fin: new Date(finMs).toISOString(), verifie: T0 }), ...extra });
+    const voir = async (stockage, chemin = DOCS[0].slug + "/index.html") => { const wx = await pagePass(chemin, { horloge: RH, stockage }); await new Promise(r => setTimeout(r, 40)); return wx; };
+    const z = n => String(n).padStart(2, "0"), lisible = ms => { const d = new Date(ms); return z(d.getDate()) + "/" + z(d.getMonth() + 1) + "/" + d.getFullYear() + " à " + z(d.getHours()) + ":" + z(d.getMinutes()); };
+    let wx = await voir(garde(T0 + 20 * 36e5)), dx = wx.document;
+    check("rappel du Pass : rien quand il reste 20 heures sur 24", !dx.getElementById("rappel-pass"));
+    wx = await voir(garde(T0 + 5 * 36e5)); dx = wx.document;
+    let b = dx.getElementById("rappel-pass");
+    check("rappel du Pass : bandeau dans le dernier quart (5 heures restantes) : merci + « se termine le JJ/MM/AAAA à HH:MM »",
+      !!b && /Merci pour votre inscription/.test(b.textContent) && b.textContent.includes("se termine le " + lisible(T0 + 5 * 36e5)));
+    const ren = b && b.querySelector("a.rappel-renouveler"), av = b && b.querySelector("a.rappel-avis"), x = b && b.querySelector("button.rappel-fermer");
+    check("rappel du Pass : vrai bouton « Renouveler mon Pass » (../pass/#offre), lien « Donner mon avis » (formulaire Votre avis de l'accueil), croix",
+      !!ren && ren.getAttribute("href") === "../pass/#offre" && /id="offre"/.test(lire("pass/index.html")) && !!av && av.getAttribute("href") === "../#avis" && /id="avis"/.test(lire("index.html")) && !!x && x.type === "button");
+    x.click();
+    check("rappel du Pass : la croix ferme le bandeau", !dx.getElementById("rappel-pass"));
+    const memo = wx.localStorage.getItem("dt-pass-rappel-v1");
+    wx = await voir(garde(T0 + 4 * 36e5, { "dt-pass-rappel-v1": memo }));
+    check("rappel du Pass : une fois par jour au plus", !wx.document.getElementById("rappel-pass"));
+    wx = await voir(garde(T0 + 4 * 36e5, { "dt-pass-rappel-v1": JSON.stringify({ ...JSON.parse(memo), vu: "2026-10-19" }) }));
+    check("rappel du Pass : de nouveau possible un autre jour", !!wx.document.getElementById("rappel-pass"));
+    wx = await voir(garde(T0 + 3 * 36e5), "pass/index.html");
+    check("rappel du Pass : aussi sur la page pass/ (lien Renouveler vers #offre de la même page)", !!wx.document.getElementById("rappel-pass") && wx.document.querySelector("#rappel-pass a.rappel-renouveler").getAttribute("href") === "../pass/#offre");
+    wx = await voir(garde(T0 - 2 * 36e5)); dx = wx.document; b = dx.getElementById("rappel-pass");
+    check("rappel du Pass : après la fin, « Votre Pass Journée est terminé — merci ! » avec Renouveler et Donner mon avis, code effacé",
+      !!b && /est terminé — merci/.test(b.textContent) && !!b.querySelector("a.rappel-renouveler") && !!b.querySelector("a.rappel-avis") && !wx.localStorage.getItem("dt-pass-v1"));
+    wx = await voir({ "dt-pass-rappel-v1": wx.localStorage.getItem("dt-pass-rappel-v1") });
+    check("rappel du Pass : message de fin montré une seule fois", !wx.document.getElementById("rappel-pass"));
+    wx = await voir(garde(T0 + 2 * 36e5, { langue: "ar" })); b = wx.document.getElementById("rappel-pass");
+    check("rappel du Pass : en arabe (شكرًا على اشتراكك، جدّد باقتي)", !!b && /شكرًا على اشتراكك/.test(b.textContent) && /جدّد باقتي/.test(b.textContent));
+    wx = await voir({ "dt-pass-v1": "{abîmé", "dt-pass-rappel-v1": "{abîmé" });
+    check("rappel du Pass : stockage abîmé = pas de plantage, pas de bandeau", !wx.document.getElementById("rappel-pass"));
+  }
   // pass.json public : empreintes et heures de fin seulement
   let pj = {}; try { pj = JSON.parse(lire("donnees/pass.json")); } catch (e) {}
   check("donnees/pass.json : sel, tours, codes = empreinte (64 hex) + heure de fin UTC, aucune donnée personnelle",
