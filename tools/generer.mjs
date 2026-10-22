@@ -11,7 +11,7 @@ export function pages(root) {
   const lire = f => readFileSync(join(root, f), "utf8");
   const req = createRequire(join(root, "tools", "x.js"));
   delete req.cache[req.resolve(join(root, "assets/documents.js"))];
-  const { DOCS, CONTRATS, GUIDES, CATEGORIES, SOURCES, LEG_SUPPR } = req(join(root, "assets/documents.js"));
+  const { DOCS, CONTRATS, GUIDES, CATEGORIES, SOURCES, LEG_SUPPR, ETAPES_COURTES } = req(join(root, "assets/documents.js"));
   delete req.cache[req.resolve(join(root, "assets/modele.js"))];
   const CREDITS = JSON.parse(lire("assets/photos/credits.json"));
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
@@ -311,9 +311,12 @@ ${PASS_MODELE}
 <p class="avert">${bi("Modèle indicatif — ce site n'est pas officiel et ne remplace pas un avocat. Relisez le document avant de le signer.", "نموذج استرشادي — هذا الموقع ليس رسميا ولا يعوض المحامي. أعد قراءة الوثيقة قبل إمضائها.")}</p>\n`;
     }
     s += encartAnnuaire(d);
+    // « Les étapes » : petite rangée 1-2-3… de gauche à droite (titres courts ETAPES_COURTES, chaque case = lien vers #etape-N),
+    // puis la liste détaillée avec ses explications (Ahmed, 22/10/2026 : on ajoute la rangée, on ne retire rien)
     s += `<section class="carte protege" id="etapes">
   ${h2("liste", "Les étapes", "المراحل")}
-  <ol class="schema">${d.etapes.map(e => `<li><span class="ic">${svg(ICONES[e.ic])}</span><div><h3>${bi(e.fr[0], e.ar[0])}</h3><p>${bi(e.fr[1], e.ar[1])}</p></div></li>`).join("")}</ol>
+  <nav class="rangee-etapes" aria-label="${esc(d.etapes.length + " étapes")}"><ol>${d.etapes.map((e, i) => { const c = ETAPES_COURTES[e.fr[0]] || [e.fr[0], e.ar[0]]; return `<li><a href="#etape-${i + 1}"><span class="num">${i + 1}</span><span class="t">${bi(c[0], c[1])}</span></a></li>`; }).join("")}</ol></nav>${d.etapes.length >= 6 ? `<p class="rangee-glisser n${d.etapes.length}" aria-hidden="true">${bi(`↔ Glissez pour voir les ${d.etapes.length} étapes`, "↔ اسحب لرؤية كل المراحل")}</p>` : ""}
+  <ol class="schema">${d.etapes.map((e, i) => `<li id="etape-${i + 1}"><span class="ic">${svg(ICONES[e.ic])}</span><div><h3>${bi(e.fr[0], e.ar[0])}</h3><p>${bi(e.fr[1], e.ar[1])}</p></div></li>`).join("")}</ol>
 </section>
 <div class="deux-col">
 <section class="carte protege" id="pieces">${h2("garder", "Pièces à fournir", "الوثائق المطلوبة")}${listeBi(d.pieces)}</section>

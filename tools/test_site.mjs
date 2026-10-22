@@ -559,6 +559,23 @@ for (const p of fichiers) {
   const et = [...(d.querySelector("#comment .comment")?.children || [])];
   check("accueil : « Comment ça marche ? » = 3 étapes numérotées 1-2-3 (pastille sur l'icône)", et.length === 3 && et.every((e, i) => e.querySelector(".ic .num")?.textContent === String(i + 1) && !!e.querySelector(".ic svg")));
   check("accueil : les 3 étapes sur une seule rangée au téléphone (grille de 3 colonnes, jamais remise en 1 colonne)", /\.comment\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/.test(css) && !/\.comment\{[^}]*grid-template-columns:(1fr|repeat\(1,)/.test(css.replace(/^\.comment\{display:grid;grid-template-columns:repeat\(3[^\n]*/m, ""))); }
+// « Les étapes » des pages de modèles et démarches (Ahmed, 22/10/2026 : étapes « sur une ligne de gauche à droite ») : petite rangée
+// 1-2-3… AJOUTÉE au-dessus de la liste détaillée (rien retiré). Mesuré dans Chromium à 390 px le 22/10/2026 : 4-5 étapes tiennent sur
+// une ligne, 6-7 défilent dans la rangée (jamais la page), titres courts en 2 lignes au plus, aucun mot coupé, FR et AR.
+{ const { ETAPES_COURTES } = req(join(root, "assets/documents.js")), css = lire("assets/style.css");
+  for (const d of TOUS) {
+    const doc = new JSDOM(lire(d.slug + "/index.html")).window.document;
+    const det = [...doc.querySelectorAll("#etapes ol.schema > li")], cases = [...doc.querySelectorAll("#etapes nav.rangee-etapes ol > li")];
+    const rangee = doc.querySelector("#etapes nav.rangee-etapes");
+    check(`${d.slug} : rangée des étapes au-dessus de la liste détaillée, autant de cases que d'étapes (${d.etapes.length})`, !!rangee && cases.length === d.etapes.length && det.length === d.etapes.length && !!(rangee.compareDocumentPosition(doc.querySelector("#etapes ol.schema")) & 4));
+    check(`${d.slug} : rangée numérotée 1..n, chaque case = vrai lien vers son étape détaillée (#etape-N existe)`, cases.every((li, i) => { const a = li.querySelector("a[href]"); return a && a.getAttribute("href") === "#etape-" + (i + 1) && li.querySelector(".num")?.textContent === String(i + 1) && det[i]?.id === "etape-" + (i + 1); }));
+    check(`${d.slug} : chaque case a un titre court en français ET en arabe (ETAPES_COURTES), liste détaillée inchangée (titre + explication)`, d.etapes.every((e, i) => { const c = ETAPES_COURTES[e.fr[0]], t = cases[i]?.querySelector(".t"); return c && c[0].length <= 20 && c[1].length <= 20 && ARABE.test(c[1]) && t?.querySelector('[data-l="fr"]')?.textContent === c[0] && !!t?.querySelector('[data-l="ar"]') && det[i].querySelector("h3") && det[i].querySelector("p")?.textContent.length > 10; }));
+    check(`${d.slug} : « Glissez » seulement pour 6-7 étapes`, !!doc.querySelector(".rangee-glisser") === d.etapes.length >= 6 && (d.etapes.length < 6 || !!doc.querySelector(".rangee-glisser.n" + d.etapes.length)));
+  }
+  check("titres courts : aucun titre court inutilisé (une étape renommée = son titre court mis à jour)", Object.keys(ETAPES_COURTES).every(k => TOUS.some(d => d.etapes.some(e => e.fr[0] === k))));
+  check("rangée des étapes : une seule ligne (flex sans retour à la ligne), défilement DANS la rangée, cases de 64 px au moins, « Glissez » pour 6 et 7 étapes",
+    /\.rangee-etapes\{[^}]*overflow-x:auto/.test(css) && /\.rangee-etapes ol\{[^}]*display:flex;width:fit-content;min-width:100%/.test(css) && !/\.rangee-etapes[^{]*\{[^}]*flex-wrap:wrap/.test(css)
+    && /\.rangee-etapes li\{flex:1 0 0;min-width:64px/.test(css) && /\.rangee-glisser\.n6\{display:block\}/.test(css) && /\.rangee-glisser\.n7\{display:block\}/.test(css)); }
 // bouton Partager : sans menu de partage du téléphone (navigator.share), WhatsApp s'ouvre avec l'adresse de la page (sans ?lang ni #)
 for (const p of ["index.html", DOCS[0].slug + "/index.html"]) {
   const w = await page(p), doc = w.document, ouverts = [];

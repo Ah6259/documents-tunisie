@@ -180,3 +180,10 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   (`#comment .comment`, generer.mjs) = 3 étapes sur UNE rangée au téléphone, numéro en pastille `.num` sur l'icône (titres sans « 1. »,
   2 lignes au plus à 390 px) ; test dans test_site.mjs. Les « Étapes » détaillées des pages modèles (`ol.schema`, 4 à 7 étapes avec
   explication) restent en colonne : à changer seulement sur décision d'Ahmed (on perdrait les explications).
+- **Rangée des étapes des 33 pages de modèles et démarches (22/10/2026, « 4 oui » d'Ahmed)** : AJOUTÉE en haut de « Les étapes »
+  (`nav.rangee-etapes`, generer.mjs), la liste détaillée `ol.schema` reste dessous, inchangée. Pastille dorée numérotée + titre COURT
+  (`ETAPES_COURTES` de documents.js : clé = titre complet fr, valeur = [court fr, court ar] ; nouvelle étape = lui donner son titre court,
+  le test l'exige, ≤ 20 caractères, aucun mot plus large qu'une case de 64 px) ; chaque case = lien vers `#etape-N` de la liste détaillée.
+  Une seule ligne : 4-5 étapes tiennent à 390 px, 6-7 défilent DANS la rangée (ombre au bord + « ↔ Glissez… » sous 454/518 px), jamais la page ;
+  arabe de droite à gauche. Mesuré dans Chromium à 390 px avec les vraies polices (Figtree, Noto Kufi Arabic) : 66 pages FR+AR, page = 390 px,
+  2 lignes au plus, aucun débordement. Tests dans test_site.mjs.
