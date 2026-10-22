@@ -176,3 +176,7 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   au plus 1 fois par jour (mémoire `dt-pass-rappel-v1`) : « Merci pour votre inscription ! Votre Pass Journée se termine le JJ/MM/AAAA à HH:MM »,
   bouton doré « Renouveler mon Pass » (`pass/#offre`), lien « Donner mon avis » (`#avis` de l'accueil), croix ; après la fin (≤ 30 jours) :
   « terminé — merci ! » une fois. FR + AR (redessiné au changement de langue), tests « rappel du Pass » dans test_site.mjs ; ?v= refait par generer.mjs.
+- **Étapes 1-2-3 de l'accueil (22/10/2026, Ahmed : « sur une ligne, de gauche à droite », règle pour tous ses sites)** : « Comment ça marche ? »
+  (`#comment .comment`, generer.mjs) = 3 étapes sur UNE rangée au téléphone, numéro en pastille `.num` sur l'icône (titres sans « 1. »,
+  2 lignes au plus à 390 px) ; test dans test_site.mjs. Les « Étapes » détaillées des pages modèles (`ol.schema`, 4 à 7 étapes avec
+  explication) restent en colonne : à changer seulement sur décision d'Ahmed (on perdrait les explications).

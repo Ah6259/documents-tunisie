@@ -553,6 +553,12 @@ for (const p of fichiers) {
   const ld = [...s.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(x => JSON.parse(x[1]));
   if (!/^(index\.html|a-propos\/|pass\/)/.test(p)) check(`${p} : FAQ Google (JSON-LD) en français et en arabe`, ld.some(j => j["@type"] === "FAQPage" && j.mainEntity.length >= 2 && j.mainEntity.some(q => ARABE.test(q.name))));
 }
+// « Comment ça marche ? » de l'accueil (Ahmed, 22/10/2026) : les 3 étapes illustrées restent sur UNE rangée au téléphone,
+// numéro 1-2-3 en pastille sur l'icône (titres courts, 2 lignes au plus à 390 px : mesuré dans Chromium le 22/10/2026)
+{ const d = new JSDOM(lire("index.html")).window.document, css = lire("assets/style.css");
+  const et = [...(d.querySelector("#comment .comment")?.children || [])];
+  check("accueil : « Comment ça marche ? » = 3 étapes numérotées 1-2-3 (pastille sur l'icône)", et.length === 3 && et.every((e, i) => e.querySelector(".ic .num")?.textContent === String(i + 1) && !!e.querySelector(".ic svg")));
+  check("accueil : les 3 étapes sur une seule rangée au téléphone (grille de 3 colonnes, jamais remise en 1 colonne)", /\.comment\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/.test(css) && !/\.comment\{[^}]*grid-template-columns:(1fr|repeat\(1,)/.test(css.replace(/^\.comment\{display:grid;grid-template-columns:repeat\(3[^\n]*/m, ""))); }
 // bouton Partager : sans menu de partage du téléphone (navigator.share), WhatsApp s'ouvre avec l'adresse de la page (sans ?lang ni #)
 for (const p of ["index.html", DOCS[0].slug + "/index.html"]) {
   const w = await page(p), doc = w.document, ouverts = [];

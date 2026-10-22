@@ -369,9 +369,9 @@ ${pied}`;
 <section class="carte" id="comment">
   ${h2("info", "Comment ça marche ?", "كيف يعمل الموقع؟")}
   <div class="comment">
-    <div><span class="ic">${svg(ICONES.remplir)}</span>${bi("1. Remplissez le formulaire", "1. عمّر الاستمارة")}</div>
-    <div><span class="ic">${svg(ICONES.pdf)}</span>${bi("2. Téléchargez le PDF", "2. حمّل ملف PDF")}</div>
-    <div><span class="ic">${svg(ICONES.municipalite)}</span>${bi("3. Suivez les étapes", "3. اتبع المراحل")}</div>
+    <div><span class="ic"><span class="num">1</span>${svg(ICONES.remplir)}</span>${bi("Remplissez le formulaire", "عمّر الاستمارة")}</div>
+    <div><span class="ic"><span class="num">2</span>${svg(ICONES.pdf)}</span>${bi("Téléchargez le PDF", "حمّل ملف PDF")}</div>
+    <div><span class="ic"><span class="num">3</span>${svg(ICONES.municipalite)}</span>${bi("Suivez les étapes", "اتبع المراحل")}</div>
   </div>
 </section>
 <section class="carte" id="confiance">
