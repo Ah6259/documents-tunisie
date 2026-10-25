@@ -653,6 +653,34 @@ check("toutes les pages : lien vers le manifeste, icône iPhone et theme-color",
   return s.includes(`<link rel="manifest" href="${r}manifest.webmanifest">`) && s.includes(`<link rel="apple-touch-icon" href="${r}assets/icons/apple-touch-icon.png">`) && s.includes('<meta name="theme-color"'); }));
 check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vignette) : ${Math.round(ogJpg.length / 1024)} Ko`, ogJpg[0] === 0xFF && ogJpg[1] === 0xD8 && ogJpg.length < 250000);
 
+// 25/10/2026 (RÈGLE d'Ahmed, règle commune § 44 : « la page Comment fonctionne le site doit être mise à jour chaque fois qu'on modifie le site ») :
+// chaque fonction visible du site (repère dans le code ou les pages) doit être expliquée dans a-propos/ ; nouvelle fonction = une ligne ici + son explication FR + AR dans tools/generer.mjs
+{ const brut = lire("a-propos/index.html"), ap = brut.replace(/<[^>]+>/g, " ").replace(/[\u00a0\u2068\u2069]/g, " ").replace(/\s+/g, " ");
+  const acc = lire("index.html"), js = lire("assets/page.js") + lire("assets/modele.js") + lire("assets/pass.js") + lire("tools/generer.mjs");
+  const FONCTIONS = [
+    ["recherche (au son, nombre de résultats) et catégories", /afficherCompte/.test(js) && /id="recherche"/.test(acc), /Chercher un document : la case de recherche[^.]*au son[^.]*nombre de documents/],
+    ["remplir un modèle, aperçu et PDF", /voir-apercu/.test(js), /Remplir un modèle : vous remplissez le formulaire, l'aperçu[^.]*Télécharger le PDF/],
+    ["grands contrats", existsSync(join(root, "vente-voiture/index.html")), /Les grands contrats : vente de voiture/],
+    ["rangée des étapes et détail", /rangee-etapes/.test(js), /Les étapes après la signature : une rangée d'étapes numérotées/],
+    ["démarches expliquées", /GUIDES/.test(js), /Démarches expliquées : explication seulement/],
+    ["schéma case par case", /id="schema"/.test(js), /Schéma « case par case »/],
+    ["sources citées et « à vérifier »", true, /Sources citées : chaque page donne ses sources officielles/],
+    ["annuaires gratuits et calculateur de crédit", /cat-annuaire/.test(acc) && /outils\.clicvia\.com\/credit/.test(js), /Annuaires gratuits : liens vers nos annuaires[^.]*calculateur de crédit/],
+    ["langue FR / AR", /\.langue/.test(js), /Français \/ arabe : le bouton de langue/],
+    ["bouton Partager", /\.partager/.test(js), /Partager : le bouton rond/],
+    ["Votre avis", /id="avis"/.test(acc), /Votre avis : un formulaire/],
+    ["recherches sans résultat comptées", /recherche-vide/.test(js), /Documents demandés : un mot cherché sans résultat/],
+    ["installation et hors connexion", existsSync(join(root, "sw.js")), /Installer sur le téléphone/],
+    ["vidéo de présentation", existsSync(join(root, "video/index.html")), /Vidéo de présentation : courte vidéo/],
+    ["1 PDF gratuit par jour et Pass Journée (prix, code)", existsSync(join(root, "pass/index.html")), /1 document PDF est gratuit chaque jour[\s\S]*Pass Journée \(payant, 7 DT\)[\s\S]*code/],
+    ["rappel de fin du Pass", /afficherRappel/.test(js), /Peu avant la fin du Pass, un bandeau vous prévient/],
+    ["vie privée", true, /Ce que vous écrivez dans les formulaires reste dans votre téléphone/],
+    ["mises à jour automatiques", existsSync(join(root, "tools/surveiller_sources.mjs")), /Mises à jour automatiques : un robot vérifie chaque mois/],
+    ["site indépendant", true, /Ce site est indépendant/]];
+  const manque = FONCTIONS.filter(([, sur, re]) => sur && !re.test(ap)).map(([n]) => n);
+  check(`page « Comment fonctionne le site ? » à jour : titre et chaque fonction du site expliquée (${FONCTIONS.length} fonctions)` + (manque.length ? " — manque : " + manque.join(", ") : ""),
+    manque.length === 0 && /<h1>[^]*?Comment fonctionne le site \?[^]*?كيف يعمل الموقع؟[^]*?<\/h1>/.test(brut)
+    && /a-propos\/">\$\{T\("Comment fonctionne le site \?"/.test(lire("assets/page.js")) && /id="lien-fonctionnement"/.test(acc)); }
 check("langue par défaut = ARABE (décision d'Ahmed), seule une langue fr/ar enregistrée est reprise (mémoire partagée entre sites)", (() => { const js = readFileSync(join(root, "assets/page.js"), "utf8"); return /let langue = "ar";/.test(js) && js.includes("/^(fr|ar)$/.test(") && js.includes(': "") || "ar"'); })());
 console.log(erreurs ? `\n${erreurs} PROBLÈME(S)` : "\nTOUT PASSE");
 process.exit(erreurs ? 1 : 0);

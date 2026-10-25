@@ -376,12 +376,13 @@ ${pied}`;
     <div><span class="ic"><span class="num">2</span>${svg(ICONES.pdf)}</span>${bi("Téléchargez le PDF", "حمّل ملف PDF")}</div>
     <div><span class="ic"><span class="num">3</span>${svg(ICONES.municipalite)}</span>${bi("Suivez les étapes", "اتبع المراحل")}</div>
   </div>
+  <p class="note"><a href="a-propos/" id="lien-fonctionnement">${bi("Tout savoir : comment fonctionne le site ? →", "← كل شيء عن الموقع: كيف يعمل الموقع؟")}</a></p>
 </section>
 <section class="carte" id="confiance">
   ${h2("bouclier", "Pourquoi nous faire confiance ?", "لماذا تثق بنا؟")}
   <ul class="sources" data-l="fr"><li>Les étapes viennent des <b>sources officielles</b> (ministères, ATTT, CNSS…), citées sur chaque page.</li><li>Ce qui n'est pas encore confirmé est marqué <b>« à vérifier »</b>, jamais inventé.</li><li>Le PDF est fabriqué <b>dans votre téléphone</b> : rien n'est envoyé ni enregistré.</li></ul>
   <ul class="sources" data-l="ar"><li>المراحل مأخوذة من <b>المصادر الرسمية</b> (الوزارات، الوكالة الفنية للنقل البري، الضمان الاجتماعي…)، ومذكورة في كل صفحة.</li><li>ما لم يتم تأكيده بعد يحمل عبارة <b>« يُتثبت منه »</b>، ولا نخترع أي معلومة.</li><li>يُصنع ملف ⁨PDF⁩ <b>في هاتفك</b>: لا يُرسل ولا يُحفظ أي شيء.</li></ul>
-  <p class="note"><a href="a-propos/">${bi("Notre méthode, nos sources et nos limites →", "← منهجيتنا ومصادرنا وحدودنا")}</a></p>
+  <p class="note"><a href="a-propos/">${bi("Comment fonctionne le site ? Méthode, sources et limites →", "← كيف يعمل الموقع؟ المنهجية والمصادر والحدود")}</a></p>
 </section>
 ${AVIS}
 <p class="avert">${bi("Site non officiel : les modèles sont indicatifs et ne remplacent pas un avocat.", "موقع غير رسمي: النماذج استرشادية ولا تعوض المحامي.")}</p>
@@ -392,19 +393,57 @@ ${pied}`;
 
   /* ---------------- à propos ---------------- */
   {
-    let s = tete({ titre: "À propos et méthode — Documents Tunisie", desc: "Comment sont faits les modèles gratuits de Documents Tunisie : sources officielles, vérification, limites, données personnelles, crédits photos.",
+    let s = tete({ titre: "Comment fonctionne le site ? — Documents Tunisie", desc: "Comment fonctionne Documents Tunisie : modèles gratuits à remplir, PDF fait dans le téléphone, étapes officielles, Pass Journée, vos données, sources et limites.",
       chemin: "a-propos/", racine: "../", scripts: ["page.js"], jsonld: [] });
     s += corpsDebut() + "\n";
-    s += hero({ photo: "administration", racine: "../", fil: `<a href="../">${bi("Accueil", "الرئيسية")}</a>`, h1: bi("À propos et méthode", "من نحن والمنهجية"),
-      intro: bi("Ce que fait ce site, d'où viennent les informations et ce qu'il ne fait pas.", "ما يقدمه هذا الموقع، ومن أين تأتي المعلومات، وما لا يقوم به.") });
+    s += hero({ photo: "administration", racine: "../", fil: `<a href="../">${bi("Accueil", "الرئيسية")}</a>`, h1: bi("Comment fonctionne le site ?", "كيف يعمل الموقع؟"),
+      intro: bi("Ce que fait ce site, comment s'en servir, d'où viennent les informations et ce qu'il ne fait pas.", "ما يقدمه هذا الموقع، كيف تستعمله، ومن أين تأتي المعلومات، وما لا يقوم به.") });
     s += `\n<main class="wrap chevauche">
 <section class="carte">${h2("info", "Ce que fait ce site", "ما يقدمه الموقع")}
   <p data-l="fr">Documents Tunisie propose des <b>modèles</b> de documents courants (procurations, attestations, demandes, reçus…) à remplir sur téléphone, en <b>français et en arabe</b>, et explique gratuitement <b>les étapes</b> après la signature : légalisation, enregistrement, administration à contacter, pièces à apporter. <b>1 document PDF est gratuit chaque jour</b> sur chaque téléphone ; le <a href="../pass/">Pass Journée</a> (7 DT) donne tous les documents pendant 24 heures.</p>
   <p data-l="ar">يقدم موقع وثائق تونس <b>نماذج</b> لوثائق متداولة (توكيلات، شهائد، مطالب، وصولات…) تُعمّر من الهاتف، <b>بالعربية والفرنسية</b>، ويشرح مجانًا <b>المراحل</b> بعد الإمضاء: التعريف بالإمضاء، التسجيل، الإدارة المعنية، الوثائق المطلوبة. <b>وثيقة ⁨PDF⁩ واحدة مجانية كل يوم</b> على كل هاتف؛ و<a href="../pass/">باقة اليوم</a> (⁨7⁩ د) تمنح كل الوثائق طيلة ⁨24⁩ ساعة.</p>
 </section>
+<section class="carte" id="fonctionnement">${h2("info", "Ce que vous pouvez faire", "ما يمكنك فعله")}
+  <ul class="liste" data-l="fr">
+    <li><b>Chercher un document</b> : la case de recherche de l'accueil comprend aussi les fautes d'orthographe (« au son ») et affiche le nombre de documents trouvés ; les catégories trient la liste.</li>
+    <li><b>Remplir un modèle</b> : vous remplissez le formulaire, l'aperçu du document suit votre saisie (bouton « Voir l'aperçu »), puis « Télécharger le PDF » fabrique le PDF dans votre téléphone.</li>
+    <li><b>Les grands contrats</b> : vente de voiture, de moto, location de maison, avec toutes les étapes (légalisation, enregistrement, carte grise).</li>
+    <li><b>Les étapes après la signature</b> : une rangée d'étapes numérotées en haut, puis le détail de chaque étape (légalisation, enregistrement, administration à contacter, pièces à apporter).</li>
+    <li><b>Démarches expliquées</b> : explication seulement, à partir des textes officiels, sans modèle à remplir (divorce, mariage, contrat de travail…).</li>
+    <li><b>Schéma « case par case »</b> : pour la traite, un dessin SPÉCIMEN explique chaque case à remplir.</li>
+    <li><b>Sources citées</b> : chaque page donne ses sources officielles et sa date de vérification ; ce qui n'est pas confirmé est marqué « à vérifier ».</li>
+    <li><b>Annuaires gratuits</b> : liens vers nos annuaires (avocats et notaires, comptables, prestataires de mariage) et vers le calculateur de crédit, quand c'est utile.</li>
+    <li><b>Français / arabe</b> : le bouton de langue en haut de chaque page change la page et le document.</li>
+    <li><b>Partager</b> : le bouton rond en haut de la page envoie le lien (menu du téléphone ou WhatsApp).</li>
+    <li><b>Votre avis</b> : un formulaire en bas de l'accueil ; il n'est envoyé que si vous cliquez sur « Envoyer ».</li>
+    <li><b>Documents demandés</b> : un mot cherché sans résultat est compté (sans les chiffres) ; les documents les plus demandés sont ajoutés au site.</li>
+    <li><b>Installer sur le téléphone</b> : le site s'installe comme une application et s'ouvre aussi sans connexion (dernière version vue).</li>
+    <li><b>Vidéo de présentation</b> : courte vidéo à regarder ou à partager.</li>
+  </ul>
+  <ul class="liste" data-l="ar">
+    <li><b>البحث عن وثيقة</b>: خانة البحث في الصفحة الرئيسية تفهم أيضًا الأخطاء الإملائية («حسب النطق») وتعرض عدد الوثائق؛ والأصناف ترتّب القائمة.</li>
+    <li><b>تعمير نموذج</b>: تعمّر الاستمارة، ومعاينة الوثيقة تتبع ما تكتبه (زر «معاينة الوثيقة»)، ثم «تحميل ⁨PDF⁩» يصنع الملف في هاتفك.</li>
+    <li><b>العقود الكبرى</b>: بيع سيارة أو دراجة نارية، كراء منزل، مع كل المراحل (التعريف بالإمضاء، التسجيل، البطاقة الرمادية).</li>
+    <li><b>المراحل بعد الإمضاء</b>: صف مراحل مرقّمة في الأعلى، ثم تفاصيل كل مرحلة (التعريف بالإمضاء، التسجيل، الإدارة المعنية، الوثائق المطلوبة).</li>
+    <li><b>إجراءات مشروحة</b>: شرح فقط انطلاقًا من النصوص الرسمية، دون نموذج للتعمير (الطلاق، الزواج، عقد الشغل…).</li>
+    <li><b>رسم «خانة بخانة»</b>: للكمبيالة، رسم «نموذج» يشرح كل خانة.</li>
+    <li><b>مصادر مذكورة</b>: كل صفحة تذكر مصادرها الرسمية وتاريخ التثبت؛ وما لم يتأكد يحمل عبارة «يُتثبت منه».</li>
+    <li><b>أدلة مجانية</b>: روابط نحو أدلتنا (المحامون وعدول الإشهاد، المحاسبون، مزودو خدمات الأعراس) ونحو حاسبة القروض، عند الحاجة.</li>
+    <li><b>العربية / الفرنسية</b>: زر اللغة أعلى كل صفحة يغيّر الصفحة والوثيقة.</li>
+    <li><b>مشاركة</b>: الزر الدائري أعلى الصفحة يرسل الرابط (قائمة الهاتف أو واتساب).</li>
+    <li><b>رأيك</b>: استمارة أسفل الصفحة الرئيسية، لا تُرسل إلا عند الضغط على «إرسال».</li>
+    <li><b>الوثائق المطلوبة</b>: الكلمة التي لا نتيجة لها تُحسب (دون الأرقام)؛ ونضيف الوثائق الأكثر طلبًا.</li>
+    <li><b>التثبيت على الهاتف</b>: يُثبَّت الموقع كتطبيق ويفتح أيضًا دون اتصال (آخر نسخة شوهدت).</li>
+    <li><b>الفيديو التقديمي</b>: فيديو قصير للمشاهدة أو المشاركة.</li>
+  </ul>
+</section>
+<section class="carte" id="gratuit-pass">${h2("pdf", "Gratuit et Pass Journée", "المجاني وباقة اليوم")}
+  <p data-l="fr">Les pages, les formulaires et les étapes sont <b>gratuits</b>. <b>1 document PDF est gratuit chaque jour</b> sur chaque téléphone (retélécharger le même document le même jour reste permis). Pour un autre document le même jour, le <a href="../pass/">Pass Journée</a> (payant, 7 DT) donne tous les documents pendant 24 heures : paiement D17 ou IZI, puis vous recevez un <b>code</b> à taper sur la page du Pass. Pas de renouvellement automatique. Peu avant la fin du Pass, un bandeau vous prévient.</p>
+  <p data-l="ar">الصفحات والاستمارات والمراحل <b>مجانية</b>. <b>وثيقة ⁨PDF⁩ واحدة مجانية كل يوم</b> على كل هاتف (إعادة تحميل نفس الوثيقة في نفس اليوم مسموحة). ولوثيقة أخرى في نفس اليوم، <a href="../pass/">باقة اليوم</a> (بمقابل، ⁨7⁩ د) تمنح كل الوثائق طيلة ⁨24⁩ ساعة: الدفع عبر ⁨D17⁩ أو ⁨IZI⁩، ثم تتلقى <b>رمزًا</b> تكتبه في صفحة الباقة. دون تجديد آلي. وقبل نهاية الباقة بقليل، يُعلمك شريط بذلك.</p>
+</section>
 <section class="carte">${h2("livre", "Méthode et sources officielles", "المنهجية والمصادر الرسمية")}
-  <p data-l="fr">Les textes des modèles sont <b>écrits par nous</b> à partir des textes de loi et des sites officiels ; ils ne sont copiés d'aucun autre site. Chaque page cite ses sources et sa date de vérification (<span data-maj>${MAJ}</span>). Un robot vérifie chaque mois que ces sources répondent toujours.</p>
-  <p data-l="ar">نصوص النماذج <b>من تحريرنا</b> انطلاقا من النصوص القانونية والمواقع الرسمية، ولم تُنقل من أي موقع آخر. كل صفحة تذكر مصادرها وتاريخ التثبت (<span data-maj>${MAJ}</span>). يتثبت روبوت كل شهر من أن هذه المصادر لا تزال متاحة.</p>
+  <p data-l="fr">Les textes des modèles sont <b>écrits par nous</b> à partir des textes de loi et des sites officiels ; ils ne sont copiés d'aucun autre site. Chaque page cite ses sources et sa date de vérification (<span data-maj>${MAJ}</span>). <b>Mises à jour automatiques</b> : un robot vérifie chaque mois que ces sources répondent toujours. Ce site est <b>indépendant</b> : il n'a aucun lien avec l'administration.</p>
+  <p data-l="ar">نصوص النماذج <b>من تحريرنا</b> انطلاقا من النصوص القانونية والمواقع الرسمية، ولم تُنقل من أي موقع آخر. كل صفحة تذكر مصادرها وتاريخ التثبت (<span data-maj>${MAJ}</span>). <b>تحيين آلي</b>: يتثبت روبوت كل شهر من أن هذه المصادر لا تزال متاحة. هذا الموقع <b>مستقل</b>: لا علاقة له بالإدارة.</p>
   ${sourcesHTML(Object.keys(SOURCES))}
 </section>
 <section class="carte averifier">${h2("alerte", "Limites", "الحدود")}

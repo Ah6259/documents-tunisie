@@ -44,7 +44,7 @@ const SITE = "https://documents.clicvia.com/";
           <a href="${racine}vente-voiture/">${T("Vendre une voiture", "بيع سيارة")}</a>
           <a href="${racine}location-maison/">${T("Louer un logement", "كراء مسكن")}</a>
           <a href="https://avocats.clicvia.com/" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats">${T("Avocats et notaires", "محامون وعدول")}</a>
-          <a href="${racine}a-propos/">${T("À propos et méthode", "من نحن والمنهجية")}</a>
+          <a href="${racine}a-propos/">${T("Comment fonctionne le site ?", "كيف يعمل الموقع؟")}</a>
           <a href="${racine}#avis">${T("Votre avis", "رأيك")}</a>
         <a href="https://clicvia.com/" rel="noopener" target="_blank">${T("Tous nos services", "كل خدماتنا")}</a>
         </nav>

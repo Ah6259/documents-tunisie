@@ -11,6 +11,7 @@ Adresse prévue : https://documents.clicvia.com/ (GitHub Pages, branche `main`).
 - **5 démarches expliquées** (divorce, mariage, contrat de travail CDI/CDD depuis la loi n° 2025-9, CIVP/Karama/Service civil,
   prêt d'honneur sans intérêts) : explication à partir des textes officiels (`GUIDES` dans `assets/documents.js`) ; seul le prêt
   d'honneur renvoie vers un modèle de lettre (« demande de prêt d'honneur », marqué « modèle indicatif »).
+- **« Comment fonctionne le site ? »** (`a-propos/`, fabriquée par generer.mjs) : chaque fonction, gratuit / Pass, vos données, méthode — mise à jour à chaque modification visible (règle commune § 44, test `FONCTIONS` de `tools/test_site.mjs`).
 - Toutes les données (textes, champs, étapes, sources) sont dans `assets/documents.js`.
   Les pages HTML sont **fabriquées** par `node tools/generer.mjs` (ne pas les modifier à la main).
 
