@@ -189,3 +189,9 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   2 lignes au plus, aucun débordement. Tests dans test_site.mjs.
 
 - **RÈGLE D'AHMED (25/10/2026, règle commune § 44) : la page « Comment fonctionne le site ? » (`a-propos/`, FR + AR, h1 « Comment fonctionne le site ? » / « كيف يعمل الموقع؟ ») est mise à jour à CHAQUE modification visible, dans le même envoi** (nouveau document, fonction changée ou retirée). Elle est FABRIQUÉE par `tools/generer.mjs` (bloc « à propos ») : cartes `#fonctionnement` (chaque fonction en une ligne), `#gratuit-pass` (1 PDF gratuit par jour, Pass Journée), puis méthode (mises à jour automatiques, site indépendant), limites, vos données, crédits, droits. Liens : pied de page de toutes les pages (`page.js`, « Comment fonctionne le site ? »), accueil (`#lien-fonctionnement` sous « Comment ça marche ? » + lien de « Pourquoi nous faire confiance ? »). **Test `FONCTIONS` dans `tools/test_site.mjs`** (repère dans le code -> phrase attendue dans la page) : fonction présente mais non expliquée = test rouge = publication bloquée. Nouvelle fonction = une ligne dans `FONCTIONS` + son explication FR + AR dans generer.mjs, puis `node tools/generer.mjs`.
+
+- **08/11/2026 — plan SEO d'Ahmed appliqué à ce site (phase 2 ; contrôle commun `outils visibilite/controle_seo.mjs` de projets-ahmed ;
+  plan : `consignes des taches/seo-documents.md`)** : `titreSeo()` / `descSeo()` dans `tete()` de tools/generer.mjs (titre <= 70 caractères :
+  le suffixe arabe « – نماذج… » saute s'il dépasse, puis coupe à un séparateur ; description <= 165 coupée en fin de phrase). Avant : titres de
+  77 à 113 caractères, descriptions jusqu'à 289. Tests verts (site, 37 sabotages, robot, sw, avis, vidéo). Reste (phase 2 point 7) :
+  une adresse par langue (FR et AR mêlés sous lang="fr").

@@ -120,7 +120,23 @@ export function pages(root) {
 </aside>\n` : "";
   const CSP = `default-src 'self'; script-src 'self' https://gc.zgo.at; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: ${COMPTEUR}; connect-src 'self' ${COMPTEUR} ${FORMSPREE}; object-src 'none'; base-uri 'self'; form-action 'self' ${FORMSPREE}; upgrade-insecure-requests`;
 
+  // SEO (08/11/2026, plan d'Ahmed pour tous les sites) : Google coupe les titres vers 60-70 caractères et les descriptions vers 160 :
+  // le suffixe « – نماذج… » / « | … » saute si le titre dépasse, puis coupe à un séparateur ; description coupée en fin de phrase
+  function titreSeo(t, maxi = 70) {
+    if (t.length <= maxi) return t;
+    for (const sep of [" – ", " | "]) { const i = t.lastIndexOf(sep); if (i > 0 && t.length - i <= 45 && t.slice(0, i).trim().length <= maxi) return t.slice(0, i).trim(); }
+    let base = t.split(/ – | \| /)[0].trim();
+    if (base.length <= maxi) return base;
+    for (const sep of [" : ", " (", " — ", ", "]) { const i = base.lastIndexOf(sep, maxi); if (i >= 25) return base.slice(0, i).replace(/[\s,;:—-]+$/, ""); }
+    return base.slice(0, maxi - 1).replace(/\s+\S*$/, "").replace(/[\s,;:—(-]+$/, "") + "…";
+  }
+  function descSeo(d, maxi = 165) {
+    if (d.length <= maxi) return d;
+    const c = d.slice(0, maxi), i = Math.max(c.lastIndexOf(". "), c.lastIndexOf("۔ "));
+    return i >= 60 ? c.slice(0, i + 1) : c.slice(0, maxi - 1).replace(/\s+\S*$/, "").replace(/[\s,;:—(،-]+$/, "") + "…";
+  }
   function tete({ titre, desc, chemin, racine, scripts, jsonld }) {
+    titre = titreSeo(titre); desc = descSeo(desc);
     return `<!doctype html>
 <html translate="no" lang="fr" dir="ltr" data-racine="${racine}">
 <head>
