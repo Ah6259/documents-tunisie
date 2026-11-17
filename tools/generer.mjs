@@ -435,6 +435,7 @@ ${pied}`;
     <li><b>Documents demandés</b> : un mot cherché sans résultat est compté (sans les chiffres) ; les documents les plus demandés sont ajoutés au site.</li>
     <li><b>Installer sur le téléphone</b> : le site s'installe comme une application et s'ouvre aussi sans connexion (dernière version vue).</li>
     <li><b>Vidéo de présentation</b> : courte vidéo à regarder ou à partager.</li>
+    <li><b>Page introuvable, confidentialité, conditions</b> : une adresse qui n'existe pas montre notre page « Page introuvable », qui cherche d'abord la page sur nos sites et vous y emmène ; en bas de chaque page, les liens « Confidentialité » et « Conditions d'utilisation » mènent aux pages communes de nos services (clicvia.com).</li>
   </ul>
   <ul class="liste" data-l="ar">
     <li><b>البحث عن وثيقة</b>: خانة البحث في الصفحة الرئيسية تفهم أيضًا الأخطاء الإملائية («حسب النطق») وتعرض عدد الوثائق؛ والأصناف ترتّب القائمة.</li>
@@ -451,6 +452,7 @@ ${pied}`;
     <li><b>الوثائق المطلوبة</b>: الكلمة التي لا نتيجة لها تُحسب (دون الأرقام)؛ ونضيف الوثائق الأكثر طلبًا.</li>
     <li><b>التثبيت على الهاتف</b>: يُثبَّت الموقع كتطبيق ويفتح أيضًا دون اتصال (آخر نسخة شوهدت).</li>
     <li><b>الفيديو التقديمي</b>: فيديو قصير للمشاهدة أو المشاركة.</li>
+    <li><b>صفحة غير موجودة، الخصوصية، الشروط</b>: العنوان غير الموجود يعرض صفحتنا «صفحة غير موجودة» التي تبحث أولًا عن الصفحة في مواقعنا وتأخذك إليها؛ وفي أسفل كل صفحة، رابطا «الخصوصية» و«شروط الاستعمال» يؤديان إلى الصفحات المشتركة لخدماتنا (clicvia.com).</li>
   </ul>
 </section>
 <section class="carte" id="gratuit-pass">${h2("pdf", "Gratuit et Pass Journée", "المجاني وباقة اليوم")}

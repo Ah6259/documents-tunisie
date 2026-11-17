@@ -548,11 +548,23 @@ for (const p of fichiers) {
   const w = await page(p), doc = w.document, pied = doc.getElementById("pied").textContent;
   check(`${p} : translate="no" gardé par le JavaScript (français puis arabe)`, doc.documentElement.getAttribute("translate") === "no" && (doc.querySelector(".langue")?.click(), doc.documentElement.lang === "ar" && doc.documentElement.getAttribute("translate") === "no"));
   check(`${p} : en-tête avec logo et lien « Avocats et notaires », pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && !!doc.querySelector("#entete a.entete-annuaire[href^=\"https://avocats.clicvia.com/\"] img") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
+  // liens vers les pages communes « Confidentialité » et « Conditions d'utilisation » de clicvia.com (17/11/2026), dans la langue de la page
+  { const a = (u, t) => [...doc.querySelectorAll("#pied nav a")].some(x => x.getAttribute("href") === u && x.textContent.trim() === t);
+    const ar = doc.documentElement.lang === "ar" && a("https://clicvia.com/ar/confidentialite/", "الخصوصية") && a("https://clicvia.com/ar/conditions/", "شروط الاستعمال");
+    doc.querySelector(".langue").click();
+    const fr = doc.documentElement.lang === "fr" && a("https://clicvia.com/confidentialite/", "Confidentialité") && a("https://clicvia.com/conditions/", "Conditions d'utilisation");
+    doc.querySelector(".langue").click();
+    check(`${p} : pied : liens « Confidentialité » et « Conditions d'utilisation » (arabe et français, adresse dans la langue)`, ar && fr && doc.documentElement.lang === "ar"); }
   check(`${p} : bouton « Partager » dans l'en-tête (arabe : « شارك هذه الصفحة »)`, doc.querySelector('#entete button.partager[aria-label="شارك هذه الصفحة"] svg'));
   check(`${p} : dates « vérifié le » = la constante MAJ`, [...doc.querySelectorAll("[data-maj]")].every(x => x.textContent === w.eval("MAJ")));
   const ld = [...s.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(x => JSON.parse(x[1]));
   if (!/^(index\.html|a-propos\/|pass\/)/.test(p)) check(`${p} : FAQ Google (JSON-LD) en français et en arabe`, ld.some(j => j["@type"] === "FAQPage" && j.mainEntity.length >= 2 && j.mainEntity.some(q => ARABE.test(q.name))));
 }
+// Page 404 commune (17/11/2026, règle commune § 58 point 14 ; modèle : outils communs/page-404 de projets-ahmed) : sinon GitHub montre sa page anglaise
+check("page 404 commune à la racine publiée : 404.html (nom du site, couleur) + 404.js qui cherche la page (« Recherche de la page »)",
+  existsSync(join(root, "404.html")) && existsSync(join(root, "404.js")) && lire("404.html").includes("<title>Page introuvable — Documents Tunisie</title>")
+  && lire("404.html").includes('<script src="/404.js"></script>') && lire("404.js").includes("Recherche de la page"));
+check("À propos : la page introuvable et les liens Confidentialité / Conditions sont expliqués (FR + AR)", lire("a-propos/index.html").includes("Page introuvable, confidentialité, conditions") && lire("a-propos/index.html").includes("صفحة غير موجودة، الخصوصية، الشروط"));
 // « Comment ça marche ? » de l'accueil (Ahmed, 22/10/2026) : les 3 étapes illustrées restent sur UNE rangée au téléphone,
 // numéro 1-2-3 en pastille sur l'icône (titres courts, 2 lignes au plus à 390 px : mesuré dans Chromium le 22/10/2026)
 { const d = new JSDOM(lire("index.html")).window.document, css = lire("assets/style.css");

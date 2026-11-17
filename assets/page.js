@@ -47,6 +47,8 @@ const SITE = "https://documents.clicvia.com/";
           <a href="${racine}a-propos/">${T("Comment fonctionne le site ?", "كيف يعمل الموقع؟")}</a>
           <a href="${racine}#avis">${T("Votre avis", "رأيك")}</a>
         <a href="https://clicvia.com/" rel="noopener" target="_blank">${T("Tous nos services", "كل خدماتنا")}</a>
+        <a href="${T("https://clicvia.com/confidentialite/", "https://clicvia.com/ar/confidentialite/")}" rel="noopener" target="_blank">${T("Confidentialité", "الخصوصية")}</a>
+        <a href="${T("https://clicvia.com/conditions/", "https://clicvia.com/ar/conditions/")}" rel="noopener" target="_blank">${T("Conditions d'utilisation", "شروط الاستعمال")}</a>
         </nav>
         <p>${T(`Informations vérifiées le ${MAJ} à partir des sources officielles citées sur chaque page.`, `معلومات تم التثبت منها في ${MAJ} انطلاقا من المصادر الرسمية المذكورة في كل صفحة.`)}</p>
         <p>${T("Site non officiel : modèles indicatifs qui ne remplacent pas un avocat. Le PDF est fabriqué dans votre téléphone : aucune donnée n'est envoyée.",

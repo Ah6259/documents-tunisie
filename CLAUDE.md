@@ -195,3 +195,9 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   le suffixe arabe « – نماذج… » saute s'il dépasse, puis coupe à un séparateur ; description <= 165 coupée en fin de phrase). Avant : titres de
   77 à 113 caractères, descriptions jusqu'à 289. Tests verts (site, 37 sabotages, robot, sw, avis, vidéo). Reste (phase 2 point 7) :
   une adresse par langue (FR et AR mêlés sous lang="fr").
+
+## Page 404 commune + liens Confidentialité / Conditions (17/11/2026, liste des « 20 points » d'Ahmed)
+- `404.html` + `404.js` à la racine (modèle `outils communs/page-404/` de projets-ahmed : le modifier là-bas puis
+  `installer.py site "Documents Tunisie" "#8C2B3A"`) : cherche la page sur nos sites avant « Page introuvable ».
+- Pied (assets/page.js) : liens https://clicvia.com/confidentialite/ et /conditions/ (versions ar/ quand la page est en arabe) ; ligne
+  ajoutée dans « Comment fonctionne le site ? ». test_site.mjs bloque si la 404 ou un lien manque (chaque page, AR + FR) ; 404.html exclue de test_sw / test_avis.
