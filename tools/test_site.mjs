@@ -111,14 +111,17 @@ for (const d of DOCS) {
 }
 
 // ---- 4. Pages chargées comme dans un navigateur ------------------------------------
+// UNE ADRESSE PAR LANGUE (21/11/2026) : page(chemin, "ar") ouvre ar/<chemin> (page arabe seule), sans ?lang ;
+// le bouton de langue appelle window.allerVers (noté dans w.__allerVers) au lieu de changer d'adresse.
 async function page(chemin, lang = "fr") {
+  if (lang === "ar" && existsSync(join(root, "ar", chemin))) chemin = "ar/" + chemin;
   const dossier = dirname(join(root, chemin));
   // (les scripts externes, comme GoatCounter, ne sont pas chargés)
   const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
     (_, a, src) => `<script>${readFileSync(join(dossier, src), "utf8")}</script>`);
   const vc = new VirtualConsole(); vc.on("jsdomError", e => { if (!/Not implemented/.test(e.message)) { console.log("   erreur JS :", chemin, e.message); erreurs++; } });
-  const dom = new JSDOM(html, { url: `https://documents.clicvia.com/${chemin.replace("index.html", "")}?lang=${lang}`,
-    runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc });
+  const dom = new JSDOM(html, { url: `https://documents.clicvia.com/${chemin.replace("index.html", "")}${/data-langue-fixe/.test(html) ? "" : "?lang=" + lang}`,
+    runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc, beforeParse(w) { w.allerVers = u => { w.__allerVers = u; }; } });
   dom.window.__imprime = 0; dom.window.print = () => dom.window.__imprime++;
   await new Promise(ok => dom.window.addEventListener("load", ok));
   return dom.window;
@@ -170,19 +173,22 @@ for (const d of GUIDES) {
 const HONNEUR = ["pret-d-honneur", "demande-pret-d-honneur"];   // prêt d'honneur : annuaire des comptables + calculateur de crédit
 const AVEC_ANNUAIRE = [...CONTRATS, ...GUIDES].map(d => d.slug).filter(s => !HONNEUR.includes(s)).concat("reconnaissance-de-dette");
 for (const slug of AVEC_ANNUAIRE) {
-  const w = await page(slug + "/index.html"), doc = w.document;
-  const liens = [...doc.querySelectorAll('#annuaire a[href^="https://avocats.clicvia.com/"]')];
+  const w = await page(slug + "/index.html"), doc = w.document, docAr = (await page(slug + "/index.html", "ar")).document;
+  // une adresse par langue : le lien français sur la page française, le lien arabe (?lang=ar) sur la page arabe
+  const liens = [...doc.querySelectorAll('#annuaire a[href^="https://avocats.clicvia.com/"]'), ...docAr.querySelectorAll('#annuaire a[href="https://avocats.clicvia.com/?lang=ar"]')];
   check(`${slug} : lien vers l'annuaire des avocats et notaires (FR + AR, clic compté, hors du PDF)`, liens.length === 2
-    && liens.every(a => a.dataset.annuaire === "lien-avocats/" + slug && /noopener/.test(a.rel)) && !doc.querySelector("#annuaire").closest("#impression, .feuille"));
+    && liens.every(a => a.dataset.annuaire === "lien-avocats/" + slug && /noopener/.test(a.rel)) && !doc.querySelector("#annuaire").closest("#impression, .feuille")
+    && ARABE.test(docAr.getElementById("annuaire").textContent) && !docAr.querySelector("#annuaire [data-l=fr]") && !doc.querySelector("#annuaire [data-l=ar]"));
   check(`${slug} : texte neutre (pas de « meilleur », pas de classement)`, !/meilleur|top \d|أفضل/i.test(doc.getElementById("annuaire").textContent));
   let compte = null; w.goatcounter = { count: o => { compte = o; } };
   liens[0].addEventListener("click", e => e.preventDefault()); liens[0].click();
   check(`${slug} : clic sur l'annuaire compté anonymement (lien-avocats/${slug})`, compte && compte.path === "lien-avocats/" + slug && compte.event === true);
 }
 for (const slug of HONNEUR) {
-  const w = await page(slug + "/index.html"), doc = w.document;
-  const compta = [...doc.querySelectorAll('#annuaire a[href^="https://comptables.clicvia.com/"]')];
-  const calc = [...doc.querySelectorAll('#annuaire a[href^="https://outils.clicvia.com/credit/"]')];
+  const w = await page(slug + "/index.html"), doc = w.document, docAr = (await page(slug + "/index.html", "ar")).document;
+  const tous = sel => [...doc.querySelectorAll(sel), ...docAr.querySelectorAll(sel)];
+  const compta = tous('#annuaire a[href^="https://comptables.clicvia.com/"]');
+  const calc = tous('#annuaire a[href^="https://outils.clicvia.com/credit/"]');
   check(`${slug} : liens vers l'annuaire des comptables et le calculateur de crédit (FR + AR, clic compté, noopener)`, compta.length === 2 && calc.length === 2
     && compta.every(a => a.dataset.annuaire === "lien-comptables/" + slug && /noopener/.test(a.rel)) && calc.every(a => a.dataset.annuaire === "lien-outils/" + slug));
   check(`${slug} : dépôt en ligne seulement (circulaire BCT n° 2026-08) et « À vérifier » daté`, /uniquement sur la plateforme en ligne/.test(doc.body.textContent) && /Situation au \d{2}\/\d{2}\/2026/.test(doc.getElementById("a-verifier").textContent)
@@ -202,7 +208,8 @@ for (const slug of HONNEUR) {
   const nums = [...(svgT.matchAll(/text-anchor="middle">(\d+)<\/text>/g))].map(m => +m[1]);
   check("traite : schéma « Case par case » (image à nous, protégée), 14 cases expliquées en FR et AR, cases grises = banque",
     sec && sec.classList.contains("protege") && img && /^\.\.\/assets\/illustrations\/traite-cases\.svg\?v=/.test(img.getAttribute("src")) && img.getAttribute("alt")
-    && sec.querySelectorAll("ol.cases li").length === 14 && [...sec.querySelectorAll("ol.cases li")].every(li => li.querySelector('[data-l="fr"]') && li.querySelector('[data-l="ar"]'))
+    && sec.querySelectorAll("ol.cases li").length === 14 && [...sec.querySelectorAll("ol.cases li")].every(li => li.querySelector('[data-l="fr"]') && !li.querySelector('[data-l="ar"]'))
+    && [...(await page("traite-lettre-de-change/index.html", "ar")).document.querySelectorAll("#schema ol.cases li")].filter(li => li.querySelector('[data-l="ar"]') && !li.querySelector('[data-l="fr"]')).length === 14
     && /Cases grises/.test(sec.textContent) && doc.getElementById("explication-seulement").compareDocumentPosition(sec) === 4);
   check("traite : le schéma est un SPÉCIMEN dessiné par nous (mention « SPÉCIMEN · نموذج », numéros 1 à 14, aucun vrai RIB ni vrai nom)",
     /SPÉCIMEN · نموذج/.test(svgT) && /Dessin original de Documents Tunisie/.test(svgT) && [...Array(14)].every((_, i) => nums.includes(i + 1)) && !/\d{6,}/.test(svgT.replace(/<[^>]+>/g, " ")));
@@ -213,13 +220,13 @@ check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "a
   const w = await page("index.html"), doc = w.document;
   check(`accueil : ${TOUS.length} cartes de documents (une par document, contrat et démarche)`, doc.querySelectorAll("[data-cherche]").length === TOUS.length);
   check("accueil : 6 catégories avec icône", doc.querySelectorAll(".cat svg").length === 6);
-  check("accueil : plus de badges sans lien ; « 1 document gratuit par jour, étapes gratuites, sans inscription » dans l'intro (FR + AR)", !doc.querySelector(".confiance, .badge-c") && /1 document gratuit par jour, étapes gratuites, sans inscription/.test(doc.querySelector(".hero").textContent) && /وثيقة مجانية كل يوم، المراحل مجانية، دون تسجيل/.test(doc.querySelector(".hero").textContent));
+  check("accueil : plus de badges sans lien ; « 1 document gratuit par jour, étapes gratuites, sans inscription » dans l'intro (FR + AR)", !doc.querySelector(".confiance, .badge-c") && /1 document gratuit par jour, étapes gratuites, sans inscription/.test(doc.querySelector(".hero").textContent) && /وثيقة مجانية كل يوم، المراحل مجانية، دون تسجيل/.test(lire("ar/index.html")));
   check("accueil : PAS de bouton « Pass Journée » (décision d'Ahmed : le visiteur partirait), aucun lien vers pass/", !doc.querySelector('a[href^="pass/"], a[href*="/pass/"], .btn-pass, .btn-pro') && !/Pass Journée/.test(doc.body.textContent));
   // bouton vers l'annuaire « Avocats et notaires » (demande d'Ahmed du 06/10/2026) : fin de la rangée des catégories, bordure dorée
   const av = doc.querySelector(".cats > a.cat-annuaire");
   check("accueil : bouton « Avocats et notaires » / « محامون وعدول » à la fin de la rangée des catégories, avec le logo de l'annuaire (copié dans le site)",
     av && av === doc.querySelector(".cats").lastElementChild && av.getAttribute("href") === "https://avocats.clicvia.com/" && /noopener/.test(av.rel)
-    && /Avocats et notaires/.test(av.textContent) && /محامون وعدول/.test(av.textContent) && av.querySelector('img[src="assets/logo-avocats-notaires.svg"]')
+    && /Avocats et notaires/.test(av.textContent) && /محامون وعدول/.test(lire("ar/index.html").match(/<a class="cat-annuaire"[\s\S]*?<\/a>/)[0]) && av.querySelector('img[src="assets/logo-avocats-notaires.svg"]')
     && existsSync(join(root, "assets/logo-avocats-notaires.svg")) && /\.cat-annuaire\{[^}]*border:2px solid #F2B33D/.test(lire("assets/style.css")));
   { let c = null; w.goatcounter = { count: o => { c = o; } }; av.addEventListener("click", e => e.preventDefault()); av.click();
     check("accueil : clic sur « Avocats et notaires » compté anonymement (lien-site/avocats), sans filtrer les catégories", c && c.path === "lien-site/avocats" && c.event === true && !doc.querySelector(".cat.on")); }
@@ -288,12 +295,14 @@ const EMPREINTE = async (code, sel, tours) => {
 check("vecteur commun avec le robot du dépôt privé (Python) : PBKDF2-SHA-256, 100 000 tours",
   await EMPREINTE("ABCD2345", "sel-de-test", 100000) === "517bf9a9ea3ad38b3adcbeef5808d4efe420fbf10a2b7bd9179640f4d1c7c2dd");
 async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois = [] } = {}) {
+  if (stockage.langue === "ar" && existsSync(join(root, "ar", chemin))) chemin = "ar/" + chemin;   // une adresse par langue
   const dossier = dirname(join(root, chemin));
   const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
     (_, a, src) => `<script>${readFileSync(join(dossier, src), "utf8")}</script>`);
   const vc = new VirtualConsole(); vc.on("jsdomError", e => { if (!/Not implemented/.test(e.message)) { console.log("   erreur JS :", chemin, e.message); erreurs++; } });
   const dom = new JSDOM(html, { url: `https://documents.clicvia.com/${chemin.replace("index.html", "")}`, runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc,
     beforeParse(w) {
+      w.allerVers = u => { w.__allerVers = u; };
       try { if (!w.localStorage.getItem("langue")) w.localStorage.setItem("langue", "fr"); } catch (e) {}  // ces scénarios lisent les textes français
       const Vraie = w.Date;
       w.Date = class extends Vraie { constructor(...a) { super(...(a.length ? a : [horloge.t])); } static now() { return horloge.t; } };
@@ -336,7 +345,7 @@ async function taperCode(w, code) {
     && doc.getElementById("apercu-bloque").hidden && /\.apercu\{[^}]*max-height:420px/.test(lire("assets/style.css")) && /max-width:600px\)\{\.apercu\{max-height:260px/.test(lire("assets/style.css")));
   { const va = doc.getElementById("voir-apercu");
     check("page de modèle : bouton « Voir l'aperçu » juste après « Télécharger le PDF », qui remonte à l'aperçu (FR + AR)",
-      va && va.getAttribute("href") === "#apercu-carte" && doc.getElementById("telecharger").nextElementSibling === va && /Voir l'aperçu/.test(va.textContent) && /معاينة الوثيقة/.test(va.textContent)); }
+      va && va.getAttribute("href") === "#apercu-carte" && doc.getElementById("telecharger").nextElementSibling === va && /Voir l'aperçu/.test(va.textContent) && /معاينة الوثيقة/.test(lire("ar/" + A.slug + "/index.html").match(/id="voir-apercu"[\s\S]*?<\/a>/)[0])); }
   remplir(w, A); doc.getElementById("telecharger").click();
   check("Pass Journée : 1er PDF du jour autorisé (gratuit)", w.__imprime === 1 && doc.getElementById("pass-bloque").hidden);
   check("le PDF ne parle ni du Pass ni du site", !/Pass|باقة|Documents Tunisie|ah6259/.test(doc.getElementById("impression").innerHTML));
@@ -529,8 +538,8 @@ const tuilesSansLien = doc => [...doc.body.querySelectorAll("*")].filter(el => {
   return t.length > 0 && t.length < 90;
 }).map(el => el.textContent.replace(/\s+/g, " ").trim().slice(0, 40));
 const V = new Set();
-for (const p of fichiers) {
-  const s = lire(p);
+for (const p of [...fichiers, ...fichiers.map(f => "ar/" + f)]) {   // une adresse par langue : pages françaises ET pages arabes (ar/)
+  const s = lire(p), enAr = p.startsWith("ar/"), base = enAr ? p.slice(3) : p, L = enAr ? "ar" : "fr";
   check(`${p} : titre, description, canonical`, /<title>.{20,}<\/title>/.test(s) && /name="description" content=".{50,}"/.test(s) && s.includes('rel="canonical"'));
   check(`${p} : image d'aperçu og-image-v3.jpg (type JPEG)`, s.includes("og-image-v3.jpg") && s.includes('<meta property="og:image:type" content="image/jpeg">') && !s.includes("og-image-v1.png"));
   check(`${p} : meta noai, CSP, referrer`, s.includes('<meta name="robots" content="noai, noimageai">') && s.includes('http-equiv="Content-Security-Policy"') && /script-src 'self' https:\/\/gc\.zgo\.at;/.test(s) && s.includes('name="referrer"'));
@@ -545,26 +554,80 @@ for (const p of fichiers) {
   check(`${p} : photo du bandeau présente (≤ 150 Ko) et créditée`, !!m && existsSync(join(root, dirname(p), m[1])) && statSync(join(root, dirname(p), m[1])).size <= 150000 && /class="credit-photo"[^]*Wikimedia Commons/.test(s));
   check(`${p} : pas de traduction automatique (translate="no" sur <html>, meta google notranslate)`, /<html translate="no"[ >]/.test(s) && /<meta charset="utf-8">\s*<meta name="google" content="notranslate">/.test(s));
   { const morts = tuilesSansLien(new JSDOM(s).window.document); check(`${p} : aucune carte avec une icône sans lien (pas de faux bouton)${morts.length ? " → " + morts.join(" | ") : ""}`, !morts.length); }
-  const w = await page(p), doc = w.document, pied = doc.getElementById("pied").textContent;
-  check(`${p} : translate="no" gardé par le JavaScript (français puis arabe)`, doc.documentElement.getAttribute("translate") === "no" && (doc.querySelector(".langue")?.click(), doc.documentElement.lang === "ar" && doc.documentElement.getAttribute("translate") === "no"));
-  check(`${p} : en-tête avec logo et lien « Avocats et notaires », pied ©, non officiel, date`, !!doc.querySelector("#entete .logo-mark") && !!doc.querySelector("#entete a.entete-annuaire[href^=\"https://avocats.clicvia.com/\"] img") && pied.includes("©") && pied.includes("non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
+  const w = await page(base, L), doc = w.document, pied = doc.getElementById("pied").textContent;
+  const autre = "https://documents.clicvia.com/" + (enAr ? "" : "ar/") + base.replace(/index\.html$/, "");
+  check(`${p} : langue de l'adresse (lang="${L}", dir ${enAr ? "rtl" : "ltr"}), translate="no" gardé, bouton de langue → ${autre.slice(30)}`,
+    doc.documentElement.lang === L && doc.documentElement.dir === (enAr ? "rtl" : "ltr") && doc.documentElement.getAttribute("translate") === "no"
+    && doc.querySelector(".langue").textContent === (enAr ? "Fr" : "ع") && (doc.querySelector(".langue").click(), !!w.__allerVers && new w.URL(w.__allerVers, w.location.href).href === autre)
+    && doc.documentElement.lang === L);
+  check(`${p} : en-tête avec logo et lien « Avocats et notaires », pied ©, ${enAr ? "غير رسمي" : "non officiel"}, date`, !!doc.querySelector("#entete .logo-mark") && !!doc.querySelector("#entete a.entete-annuaire[href^=\"https://avocats.clicvia.com/\"] img") && pied.includes("©") && pied.includes(enAr ? "غير رسمي" : "non officiel") && /\d{2}\/\d{2}\/\d{4}/.test(pied));
   // liens vers les pages communes « Confidentialité » et « Conditions d'utilisation » de clicvia.com (17/11/2026), dans la langue de la page
   { const a = (u, t) => [...doc.querySelectorAll("#pied nav a")].some(x => x.getAttribute("href") === u && x.textContent.trim() === t);
-    const ar = doc.documentElement.lang === "ar" && a("https://clicvia.com/ar/confidentialite/", "الخصوصية") && a("https://clicvia.com/ar/conditions/", "شروط الاستعمال");
-    doc.querySelector(".langue").click();
-    const fr = doc.documentElement.lang === "fr" && a("https://clicvia.com/confidentialite/", "Confidentialité") && a("https://clicvia.com/conditions/", "Conditions d'utilisation");
-    doc.querySelector(".langue").click();
-    check(`${p} : pied : liens « Confidentialité » et « Conditions d'utilisation » (arabe et français, adresse dans la langue)`, ar && fr && doc.documentElement.lang === "ar"); }
-  check(`${p} : bouton « Partager » dans l'en-tête (arabe : « شارك هذه الصفحة »)`, doc.querySelector('#entete button.partager[aria-label="شارك هذه الصفحة"] svg'));
+    check(`${p} : pied : liens « Confidentialité » et « Conditions d'utilisation » (adresse dans la langue de la page)`, enAr
+      ? a("https://clicvia.com/ar/confidentialite/", "الخصوصية") && a("https://clicvia.com/ar/conditions/", "شروط الاستعمال")
+      : a("https://clicvia.com/confidentialite/", "Confidentialité") && a("https://clicvia.com/conditions/", "Conditions d'utilisation")); }
+  check(`${p} : bouton « Partager » dans l'en-tête (« ${enAr ? "شارك هذه الصفحة" : "Partager cette page"} »)`, doc.querySelector(`#entete button.partager[aria-label="${enAr ? "شارك هذه الصفحة" : "Partager cette page"}"] svg`));
+  check(`${p} : liens du logo et du pied vers les pages de la même langue`, new w.URL(doc.querySelector("#entete a.logo").getAttribute("href"), w.location.href).href === "https://documents.clicvia.com/" + (enAr ? "ar/" : "")
+    && [...doc.querySelectorAll("#pied nav a")].filter(x => !/^https?:/.test(x.getAttribute("href"))).every(x => new w.URL(x.getAttribute("href"), w.location.href).pathname.startsWith(enAr ? "/ar/" : "/") && (enAr || !new w.URL(x.getAttribute("href"), w.location.href).pathname.startsWith("/ar/"))));
   check(`${p} : dates « vérifié le » = la constante MAJ`, [...doc.querySelectorAll("[data-maj]")].every(x => x.textContent === w.eval("MAJ")));
   const ld = [...s.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(x => JSON.parse(x[1]));
-  if (!/^(index\.html|a-propos\/|pass\/)/.test(p)) check(`${p} : FAQ Google (JSON-LD) en français et en arabe`, ld.some(j => j["@type"] === "FAQPage" && j.mainEntity.length >= 2 && j.mainEntity.some(q => ARABE.test(q.name))));
+  if (!/^(index\.html|a-propos\/|pass\/)/.test(base)) check(`${p} : FAQ Google (JSON-LD) dans la langue de la page (${enAr ? "arabe" : "français"} seulement)`, ld.some(j => j["@type"] === "FAQPage" && j.mainEntity.length >= 1 && j.mainEntity.every(q => ARABE.test(q.name) === enAr)));
+}
+// UNE ADRESSE PAR LANGUE (21/11/2026, règle commune § 8 point 9 ; tools/langues.mjs) : chaque page publique existe en français à son
+// adresse et en arabe sous ar/, chacune écrite dans SA langue (Google lit la page arabe), qui se citent (hreflang) ; jamais seulement ?lang=
+{ const SITE = "https://documents.clicvia.com/", titresAr = new Set(), pb = [];
+  const existe = (de, href) => { const u = new URL(href, SITE + de); if (u.origin + "/" !== SITE) return true;
+    const f = u.pathname.slice(1); return existsSync(join(root, f.endsWith("/") || f === "" ? f + "index.html" : f)); };
+  for (const p of fichiers) {
+    const fr = lire(p), ar = lire("ar/" + p), ch = p.replace(/index\.html$/, ""), dFr = new JSDOM(fr).window.document, dAr = new JSDOM(ar).window.document;
+    const hl = d => Object.fromEntries([...d.querySelectorAll('link[rel="alternate"][hreflang]')].map(l => [l.getAttribute("hreflang"), l.getAttribute("href")]));
+    const att = { fr: SITE + ch, ar: SITE + "ar/" + ch, "x-default": SITE + ch };
+    if (JSON.stringify(hl(dFr)) !== JSON.stringify(att) || JSON.stringify(hl(dAr)) !== JSON.stringify(att)) pb.push(p + " : hreflang");
+    if (dFr.querySelector('link[rel="canonical"]')?.href !== att.fr || dAr.querySelector('link[rel="canonical"]')?.href !== att.ar) pb.push(p + " : canonical");
+    if (dAr.querySelector('meta[property="og:url"]')?.content !== att.ar || dAr.querySelector('meta[property="og:locale"]')?.content !== "ar_AR" || dFr.querySelector('meta[property="og:locale"]')?.content !== "fr_FR") pb.push(p + " : og:url / og:locale");
+    if (dFr.documentElement.lang !== "fr" || dAr.documentElement.lang !== "ar" || dAr.documentElement.dir !== "rtl" || dFr.documentElement.dataset.langueFixe !== "fr" || dAr.documentElement.dataset.langueFixe !== "ar") pb.push(p + " : lang / dir / langue fixe");
+    if (dFr.querySelector('[data-l="ar"]') || dAr.querySelector('[data-l="fr"]')) pb.push(p + " : texte de l'autre langue resté dans la page");
+    const titreAr = dAr.title, descAr = dAr.querySelector('meta[name="description"]')?.content || "";
+    if (!ARABE.test(titreAr) || titreAr.length > 70 || titresAr.has(titreAr) || ARABE.test(dFr.title)) pb.push(p + " : titre (« " + titreAr + " »)");
+    titresAr.add(titreAr);
+    if (!ARABE.test(descAr) || descAr.length < 40 || descAr.length > 165) pb.push(p + " : description arabe (" + descAr.length + ")");
+    // texte visible (hors scripts) : page arabe surtout en arabe, page française sans arabe (sauf les noms propres isolés)
+    const txt = d => { const c = d.body.cloneNode(true); c.querySelectorAll("script,style").forEach(x => x.remove()); return c.textContent; };
+    const nAr = t => (t.match(/[؀-ۿ]/g) || []).length, nLat = t => (t.match(/[A-Za-zÀ-ÿ]/g) || []).length;
+    if (nAr(txt(dAr)) < 3 * nLat(txt(dAr).replace(/https?:\S+|[A-Za-z0-9.-]+\.(com|tn)\S*/g, ""))) pb.push(p + " : page arabe trop peu arabe");
+    if (nAr(txt(dFr)) > nLat(txt(dFr)) / 20) pb.push(p + " : page française avec trop d'arabe");
+    for (const [d, de] of [[dFr, ch], [dAr, "ar/" + ch]])
+      for (const x of d.querySelectorAll("a[href], img[src], link[href], script[src]")) {
+        const h = x.getAttribute("href") ?? x.getAttribute("src");
+        if (/^(#|mailto:|tel:|https?:\/\/(?!documents\.clicvia\.com))/.test(h)) continue;
+        if (!existe(de, h)) pb.push(de + " : lien mort « " + h + " »");
+        const u = new URL(h, SITE + de);
+        if (x.tagName === "A" && u.origin + "/" === SITE && (u.pathname.endsWith("/") || u.pathname === "/") && !/^\/video\//.test(u.pathname) && u.pathname.startsWith("/ar/") !== (d === dAr)) pb.push(de + " : lien vers une page de l'autre langue « " + h + " »");
+      }
+  }
+  check(`une adresse par langue : ${fichiers.length} pages françaises + ${fichiers.length} pages arabes (ar/), hreflang fr / ar / x-default réciproques, canonical, og:locale, une seule langue par page, titres arabes uniques ≤ 70, descriptions arabes 40-165, liens internes valides dans la même langue${pb.length ? " — " + pb.slice(0, 6).join(" | ") : ""}`, !pb.length);
+  const sm = lire("sitemap.xml");
+  check("une adresse par langue : plan du site avec chaque page française ET sa page arabe (ar/)", fichiers.filter(p => p !== "pass/conditions/index.html").every(p => { const c = p.replace(/index\.html$/, ""); return sm.includes(`<loc>${SITE}${c}</loc>`) && sm.includes(`<loc>${SITE}ar/${c}</loc>`); }));
+  // anciens liens « ?lang=ar » (partagés avant le 21/11/2026) : renvoyés vers la page arabe ; jamais pour un robot ni sans demande
+  { const ancien = async (q, opts = {}) => { const html = lire(DOCS[0].slug + "/index.html").replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
+        (_, a, src) => `<script>${readFileSync(join(root, DOCS[0].slug, src), "utf8")}</script>`);
+      const dom = new JSDOM(html, { url: SITE + DOCS[0].slug + "/" + q + "#remplir", runScripts: "dangerously", pretendToBeVisual: true, referrer: opts.referrer,
+        beforeParse(w) { w.allerVers = u => { w.__allerVers = u; }; if (opts.langue) w.localStorage.setItem("langue", opts.langue); if (opts.robot) Object.defineProperty(w.navigator, "webdriver", { get: () => true }); } });
+      await new Promise(ok => dom.window.addEventListener("load", ok)); return dom.window; };
+    let w = await ancien("?lang=ar");
+    check("une adresse par langue : ancien lien « ?lang=ar » → page arabe ar/… (ancre gardée)", w.__allerVers && new w.URL(w.__allerVers, w.location.href).href === SITE + "ar/" + DOCS[0].slug + "/#remplir");
+    w = await ancien("", { langue: "ar" });
+    check("une adresse par langue : lien partagé ou Google (sans page du site avant) : la page française reste française, même si l'arabe a été choisi avant", !w.__allerVers && w.document.documentElement.lang === "fr");
+    w = await ancien("", { langue: "ar", referrer: SITE });
+    check("une adresse par langue : visiteur venu d'une page du site qui avait choisi l'arabe → page arabe", w.__allerVers && new w.URL(w.__allerVers, w.location.href).href === SITE + "ar/" + DOCS[0].slug + "/#remplir");
+    w = await ancien("?lang=ar", { robot: true });
+    check("une adresse par langue : jamais de renvoi pour un robot (Google lit chaque adresse telle quelle)", !w.__allerVers); }
 }
 // Page 404 commune (17/11/2026, règle commune § 58 point 14 ; modèle : outils communs/page-404 de projets-ahmed) : sinon GitHub montre sa page anglaise
 check("page 404 commune à la racine publiée : 404.html (nom du site, couleur) + 404.js qui cherche la page (« Recherche de la page »)",
   existsSync(join(root, "404.html")) && existsSync(join(root, "404.js")) && lire("404.html").includes("<title>Page introuvable — Documents Tunisie</title>")
   && lire("404.html").includes('<script src="/404.js"></script>') && lire("404.js").includes("Recherche de la page"));
-check("À propos : la page introuvable et les liens Confidentialité / Conditions sont expliqués (FR + AR)", lire("a-propos/index.html").includes("Page introuvable, confidentialité, conditions") && lire("a-propos/index.html").includes("صفحة غير موجودة، الخصوصية، الشروط"));
+check("À propos : la page introuvable et les liens Confidentialité / Conditions sont expliqués (FR + AR)", lire("a-propos/index.html").includes("Page introuvable, confidentialité, conditions") && lire("ar/a-propos/index.html").includes("صفحة غير موجودة، الخصوصية، الشروط"));
 // « Comment ça marche ? » de l'accueil (Ahmed, 22/10/2026) : les 3 étapes illustrées restent sur UNE rangée au téléphone,
 // numéro 1-2-3 en pastille sur l'icône (titres courts, 2 lignes au plus à 390 px : mesuré dans Chromium le 22/10/2026)
 { const d = new JSDOM(lire("index.html")).window.document, css = lire("assets/style.css");
@@ -578,10 +641,11 @@ check("À propos : la page introuvable et les liens Confidentialité / Condition
   for (const d of TOUS) {
     const doc = new JSDOM(lire(d.slug + "/index.html")).window.document;
     const det = [...doc.querySelectorAll("#etapes ol.schema > li")], cases = [...doc.querySelectorAll("#etapes nav.rangee-etapes ol > li")];
+    const casesAr = [...new JSDOM(lire("ar/" + d.slug + "/index.html")).window.document.querySelectorAll("#etapes nav.rangee-etapes ol > li")];   // page arabe (ar/)
     const rangee = doc.querySelector("#etapes nav.rangee-etapes");
     check(`${d.slug} : rangée des étapes au-dessus de la liste détaillée, autant de cases que d'étapes (${d.etapes.length})`, !!rangee && cases.length === d.etapes.length && det.length === d.etapes.length && !!(rangee.compareDocumentPosition(doc.querySelector("#etapes ol.schema")) & 4));
     check(`${d.slug} : rangée numérotée 1..n, chaque case = vrai lien vers son étape détaillée (#etape-N existe)`, cases.every((li, i) => { const a = li.querySelector("a[href]"); return a && a.getAttribute("href") === "#etape-" + (i + 1) && li.querySelector(".num")?.textContent === String(i + 1) && det[i]?.id === "etape-" + (i + 1); }));
-    check(`${d.slug} : chaque case a un titre court en français ET en arabe (ETAPES_COURTES), liste détaillée inchangée (titre + explication)`, d.etapes.every((e, i) => { const c = ETAPES_COURTES[e.fr[0]], t = cases[i]?.querySelector(".t"); return c && c[0].length <= 20 && c[1].length <= 20 && ARABE.test(c[1]) && t?.querySelector('[data-l="fr"]')?.textContent === c[0] && !!t?.querySelector('[data-l="ar"]') && det[i].querySelector("h3") && det[i].querySelector("p")?.textContent.length > 10; }));
+    check(`${d.slug} : chaque case a un titre court en français ET en arabe (ETAPES_COURTES), liste détaillée inchangée (titre + explication)`, d.etapes.every((e, i) => { const c = ETAPES_COURTES[e.fr[0]], t = cases[i]?.querySelector(".t"); return c && c[0].length <= 20 && c[1].length <= 20 && ARABE.test(c[1]) && t?.querySelector('[data-l="fr"]')?.textContent === c[0] && !!casesAr[i]?.querySelector('.t [data-l="ar"]') && det[i].querySelector("h3") && det[i].querySelector("p")?.textContent.length > 10; }));
     check(`${d.slug} : « Glissez » seulement pour 6-7 étapes`, !!doc.querySelector(".rangee-glisser") === d.etapes.length >= 6 && (d.etapes.length < 6 || !!doc.querySelector(".rangee-glisser.n" + d.etapes.length)));
   }
   check("titres courts : aucun titre court inutilisé (une étape renommée = son titre court mis à jour)", Object.keys(ETAPES_COURTES).every(k => TOUS.some(d => d.etapes.some(e => e.fr[0] === k))));
@@ -597,9 +661,9 @@ for (const p of ["index.html", DOCS[0].slug + "/index.html"]) {
   b?.click(); await new Promise(ok => setTimeout(ok, 0));
   // partage par lien (demande d'Ahmed) : page vidéo du site + adresse du site, dans la langue de la page (arabe par défaut)
   const lg = doc.documentElement.lang, q = lg === "ar" ? "" : "?lang=" + lg;
-  const adresse = "https://documents.clicvia.com/video/" + q;
+  const adresse = "https://documents.clicvia.com/video/" + q, siteLg = "https://documents.clicvia.com/" + (lg === "ar" ? "ar/" : "");   // une adresse par langue
   check(`${p} : sans navigator.share, le clic ouvre wa.me avec la page vidéo + l'adresse du site`, ouverts.length === 1 && ouverts[0][0].startsWith("https://wa.me/?text=")
-    && decodeURIComponent(ouverts[0][0].slice(20)).endsWith(" " + adresse) && decodeURIComponent(ouverts[0][0]).includes("https://documents.clicvia.com/" + q) && ouverts[0][1] === "_blank");
+    && decodeURIComponent(ouverts[0][0].slice(20)).endsWith(" " + adresse) && decodeURIComponent(ouverts[0][0]).includes("Le site : " + siteLg + "\n") && ouverts[0][1] === "_blank");
 }
 check("même version ?v= sur toutes les pages", V.size === 1);
 // les pages publiées sont à jour par rapport aux données
@@ -679,6 +743,7 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     ["sources citées et « à vérifier »", true, /Sources citées : chaque page donne ses sources officielles/],
     ["annuaires gratuits et calculateur de crédit", /cat-annuaire/.test(acc) && /outils\.clicvia\.com\/credit/.test(js), /Annuaires gratuits : liens vers nos annuaires[^.]*calculateur de crédit/],
     ["langue FR / AR", /\.langue/.test(js), /Français \/ arabe : le bouton de langue/],
+    ["une adresse par langue (ar/)", existsSync(join(root, "ar/index.html")) && /data-langue-fixe/.test(js), /Une adresse par langue : chaque page existe en français à son adresse et en arabe sous « ar\/ »/],
     ["bouton Partager", /\.partager/.test(js), /Partager : le bouton rond/],
     ["Votre avis", /id="avis"/.test(acc), /Votre avis : un formulaire/],
     ["recherches sans résultat comptées", /recherche-vide/.test(js), /Documents demandés : un mot cherché sans résultat/],
@@ -691,8 +756,9 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     ["site indépendant", true, /Ce site est indépendant/]];
   const manque = FONCTIONS.filter(([, sur, re]) => sur && !re.test(ap)).map(([n]) => n);
   check(`page « Comment fonctionne le site ? » à jour : titre et chaque fonction du site expliquée (${FONCTIONS.length} fonctions)` + (manque.length ? " — manque : " + manque.join(", ") : ""),
-    manque.length === 0 && /<h1>[^]*?Comment fonctionne le site \?[^]*?كيف يعمل الموقع؟[^]*?<\/h1>/.test(brut)
+    manque.length === 0 && /<h1>[^]*?Comment fonctionne le site \?[^]*?<\/h1>/.test(brut) && /<h1>[^]*?كيف يعمل الموقع؟[^]*?<\/h1>/.test(lire("ar/a-propos/index.html"))
+    && /عنوان لكل لغة/.test(lire("ar/a-propos/index.html"))
     && /a-propos\/">\$\{T\("Comment fonctionne le site \?"/.test(lire("assets/page.js")) && /id="lien-fonctionnement"/.test(acc)); }
-check("langue par défaut = ARABE (décision d'Ahmed), seule une langue fr/ar enregistrée est reprise (mémoire partagée entre sites)", (() => { const js = readFileSync(join(root, "assets/page.js"), "utf8"); return /let langue = "ar";/.test(js) && js.includes("/^(fr|ar)$/.test(") && js.includes(': "") || "ar"'); })());
+check("langue par défaut = ARABE (décision d'Ahmed), seule une langue fr/ar enregistrée est reprise (mémoire partagée entre sites)", (() => { const js = readFileSync(join(root, "assets/page.js"), "utf8"); return /let langue = "ar"/.test(js) && js.includes("/^(fr|ar)$/.test(") && js.includes('langue = gardee || "ar"'); })());
 console.log(erreurs ? `\n${erreurs} PROBLÈME(S)` : "\nTOUT PASSE");
 process.exit(erreurs ? 1 : 0);

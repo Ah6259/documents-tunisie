@@ -71,7 +71,10 @@ function ressources() {
   }
   return new Chargeur();
 }
+// une adresse par langue (21/11/2026) : la page arabe d'une page est ar/<chemin> ; le bouton de langue n'y change pas d'adresse (window.allerVers)
 async function ouvrir(chemin, { lang = "fr" } = {}) {
+  if (lang === "ar" && !chemin.startsWith("ar/") && existsSync(join(root, "ar", chemin))) chemin = "ar/" + chemin;
+  if (chemin.startsWith("ar/")) lang = "ar";
   const fautes = [];
   const vc = new VirtualConsole();
   vc.on("jsdomError", e => { if (!/Not implemented|Could not load (img|link|script)/.test(e.message)) fautes.push(e.message); });
@@ -80,6 +83,7 @@ async function ouvrir(chemin, { lang = "fr" } = {}) {
     url: BASE + chemin.replace(/index\.html$/, "") + "?lang=" + lang,
     runScripts: "dangerously", resources: ressources(), pretendToBeVisual: true, virtualConsole: vc,
     beforeParse(w) {
+      w.allerVers = u => { w.__allerVers = u; };
       // faux fetch : on note chaque envoi, rien ne part sur Internet
       w.fetch = (url, opts = {}) => { appels.push({ url: String(url), opts }); return (w.__reseau || (() => Promise.resolve({ ok: true, status: 200 })))(url, opts); };
     }
@@ -97,7 +101,8 @@ let w = await ouvrir("index.html"), d = w.document;
 check("accueil : aucune erreur JavaScript" + (w.fautes.length ? " — " + w.fautes[0] : ""), !w.fautes.length);
 const sec = d.getElementById("avis"), form = d.getElementById("avis-form");
 check("accueil : section #avis présente avec le formulaire #avis-form", !!sec && !!form && sec.contains(form));
-check("section : titre et textes en français ET en arabe", !!sec && /Votre avis/.test(sec.innerHTML) && /[؀-ۿ]/.test(sec.querySelector('[data-l="ar"]')?.textContent || ""));
+check("section : titre et textes en français (page française) ET en arabe (page arabe ar/)", !!sec && /Votre avis/.test(sec.innerHTML) && existsSync(join(root, "ar/index.html"))
+  && /<section class="carte avis" id="avis"[\s\S]*?رأيك يهمّنا/.test(lire("ar/index.html")));
 check("formulaire : action = " + FORMSPREE + ", méthode POST", form?.getAttribute("action") === FORMSPREE && /post/i.test(form?.getAttribute("method") || ""));
 const msg = form?.querySelector("textarea[name=message]"), mail = form?.querySelector("input[name=email]");
 check("message : obligatoire, 1000 caractères max", !!msg && msg.required && msg.maxLength === 1000);
@@ -186,7 +191,8 @@ for (const p of pages) {
   const pied = ww.document.getElementById("pied") || ww.document.querySelector("footer");
   const liens = pied ? [...pied.querySelectorAll("a[href]")] : [];
   const ok = liens.some(l => { const u = new URL(l.getAttribute("href"), ww.location.href);
-    return u.hash === "#avis" && (u.origin + u.pathname).replace(/index\.html$/, "") === BASE && /Votre avis/.test(l.textContent); });
+    const enAr = p.startsWith("ar/");      // page arabe : l'accueil arabe (ar/#avis), texte « رأيك »
+    return u.hash === "#avis" && (u.origin + u.pathname).replace(/index\.html$/, "") === BASE + (enAr ? "ar/" : "") && (enAr ? /رأيك/ : /Votre avis/).test(l.textContent); });
   if (!ok) sansLien.push(p);
   if (ww.fautes.length) fautes.push(p + " : " + ww.fautes[0]);
   ww.close();

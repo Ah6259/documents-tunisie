@@ -206,3 +206,23 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 - En sombre, `--p` / `--or` deviennent clairs : le texte blanc posé dessus (bouton « إرسال », PDF, catégories, vidéo, puces des étapes, paiement) passait sous 3 de contraste.
   Bloc « Mode sombre lisible » à la fin de `assets/style.css` (`@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) … }`) : texte foncé sur l'accent, fonds blancs codés en dur -> `var(--carte)`, verts WhatsApp foncés, fond de secours du bandeau foncé. Mode clair inchangé.
 - Règle : toute nouvelle couleur d'accent avec texte blanc = sa ligne dans ce bloc ; contrôle Playwright (contraste ≥ 4,5 en sombre, accueil + pass + modèles) : 0 défaut. `?v=` refait par generer.mjs.
+
+## 21/11/2026 — UNE ADRESSE PAR LANGUE (règle commune § 8 point 9 ; méthode de Concours et de Code de la route)
+- Avant : FR et AR mêlés dans chaque page (spans data-l) sous lang="fr" ; contrôle commun « hreflang : aucun ». Maintenant `tools/generer.mjs`
+  fabrique toujours les pages bilingues, puis `tools/langues.mjs` (`versions()`) écrit `<chemin>/index.html` = français seul (lang="fr",
+  `data-langue-fixe="fr"`, `data-autre-langue`) et `ar/<chemin>/index.html` = arabe seul (lang="ar" dir="rtl", titre = H1 arabe + « | وثائق تونس »
+  ≤ 70, description = 1er paragraphe arabe ≤ 165, canonical / og:url `ar/…`, og:locale ar_AR, FAQ JSON-LD arabe seulement, fil d'Ariane vers ar/,
+  fichiers pris à la racine : data-racine un niveau plus bas, `data-site` = dossier des pages). hreflang fr / ar / x-default (= français) sur les deux.
+  37 pages × 2 = 74 pages. Plan du site : FR + AR (+ video/). **Ne JAMAIS modifier `ar/` à la main** (ni les pages françaises) : modifier le
+  générateur ou les données puis `node tools/generer.mjs` (le test « pages à jour » couvre aussi ar/).
+- `assets/page.js` : sur une page à langue fixe, la langue est celle de l'adresse ; le bouton de langue ouvre l'autre adresse (mêmes paramètres,
+  même ancre ; crochet `window.allerVers` pour les tests) et garde le choix ; un ancien lien `?lang=ar` renvoie vers ar/ ; une langue gardée renvoie
+  seulement si le visiteur vient d'une page du site (jamais depuis Google ou un lien partagé, jamais pour un robot ni dans un cadre). Liens des pages
+  (logo, pied, rappel du Pass de pass.js) = `window.racinePages()` ; fichiers = `data-racine`. Le PDF garde son choix de langue (FR / AR / les deux).
+- `video/` garde UNE adresse (`?lang=`, arabe par défaut) : generer.mjs retire `data-langue-fixe` de la page tirée de a-propos/ ; le partage
+  envoie le site dans la langue (`/` ou `/ar/`), « Ouvrir le site » suit la langue (bloc vidéo de page.js).
+- Tests : `page(chemin, "ar")` ouvre ar/<chemin> ; boucle des pages sur FR + AR ; bloc « une adresse par langue » (hreflang réciproques, canonical,
+  og:locale, une langue par page, titres arabes uniques ≤ 70, descriptions 40-165, liens internes valides dans la même langue, plan du site,
+  renvoi `?lang=ar`, pas de renvoi pour un robot ni un lien partagé) ; 4 sabotages de plus ; test_avis et test_video adaptés ; 3 scénarios du visiteur
+  simulé sur ar/. Ligne « Une adresse par langue » dans « Comment fonctionne le site ? » + `FONCTIONS`. `CACHE_VERSION` 6.
+- Même jour : contraste ≥ 4,5 en mode clair : étiquette « À vérifier » (`--or-texte`), boutons WhatsApp `.partage` / `.btn-wa` en #167A43.

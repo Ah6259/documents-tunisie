@@ -271,7 +271,7 @@ function dessinerRappel() {
   if (ancien) ancien.remove();
   const e = rappelMontre, main = document.querySelector("main");
   if (!e || !main) return;
-  const racine = document.documentElement.dataset.racine || "";
+  const site = window.racinePages ? window.racinePages() : (document.documentElement.dataset.racine || "");   // dossier des pages (ar/… en arabe)
   const b = document.createElement("aside");
   b.className = "rappel-pass" + (e.type === "fini" ? " fini" : "");
   b.id = "rappel-pass";
@@ -282,8 +282,8 @@ function dessinerRappel() {
         T("Votre Pass Journée se termine le " + finLisible(e.fin) + ".", "تنتهي باقة اليوم في " + finLisible(e.fin) + ".") + "</p>"
       : "<p><b>" + T("Votre Pass Journée est terminé — merci !", "انتهت باقة اليوم — شكرًا لك!") + "</b> " +
         T("Il a pris fin le " + finLisible(e.fin) + ".", "انتهت في " + finLisible(e.fin) + ".") + "</p>") +
-    '<p class="rappel-actions"><a class="btn-pro rappel-renouveler" href="' + racine + 'pass/#offre">' + T("Renouveler mon Pass", "جدّد باقتي") + "</a>" +
-    '<a class="rappel-avis" href="' + racine + '#avis">' + T("Donner mon avis", "أعطِ رأيك") + "</a></p>";
+    '<p class="rappel-actions"><a class="btn-pro rappel-renouveler" href="' + site + 'pass/#offre">' + T("Renouveler mon Pass", "جدّد باقتي") + "</a>" +
+    '<a class="rappel-avis" href="' + site + '#avis">' + T("Donner mon avis", "أعطِ رأيك") + "</a></p>";
   // tout en haut, sous l'en-tête (avant le grand bandeau de la page) : vu sans faire défiler
   const zone = document.createElement("div");
   zone.className = "wrap rappel-zone";
