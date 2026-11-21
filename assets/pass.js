@@ -271,7 +271,7 @@ function dessinerRappel() {
   if (ancien) ancien.remove();
   const e = rappelMontre, main = document.querySelector("main");
   if (!e || !main) return;
-  const site = window.racinePages ? window.racinePages() : (document.documentElement.dataset.racine || "");   // dossier des pages (ar/… en arabe)
+  const site = window.racinePages ? window.racinePages() : (document.documentElement.dataset.racine || "");   // dossier des pages (fr/… en français)
   const b = document.createElement("aside");
   b.className = "rappel-pass" + (e.type === "fini" ? " fini" : "");
   b.id = "rappel-pass";

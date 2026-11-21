@@ -2,13 +2,16 @@
 // tools/construire.py de Code de la route).
 // Avant : chaque page contenait tout le texte en français ET en arabe (spans data-l, l'autre langue cachée par le style),
 // sous lang="fr" ; Google voyait une page « française » à moitié arabe (« hreflang : aucun » au contrôle commun).
-// Maintenant, à partir de la page bilingue fabriquée par tools/generer.mjs :
-//   - <chemin> (français) : sans les textes arabes ;
-//   - ar/<chemin> (arabe) : sans les textes français, lang="ar" dir="rtl", titre (H1 arabe + nom du site) et description
-//     (1er paragraphe arabe) en arabe, fichiers (style, scripts, images, données) pris à la racine, pages restant dans ar/ ;
-//   - les deux pages se citent (hreflang fr / ar / x-default = fr) et ont chacune leur canonical ;
+// DÉCISION D'AHMED (21/11/2026, « les Tunisiens lisent l'arabe ») : l'ARABE est la langue principale, à l'adresse principale.
+// À partir de la page bilingue fabriquée par tools/generer.mjs :
+//   - <chemin> (arabe) : sans les textes français, lang="ar" dir="rtl", titre (H1 arabe + nom du site) et description
+//     (1er paragraphe arabe) en arabe ;
+//   - fr/<chemin> (français) : sans les textes arabes, fichiers (style, scripts, images, données) pris à la racine, pages
+//     restant dans fr/ ;
+//   - les deux pages se citent (hreflang ar / fr / x-default = arabe) et ont chacune leur canonical ;
+//   - ar/<chemin> (adresses arabes du matin du 21/11/2026) : petite page de renvoi vers <chemin> (noindex, canonical, meta refresh) ;
 //   - data-langue-fixe : la langue est celle de l'adresse ; le bouton de langue mène à l'autre adresse (assets/page.js).
-// NE JAMAIS MODIFIER ar/ À LA MAIN : tout est refait par node tools/generer.mjs.
+// NE JAMAIS MODIFIER fr/ NI ar/ À LA MAIN : tout est refait par node tools/generer.mjs.
 export const URL_SITE = "https://documents.clicvia.com/";
 export const NOM_AR = "وثائق تونس";
 const ARABE = /[؀-ۿ]/;
@@ -83,7 +86,7 @@ function resoudre(chemin, rel) {
   return parts.join("/") + (parts.length && (rel.endsWith("/") || ["", ".", ".."].includes(rel)) ? "/" : "");
 }
 
-/** Adresse relative vue depuis ar/<chemin> : une page qui existe en arabe reste dans ar/, tout le reste est pris à la racine. */
+/** Adresse relative vue depuis fr/<chemin> : une page qui existe dans les deux langues reste dans fr/, tout le reste est pris à la racine. */
 function unNiveau(url, chemin, miroir) {
   if (!url || /^([a-z][a-z0-9+.-]*:|\/\/|\/|#|\?)/i.test(url)) return url;
   const p = url.split("#")[0].split("?")[0];
@@ -97,22 +100,23 @@ function jsonLd(page, L, chemin, titreAr) {
     if (j["@type"] === "FAQPage") {
       j.mainEntity = j.mainEntity.filter(q => ARABE.test(q.name) === (L === "ar"));
       if (!j.mainEntity.length) return "";
-      if (L === "ar") j.inLanguage = "ar";
+      j.inLanguage = L;
     } else if (j["@type"] === "WebSite") {
       j.inLanguage = L;
-      if (L === "ar") { j.name = NOM_AR; j.url = URL_SITE + "ar/"; }
-    } else if (j["@type"] === "BreadcrumbList" && L === "ar") {
-      j.itemListElement = j.itemListElement.map((x, i, a) => ({ ...x, name: i === 0 ? NOM_AR : i === a.length - 1 && titreAr ? titreAr : x.name,
-        item: String(x.item).replace(URL_SITE, URL_SITE + "ar/") }));
+      if (L === "ar") j.name = NOM_AR; else j.url = URL_SITE + "fr/";
+    } else if (j["@type"] === "BreadcrumbList") {
+      j.itemListElement = j.itemListElement.map((x, i, a) => L === "ar"
+        ? { ...x, name: i === 0 ? NOM_AR : i === a.length - 1 && titreAr ? titreAr : x.name }
+        : { ...x, item: String(x.item).replace(URL_SITE, URL_SITE + "fr/") });
     }
     return `<script type="application/ld+json">${JSON.stringify(j)}</script>\n`;
   });
 }
 
-const teteLangues = chemin => `<link rel="alternate" hreflang="fr" href="${URL_SITE}${chemin}">\n<link rel="alternate" hreflang="ar" href="${URL_SITE}ar/${chemin}">\n<link rel="alternate" hreflang="x-default" href="${URL_SITE}${chemin}">`;
+const teteLangues = chemin => `<link rel="alternate" hreflang="ar" href="${URL_SITE}${chemin}">\n<link rel="alternate" hreflang="fr" href="${URL_SITE}fr/${chemin}">\n<link rel="alternate" hreflang="x-default" href="${URL_SITE}${chemin}">`;
 
 /** fichier = « pass/index.html » ; miroir = dossiers des pages qui existent dans les deux langues ("" = accueil).
- *  Renvoie { fr, ar } : la page française seule et la page arabe seule. */
+ *  Renvoie { ar, fr } : la page arabe seule (adresse principale) et la page française seule (fr/). */
 export function versions(page, fichier, miroir) {
   const chemin = fichier.replace(/index\.html$/, "");
   const prof = chemin.split("/").filter(Boolean).length;
@@ -121,27 +125,12 @@ export function versions(page, fichier, miroir) {
   const racine = m[1];
   const { titre: titreAr0, desc: descAr0 } = textesArabes(page);
   const titreAr = titreAr0 || NOM_AR, descAr = descSeo(descAr0 || titreAr);
-  const vers_ar = "../".repeat(prof) + "ar/" + chemin, vers_fr = "../".repeat(prof + 1) + chemin;
+  const vers_fr = "../".repeat(prof) + "fr/" + chemin, vers_ar = "../".repeat(prof + 1) + chemin;
 
-  /* ---- français ---- */
-  let fr = retirerLangue(page, "ar");
-  fr = fr.replace(m[0], `<html translate="no" lang="fr" dir="ltr" data-racine="${racine}" data-langue-fixe="fr" data-autre-langue="${vers_ar}">`);
-  fr = fr.replace('<link rel="canonical"', teteLangues(chemin) + '\n<link rel="canonical"');
-  // titre et description : jamais de morceau arabe sur la page française (« … – نماذج وثائق تونسية »)
-  fr = fr.replace(/<title>([\s\S]*?)<\/title>/, (_, t) => `<title>${t.replace(/\s+[–—|]\s+[^–—|]*[؀-ۿ][^–—|]*$/, "")}</title>`);
-  fr = fr.replace(/(<meta property="og:title" content=")([^"]*)(")/, (_, a, t, b) => a + t.replace(/\s+[–—|]\s+[^–—|]*[؀-ۿ][^–—|]*$/, "") + b);
-  fr = fr.replace(/(<meta (?:name="description"|property="og:description") content=")([^"]*)(")/g, (_, a, d, b) => a + d.replace(/…+/g, "…") + b);
-  fr = jsonLd(fr, "fr", chemin);
-
-  /* ---- arabe ---- */
+  /* ---- arabe (adresse principale) ---- */
   let ar = retirerLangue(page, "fr");
-  ar = ar.replace(/\b(href|src|srcset|action|poster)="([^"]*)"/g, (_, nom, val) => `${nom}="${nom === "srcset"
-    ? val.split(",").map(s => s.trim()).filter(Boolean).map(s => [unNiveau(s.split(/\s+/)[0], chemin, miroir), ...s.split(/\s+/).slice(1)].join(" ")).join(", ")
-    : unNiveau(val, chemin, miroir)}"`);
-  ar = ar.replace(m[0], `<html translate="no" lang="ar" dir="rtl" data-racine="../${racine}" data-site="${racine}" data-langue-fixe="ar" data-autre-langue="${vers_fr}">`);
-  const urlAr = URL_SITE + "ar/" + chemin;
-  ar = ar.replace(/<link rel="canonical" href="[^"]*">/, teteLangues(chemin) + `\n<link rel="canonical" href="${urlAr}">`);
-  ar = ar.replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${urlAr}">`);
+  ar = ar.replace(m[0], `<html translate="no" lang="ar" dir="rtl" data-racine="${racine}" data-langue-fixe="ar" data-autre-langue="${vers_fr}">`);
+  ar = ar.replace('<link rel="canonical"', teteLangues(chemin) + '\n<link rel="canonical"');
   ar = ar.replace('<meta property="og:locale" content="fr_FR"><meta property="og:locale:alternate" content="ar_AR">',
     '<meta property="og:locale" content="ar_AR"><meta property="og:locale:alternate" content="fr_FR">');
   const t = titreSeo(titreAr, 70, titreAr === NOM_AR ? "" : " | " + NOM_AR);
@@ -152,5 +141,42 @@ export function versions(page, fichier, miroir) {
   ar = ar.replace('<meta property="og:site_name" content="Documents Tunisie">', `<meta property="og:site_name" content="${NOM_AR}">`);
   ar = ar.replace('<meta name="apple-mobile-web-app-title" content="Documents TN">', `<meta name="apple-mobile-web-app-title" content="${NOM_AR}">`);
   ar = jsonLd(ar, "ar", chemin, titreAr);
-  return { fr, ar };
+
+  /* ---- français (fr/) ---- */
+  let fr = retirerLangue(page, "ar");
+  fr = fr.replace(/\b(href|src|srcset|action|poster)="([^"]*)"/g, (_, nom, val) => `${nom}="${nom === "srcset"
+    ? val.split(",").map(s => s.trim()).filter(Boolean).map(s => [unNiveau(s.split(/\s+/)[0], chemin, miroir), ...s.split(/\s+/).slice(1)].join(" ")).join(", ")
+    : unNiveau(val, chemin, miroir)}"`);
+  fr = fr.replace(m[0], `<html translate="no" lang="fr" dir="ltr" data-racine="../${racine}" data-site="${racine}" data-langue-fixe="fr" data-autre-langue="${vers_ar}">`);
+  const urlFr = URL_SITE + "fr/" + chemin;
+  fr = fr.replace(/<link rel="canonical" href="[^"]*">/, teteLangues(chemin) + `\n<link rel="canonical" href="${urlFr}">`);
+  fr = fr.replace(/<meta property="og:url" content="[^"]*">/, `<meta property="og:url" content="${urlFr}">`);
+  // titre et description : jamais de morceau arabe sur la page française (« … – نماذج وثائق تونسية »)
+  fr = fr.replace(/<title>([\s\S]*?)<\/title>/, (_, t) => `<title>${t.replace(/\s+[–—|]\s+[^–—|]*[؀-ۿ][^–—|]*$/, "")}</title>`);
+  fr = fr.replace(/(<meta property="og:title" content=")([^"]*)(")/, (_, a, t, b) => a + t.replace(/\s+[–—|]\s+[^–—|]*[؀-ۿ][^–—|]*$/, "") + b);
+  fr = fr.replace(/(<meta (?:name="description"|property="og:description") content=")([^"]*)(")/g, (_, a, d, b) => a + d.replace(/…+/g, "…") + b);
+  fr = jsonLd(fr, "fr", chemin);
+  return { ar, fr };
+}
+
+/** ar/<chemin> : adresses arabes publiées le matin du 21/11/2026, avant que l'arabe passe à l'adresse principale.
+ *  Petite page de renvoi (pas de script : la CSP l'interdirait) vers <chemin>, hors du plan du site, jamais indexée. */
+export function renvoi(fichier) {
+  const chemin = fichier.replace(/index\.html$/, "");
+  const vers = "../".repeat(chemin.split("/").filter(Boolean).length + 1) + chemin || "./";
+  return `<!doctype html>
+<html translate="no" lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, follow">
+<title>${NOM_AR}</title>
+<link rel="canonical" href="${URL_SITE}${chemin}">
+<meta http-equiv="refresh" content="0; url=${vers}">
+</head>
+<body>
+<p><a href="${vers}">${NOM_AR} — انقر هنا إن لم يتم تحويلك</a></p>
+</body>
+</html>
+`;
 }

@@ -12,8 +12,9 @@ const SITE = "https://documents.clicvia.com/", BASE = new URL(SITE).pathname, DE
 const VIDEOS = ["presentation"];                 // vidéos (sans .mp4)
 const MODE = "bouton";                   // « bouton » (.partager) ou « lien-wa » (liens wa.me de partage)
 const APROPOS = "a-propos/index.html";             // page À propos (modèle de la page vidéo), vide s'il n'y en a pas
-// une adresse par langue (21/11/2026) : les pages dans la langue par défaut (arabe) sont sous ar/ ; la page vidéo garde une seule adresse (?lang=)
-const AR = p => existsSync(join(root, "ar", p)) ? "ar/" + p : p, ACCUEIL = AR("index.html");
+// une adresse par langue (21/11/2026) : les pages dans la langue par défaut (arabe) sont à l'adresse principale, le français sous fr/ ;
+// la page vidéo garde une seule adresse (?lang=)
+const FR = p => existsSync(join(root, "fr", p)) ? "fr/" + p : "", ACCUEIL = "index.html";
 const lire = f => readFileSync(join(root, f), "utf8");
 let ok = 0; const pb = [];
 const check = (nom, cond) => { if (cond) ok++; else { pb.push(nom); console.log("ÉCHEC : " + nom); } };
@@ -103,7 +104,7 @@ j = await essai({ page: "video/index.html", cible: "[data-partager-video]" });
 check("page vidéo : le bouton « Partager la vidéo » partage la page vidéo", (j.partages[0] || {}).url === SITE + "video/" && !(j.partages[0] || {}).files);
 const autre = ["fr", "ar", "en"].find(l => l !== DEFAUT && (pv.includes(`data-v${l}=`)));
 if (autre) {
-j = await essai(ACCUEIL === "index.html" ? { query: "?lang=" + autre } : { page: "index.html" });   // page française (racine) depuis le 21/11/2026
+j = await essai(FR("index.html") ? { page: FR("index.html") } : { query: "?lang=" + autre });   // page française (fr/) depuis le 21/11/2026
 check(`Partager (page en « ${autre} ») : page vidéo dans la même langue`, (j.partages[0] || {}).url === SITE + "video/?lang=" + autre);
 // 5. page vidéo dans l'autre langue (textes, vidéo de la langue)
 {
@@ -116,8 +117,8 @@ check(`Partager (page en « ${autre} ») : page vidéo dans la même langue`, (j
 }
 }
 // 6. lien « Vidéo de présentation » (accueil, À propos) -> page vidéo
-for (const page of [ACCUEIL, APROPOS && AR(APROPOS), ...(ACCUEIL !== "index.html" ? ["index.html", APROPOS] : [])].filter(Boolean)) {
-  const w = await ouvrir(page), fr = ACCUEIL !== "index.html" && !page.startsWith("ar/");
+for (const page of [ACCUEIL, APROPOS, FR(ACCUEIL), APROPOS && FR(APROPOS)].filter(Boolean)) {
+  const w = await ouvrir(page), fr = page.startsWith("fr/");
   for (let k = 0; k < 60 && !w.document.querySelector("#lien-video a"); k++) await new Promise(r => setTimeout(r, 50));
   const a = w.document.querySelector("#lien-video a");
   check(`lien « Vidéo de présentation » sur ${page} -> page vidéo${fr ? " en français" : ""}`, !!a && a.getAttribute("href") === BASE + "video/" + (fr ? "?lang=fr" : ""));

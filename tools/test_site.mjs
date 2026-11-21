@@ -111,10 +111,11 @@ for (const d of DOCS) {
 }
 
 // ---- 4. Pages chargées comme dans un navigateur ------------------------------------
-// UNE ADRESSE PAR LANGUE (21/11/2026) : page(chemin, "ar") ouvre ar/<chemin> (page arabe seule), sans ?lang ;
+// UNE ADRESSE PAR LANGUE (21/11/2026) : l'ARABE est à l'adresse principale (décision d'Ahmed : « les Tunisiens lisent l'arabe »),
+// le français sous fr/ ; ar/ = renvois. page(chemin) ouvre fr/<chemin> (page française seule), page(chemin, "ar") ouvre <chemin>, sans ?lang ;
 // le bouton de langue appelle window.allerVers (noté dans w.__allerVers) au lieu de changer d'adresse.
 async function page(chemin, lang = "fr") {
-  if (lang === "ar" && existsSync(join(root, "ar", chemin))) chemin = "ar/" + chemin;
+  if (lang !== "ar" && existsSync(join(root, "fr", chemin))) chemin = "fr/" + chemin;
   const dossier = dirname(join(root, chemin));
   // (les scripts externes, comme GoatCounter, ne sont pas chargés)
   const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
@@ -207,30 +208,30 @@ for (const slug of HONNEUR) {
   const img = sec && sec.querySelector("figure.schema-doc img"), svgT = existsSync(join(root, "assets/illustrations/traite-cases.svg")) ? lire("assets/illustrations/traite-cases.svg") : "";
   const nums = [...(svgT.matchAll(/text-anchor="middle">(\d+)<\/text>/g))].map(m => +m[1]);
   check("traite : schéma « Case par case » (image à nous, protégée), 14 cases expliquées en FR et AR, cases grises = banque",
-    sec && sec.classList.contains("protege") && img && /^\.\.\/assets\/illustrations\/traite-cases\.svg\?v=/.test(img.getAttribute("src")) && img.getAttribute("alt")
+    sec && sec.classList.contains("protege") && img && /^\.\.\/\.\.\/assets\/illustrations\/traite-cases\.svg\?v=/.test(img.getAttribute("src")) && img.getAttribute("alt")
     && sec.querySelectorAll("ol.cases li").length === 14 && [...sec.querySelectorAll("ol.cases li")].every(li => li.querySelector('[data-l="fr"]') && !li.querySelector('[data-l="ar"]'))
     && [...(await page("traite-lettre-de-change/index.html", "ar")).document.querySelectorAll("#schema ol.cases li")].filter(li => li.querySelector('[data-l="ar"]') && !li.querySelector('[data-l="fr"]')).length === 14
     && /Cases grises/.test(sec.textContent) && doc.getElementById("explication-seulement").compareDocumentPosition(sec) === 4);
   check("traite : le schéma est un SPÉCIMEN dessiné par nous (mention « SPÉCIMEN · نموذج », numéros 1 à 14, aucun vrai RIB ni vrai nom)",
     /SPÉCIMEN · نموذج/.test(svgT) && /Dessin original de Documents Tunisie/.test(svgT) && [...Array(14)].every((_, i) => nums.includes(i + 1)) && !/\d{6,}/.test(svgT.replace(/<[^>]+>/g, " ")));
 }
-check("mariage : second lien vers l'annuaire des prestataires de mariage", /href="https:\/\/mariage\.clicvia\.com\/"[^>]*data-annuaire="lien-mariage\/mariage"/.test(lire("mariage/index.html")));
+check("mariage : second lien vers l'annuaire des prestataires de mariage", /href="https:\/\/mariage\.clicvia\.com\/"[^>]*data-annuaire="lien-mariage\/mariage"/.test(lire("fr/mariage/index.html")));
 check("aucun PDF ne contient l'adresse des annuaires", DOCS.every(d => ["fr", "ar"].every(L => !/avocats-notaires-tunisie|mariage-tunisie|comptables-tunisie|outils-pratiques|clicvia\.com/.test(M.feuille(d, valeursEx(d), L)))));
 {
   const w = await page("index.html"), doc = w.document;
   check(`accueil : ${TOUS.length} cartes de documents (une par document, contrat et démarche)`, doc.querySelectorAll("[data-cherche]").length === TOUS.length);
   check("accueil : 6 catégories avec icône", doc.querySelectorAll(".cat svg").length === 6);
-  check("accueil : plus de badges sans lien ; « 1 document gratuit par jour, étapes gratuites, sans inscription » dans l'intro (FR + AR)", !doc.querySelector(".confiance, .badge-c") && /1 document gratuit par jour, étapes gratuites, sans inscription/.test(doc.querySelector(".hero").textContent) && /وثيقة مجانية كل يوم، المراحل مجانية، دون تسجيل/.test(lire("ar/index.html")));
+  check("accueil : plus de badges sans lien ; « 1 document gratuit par jour, étapes gratuites, sans inscription » dans l'intro (FR + AR)", !doc.querySelector(".confiance, .badge-c") && /1 document gratuit par jour, étapes gratuites, sans inscription/.test(doc.querySelector(".hero").textContent) && /وثيقة مجانية كل يوم، المراحل مجانية، دون تسجيل/.test(lire("index.html")));
   check("accueil : PAS de bouton « Pass Journée » (décision d'Ahmed : le visiteur partirait), aucun lien vers pass/", !doc.querySelector('a[href^="pass/"], a[href*="/pass/"], .btn-pass, .btn-pro') && !/Pass Journée/.test(doc.body.textContent));
   // bouton vers l'annuaire « Avocats et notaires » (demande d'Ahmed du 06/10/2026) : fin de la rangée des catégories, bordure dorée
   const av = doc.querySelector(".cats > a.cat-annuaire");
   check("accueil : bouton « Avocats et notaires » / « محامون وعدول » à la fin de la rangée des catégories, avec le logo de l'annuaire (copié dans le site)",
     av && av === doc.querySelector(".cats").lastElementChild && av.getAttribute("href") === "https://avocats.clicvia.com/" && /noopener/.test(av.rel)
-    && /Avocats et notaires/.test(av.textContent) && /محامون وعدول/.test(lire("ar/index.html").match(/<a class="cat-annuaire"[\s\S]*?<\/a>/)[0]) && av.querySelector('img[src="assets/logo-avocats-notaires.svg"]')
+    && /Avocats et notaires/.test(av.textContent) && /محامون وعدول/.test(lire("index.html").match(/<a class="cat-annuaire"[\s\S]*?<\/a>/)[0]) && av.querySelector('img[src="../assets/logo-avocats-notaires.svg"]')
     && existsSync(join(root, "assets/logo-avocats-notaires.svg")) && /\.cat-annuaire\{[^}]*border:2px solid #F2B33D/.test(lire("assets/style.css")));
   { let c = null; w.goatcounter = { count: o => { c = o; } }; av.addEventListener("click", e => e.preventDefault()); av.click();
     check("accueil : clic sur « Avocats et notaires » compté anonymement (lien-site/avocats), sans filtrer les catégories", c && c.path === "lien-site/avocats" && c.event === true && !doc.querySelector(".cat.on")); }
-  check("en-tête et pied de page : lien « Avocats et notaires » (logo, bordure dorée, clic compté)", !!doc.querySelector('#entete a.entete-annuaire[data-annuaire="lien-site/avocats"] img[src="assets/logo-avocats-notaires.svg"]')
+  check("en-tête et pied de page : lien « Avocats et notaires » (logo, bordure dorée, clic compté)", !!doc.querySelector('#entete a.entete-annuaire[data-annuaire="lien-site/avocats"] img[src="../assets/logo-avocats-notaires.svg"]')
     && !!doc.querySelector('#pied a[data-annuaire="lien-site/avocats"]') && /\.entete-annuaire\{[^}]*border:2px solid #F2B33D/.test(lire("assets/style.css")));
   const r = doc.getElementById("recherche");
   r.value = "procuration"; r.dispatchEvent(new w.Event("input"));
@@ -295,7 +296,7 @@ const EMPREINTE = async (code, sel, tours) => {
 check("vecteur commun avec le robot du dépôt privé (Python) : PBKDF2-SHA-256, 100 000 tours",
   await EMPREINTE("ABCD2345", "sel-de-test", 100000) === "517bf9a9ea3ad38b3adcbeef5808d4efe420fbf10a2b7bd9179640f4d1c7c2dd");
 async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois = [] } = {}) {
-  if (stockage.langue === "ar" && existsSync(join(root, "ar", chemin))) chemin = "ar/" + chemin;   // une adresse par langue
+  if (stockage.langue !== "ar" && existsSync(join(root, "fr", chemin))) chemin = "fr/" + chemin;   // une adresse par langue (français sous fr/)
   const dossier = dirname(join(root, chemin));
   const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
     (_, a, src) => `<script>${readFileSync(join(dossier, src), "utf8")}</script>`);
@@ -345,7 +346,7 @@ async function taperCode(w, code) {
     && doc.getElementById("apercu-bloque").hidden && /\.apercu\{[^}]*max-height:420px/.test(lire("assets/style.css")) && /max-width:600px\)\{\.apercu\{max-height:260px/.test(lire("assets/style.css")));
   { const va = doc.getElementById("voir-apercu");
     check("page de modèle : bouton « Voir l'aperçu » juste après « Télécharger le PDF », qui remonte à l'aperçu (FR + AR)",
-      va && va.getAttribute("href") === "#apercu-carte" && doc.getElementById("telecharger").nextElementSibling === va && /Voir l'aperçu/.test(va.textContent) && /معاينة الوثيقة/.test(lire("ar/" + A.slug + "/index.html").match(/id="voir-apercu"[\s\S]*?<\/a>/)[0])); }
+      va && va.getAttribute("href") === "#apercu-carte" && doc.getElementById("telecharger").nextElementSibling === va && /Voir l'aperçu/.test(va.textContent) && /معاينة الوثيقة/.test(lire(A.slug + "/index.html").match(/id="voir-apercu"[\s\S]*?<\/a>/)[0])); }
   remplir(w, A); doc.getElementById("telecharger").click();
   check("Pass Journée : 1er PDF du jour autorisé (gratuit)", w.__imprime === 1 && doc.getElementById("pass-bloque").hidden);
   check("le PDF ne parle ni du Pass ni du site", !/Pass|باقة|Documents Tunisie|ah6259/.test(doc.getElementById("impression").innerHTML));
@@ -460,7 +461,7 @@ async function taperCode(w, code) {
   check("pass/ : bouton « Paiement » (details) avec D17 et IZI (liens vers les applications officielles, Google Play + iPhone) au 24 321 390, mode d'emploi, plus de Wafacash, motif = nom + téléphone", doc.querySelector("details#paiement > summary")?.textContent.includes("Paiement")
     && ["D17", "IZI", "Transfert rapide"].every(x => doc.querySelector("#paiement .paie").textContent.includes(x)) && !/Wafacash/i.test(lire("pass/index.html") + lire("pass/conditions/index.html"))
     && ["https://play.google.com/store/apps/details?id=tn.mobipost", "https://play.google.com/store/apps/details?id=tn.izi.consumer", "https://apps.apple.com/tn/app/digipostbank-d17/id1475640303", "https://apps.apple.com/tn/app/izi/id1603653941"].every(u => doc.querySelector(`#paiement .paie a[href="${u}"]`)) && /24 321 390/.test(doc.querySelector("#paiement .paie").textContent) && /votre nom et votre téléphone/.test(doc.querySelector("#paiement .paie").textContent));
-  check("paiement : logos D17 / IZI dans les boutons, étape 2 pour les deux applications, bouton « ? » avec les deux écrans d'exemple", ["d17.png", "izi.png", "transfert-d17.svg", "transfert-izi.svg"].every(f => existsSync(join(root, "assets/paiement", f))) && /class="appli-btn"[^>]*><img src="\.\.\/assets\/paiement\/d17\.png"/.test(lire("pass/index.html")) && /class="aide-transfert"/.test(lire("pass/index.html")) && /Transfert d’argent/.test(lire("pass/index.html")));
+  check("paiement : logos D17 / IZI dans les boutons, étape 2 pour les deux applications, bouton « ? » avec les deux écrans d'exemple", ["d17.png", "izi.png", "transfert-d17.svg", "transfert-izi.svg"].every(f => existsSync(join(root, "assets/paiement", f))) && /class="appli-btn"[^>]*><img src="\.\.\/assets\/paiement\/d17\.png"/.test(lire("pass/index.html")) && /class="aide-transfert"/.test(lire("pass/index.html")) && /Transfert d’argent/.test(lire("fr/pass/index.html")));
   check("paiement simple et rassurant (règle commune du 08/10/2026) : 3 étapes numérotées, phrase de confiance, description de l'offre cachée quand « Paiement » est ouvert", /<ol class="paie-etapes">/.test(lire("pass/index.html")) && /class="paie-confiance"/.test(lire("pass/index.html")) && /class="avantages[^"]*masque-si-paiement/.test(lire("pass/index.html")) && lire("assets/style.css").includes(":has(> details.paiement[open]) > .masque-si-paiement{display:none}"));
   const wa = doc.getElementById("pass-preuve");
   check("pass/ : bouton vert WhatsApp vers wa.me/21624321390 avec texte prérempli, « vous recevrez votre code par WhatsApp »", wa && wa.href.startsWith("https://wa.me/21624321390?text=") && /Pass%20Journ/.test(wa.href) && /noopener/.test(wa.rel) && /vous recevrez votre code par WhatsApp/i.test(t));
@@ -538,8 +539,8 @@ const tuilesSansLien = doc => [...doc.body.querySelectorAll("*")].filter(el => {
   return t.length > 0 && t.length < 90;
 }).map(el => el.textContent.replace(/\s+/g, " ").trim().slice(0, 40));
 const V = new Set();
-for (const p of [...fichiers, ...fichiers.map(f => "ar/" + f)]) {   // une adresse par langue : pages françaises ET pages arabes (ar/)
-  const s = lire(p), enAr = p.startsWith("ar/"), base = enAr ? p.slice(3) : p, L = enAr ? "ar" : "fr";
+for (const p of [...fichiers, ...fichiers.map(f => "fr/" + f)]) {   // une adresse par langue : pages arabes (racine) ET pages françaises (fr/)
+  const s = lire(p), enAr = !p.startsWith("fr/"), base = enAr ? p : p.slice(3), L = enAr ? "ar" : "fr";
   check(`${p} : titre, description, canonical`, /<title>.{20,}<\/title>/.test(s) && /name="description" content=".{50,}"/.test(s) && s.includes('rel="canonical"'));
   check(`${p} : image d'aperçu og-image-v3.jpg (type JPEG)`, s.includes("og-image-v3.jpg") && s.includes('<meta property="og:image:type" content="image/jpeg">') && !s.includes("og-image-v1.png"));
   check(`${p} : meta noai, CSP, referrer`, s.includes('<meta name="robots" content="noai, noimageai">') && s.includes('http-equiv="Content-Security-Policy"') && /script-src 'self' https:\/\/gc\.zgo\.at;/.test(s) && s.includes('name="referrer"'));
@@ -555,7 +556,7 @@ for (const p of [...fichiers, ...fichiers.map(f => "ar/" + f)]) {   // une adres
   check(`${p} : pas de traduction automatique (translate="no" sur <html>, meta google notranslate)`, /<html translate="no"[ >]/.test(s) && /<meta charset="utf-8">\s*<meta name="google" content="notranslate">/.test(s));
   { const morts = tuilesSansLien(new JSDOM(s).window.document); check(`${p} : aucune carte avec une icône sans lien (pas de faux bouton)${morts.length ? " → " + morts.join(" | ") : ""}`, !morts.length); }
   const w = await page(base, L), doc = w.document, pied = doc.getElementById("pied").textContent;
-  const autre = "https://documents.clicvia.com/" + (enAr ? "" : "ar/") + base.replace(/index\.html$/, "");
+  const autre = "https://documents.clicvia.com/" + (enAr ? "fr/" : "") + base.replace(/index\.html$/, "");
   check(`${p} : langue de l'adresse (lang="${L}", dir ${enAr ? "rtl" : "ltr"}), translate="no" gardé, bouton de langue → ${autre.slice(30)}`,
     doc.documentElement.lang === L && doc.documentElement.dir === (enAr ? "rtl" : "ltr") && doc.documentElement.getAttribute("translate") === "no"
     && doc.querySelector(".langue").textContent === (enAr ? "Fr" : "ع") && (doc.querySelector(".langue").click(), !!w.__allerVers && new w.URL(w.__allerVers, w.location.href).href === autre)
@@ -567,26 +568,31 @@ for (const p of [...fichiers, ...fichiers.map(f => "ar/" + f)]) {   // une adres
       ? a("https://clicvia.com/ar/confidentialite/", "الخصوصية") && a("https://clicvia.com/ar/conditions/", "شروط الاستعمال")
       : a("https://clicvia.com/confidentialite/", "Confidentialité") && a("https://clicvia.com/conditions/", "Conditions d'utilisation")); }
   check(`${p} : bouton « Partager » dans l'en-tête (« ${enAr ? "شارك هذه الصفحة" : "Partager cette page"} »)`, doc.querySelector(`#entete button.partager[aria-label="${enAr ? "شارك هذه الصفحة" : "Partager cette page"}"] svg`));
-  check(`${p} : liens du logo et du pied vers les pages de la même langue`, new w.URL(doc.querySelector("#entete a.logo").getAttribute("href"), w.location.href).href === "https://documents.clicvia.com/" + (enAr ? "ar/" : "")
-    && [...doc.querySelectorAll("#pied nav a")].filter(x => !/^https?:/.test(x.getAttribute("href"))).every(x => new w.URL(x.getAttribute("href"), w.location.href).pathname.startsWith(enAr ? "/ar/" : "/") && (enAr || !new w.URL(x.getAttribute("href"), w.location.href).pathname.startsWith("/ar/"))));
+  check(`${p} : liens du logo et du pied vers les pages de la même langue`, new w.URL(doc.querySelector("#entete a.logo").getAttribute("href"), w.location.href).href === "https://documents.clicvia.com/" + (enAr ? "" : "fr/")
+    && [...doc.querySelectorAll("#pied nav a")].filter(x => !/^https?:/.test(x.getAttribute("href"))).every(x => { const q = new w.URL(x.getAttribute("href"), w.location.href).pathname;
+      return q.startsWith(enAr ? "/" : "/fr/") && !q.startsWith("/ar/") && (!enAr || !q.startsWith("/fr/")); }));
   check(`${p} : dates « vérifié le » = la constante MAJ`, [...doc.querySelectorAll("[data-maj]")].every(x => x.textContent === w.eval("MAJ")));
   const ld = [...s.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(x => JSON.parse(x[1]));
   if (!/^(index\.html|a-propos\/|pass\/)/.test(base)) check(`${p} : FAQ Google (JSON-LD) dans la langue de la page (${enAr ? "arabe" : "français"} seulement)`, ld.some(j => j["@type"] === "FAQPage" && j.mainEntity.length >= 1 && j.mainEntity.every(q => ARABE.test(q.name) === enAr)));
 }
-// UNE ADRESSE PAR LANGUE (21/11/2026, règle commune § 8 point 9 ; tools/langues.mjs) : chaque page publique existe en français à son
-// adresse et en arabe sous ar/, chacune écrite dans SA langue (Google lit la page arabe), qui se citent (hreflang) ; jamais seulement ?lang=
+// UNE ADRESSE PAR LANGUE (21/11/2026, règle commune § 8 point 9 ; tools/langues.mjs) : chaque page publique existe en ARABE à son
+// adresse principale (décision d'Ahmed du 21/11/2026 : « les Tunisiens lisent l'arabe ») et en français sous fr/, chacune écrite dans
+// SA langue, qui se citent (hreflang, x-default = arabe) ; les adresses ar/ du matin du 21/11 renvoient vers l'adresse principale.
 { const SITE = "https://documents.clicvia.com/", titresAr = new Set(), pb = [];
   const existe = (de, href) => { const u = new URL(href, SITE + de); if (u.origin + "/" !== SITE) return true;
     const f = u.pathname.slice(1); return existsSync(join(root, f.endsWith("/") || f === "" ? f + "index.html" : f)); };
   for (const p of fichiers) {
-    const fr = lire(p), ar = lire("ar/" + p), ch = p.replace(/index\.html$/, ""), dFr = new JSDOM(fr).window.document, dAr = new JSDOM(ar).window.document;
+    const fr = lire("fr/" + p), ar = lire(p), ch = p.replace(/index\.html$/, ""), dFr = new JSDOM(fr).window.document, dAr = new JSDOM(ar).window.document;
     const hl = d => Object.fromEntries([...d.querySelectorAll('link[rel="alternate"][hreflang]')].map(l => [l.getAttribute("hreflang"), l.getAttribute("href")]));
-    const att = { fr: SITE + ch, ar: SITE + "ar/" + ch, "x-default": SITE + ch };
+    const att = { ar: SITE + ch, fr: SITE + "fr/" + ch, "x-default": SITE + ch };
     if (JSON.stringify(hl(dFr)) !== JSON.stringify(att) || JSON.stringify(hl(dAr)) !== JSON.stringify(att)) pb.push(p + " : hreflang");
     if (dFr.querySelector('link[rel="canonical"]')?.href !== att.fr || dAr.querySelector('link[rel="canonical"]')?.href !== att.ar) pb.push(p + " : canonical");
-    if (dAr.querySelector('meta[property="og:url"]')?.content !== att.ar || dAr.querySelector('meta[property="og:locale"]')?.content !== "ar_AR" || dFr.querySelector('meta[property="og:locale"]')?.content !== "fr_FR") pb.push(p + " : og:url / og:locale");
+    if (dAr.querySelector('meta[property="og:url"]')?.content !== att.ar || dFr.querySelector('meta[property="og:url"]')?.content !== att.fr
+      || dAr.querySelector('meta[property="og:locale"]')?.content !== "ar_AR" || dFr.querySelector('meta[property="og:locale"]')?.content !== "fr_FR") pb.push(p + " : og:url / og:locale");
     if (dFr.documentElement.lang !== "fr" || dAr.documentElement.lang !== "ar" || dAr.documentElement.dir !== "rtl" || dFr.documentElement.dataset.langueFixe !== "fr" || dAr.documentElement.dataset.langueFixe !== "ar") pb.push(p + " : lang / dir / langue fixe");
     if (dFr.querySelector('[data-l="ar"]') || dAr.querySelector('[data-l="fr"]')) pb.push(p + " : texte de l'autre langue resté dans la page");
+    const ldAr = [...dAr.querySelectorAll('script[type="application/ld+json"]')].map(x => JSON.parse(x.textContent));
+    if (ldAr.some(j => j.inLanguage && j.inLanguage !== "ar")) pb.push(p + " : JSON-LD de la page arabe pas en arabe");
     const titreAr = dAr.title, descAr = dAr.querySelector('meta[name="description"]')?.content || "";
     if (!ARABE.test(titreAr) || titreAr.length > 70 || titresAr.has(titreAr) || ARABE.test(dFr.title)) pb.push(p + " : titre (« " + titreAr + " »)");
     titresAr.add(titreAr);
@@ -596,38 +602,49 @@ for (const p of [...fichiers, ...fichiers.map(f => "ar/" + f)]) {   // une adres
     const nAr = t => (t.match(/[؀-ۿ]/g) || []).length, nLat = t => (t.match(/[A-Za-zÀ-ÿ]/g) || []).length;
     if (nAr(txt(dAr)) < 3 * nLat(txt(dAr).replace(/https?:\S+|[A-Za-z0-9.-]+\.(com|tn)\S*/g, ""))) pb.push(p + " : page arabe trop peu arabe");
     if (nAr(txt(dFr)) > nLat(txt(dFr)) / 20) pb.push(p + " : page française avec trop d'arabe");
-    for (const [d, de] of [[dFr, ch], [dAr, "ar/" + ch]])
+    for (const [d, de] of [[dFr, "fr/" + ch], [dAr, ch]])
       for (const x of d.querySelectorAll("a[href], img[src], link[href], script[src]")) {
         const h = x.getAttribute("href") ?? x.getAttribute("src");
         if (/^(#|mailto:|tel:|https?:\/\/(?!documents\.clicvia\.com))/.test(h)) continue;
         if (!existe(de, h)) pb.push(de + " : lien mort « " + h + " »");
         const u = new URL(h, SITE + de);
-        if (x.tagName === "A" && u.origin + "/" === SITE && (u.pathname.endsWith("/") || u.pathname === "/") && !/^\/video\//.test(u.pathname) && u.pathname.startsWith("/ar/") !== (d === dAr)) pb.push(de + " : lien vers une page de l'autre langue « " + h + " »");
+        if (x.tagName === "A" && u.origin + "/" === SITE && (u.pathname.endsWith("/") || u.pathname === "/") && !/^\/video\//.test(u.pathname)
+          && (u.pathname.startsWith("/fr/") !== (d === dFr) || u.pathname.startsWith("/ar/"))) pb.push(de + " : lien vers une page de l'autre langue « " + h + " »");
       }
+    // ancienne adresse ar/<chemin> (matin du 21/11/2026) : renvoi vers l'adresse principale, jamais indexé, sans script (CSP)
+    const rv = existsSync(join(root, "ar", p)) ? lire("ar/" + p) : "", dR = new JSDOM(rv).window.document;
+    const ref = dR.querySelector('meta[http-equiv="refresh"]')?.content || "", cible = (ref.match(/^0; url=(.+)$/) || [])[1];
+    if (!rv || !/noindex/.test(dR.querySelector('meta[name="robots"]')?.content || "") || dR.querySelector('link[rel="canonical"]')?.href !== att.ar
+      || !cible || new URL(cible, SITE + "ar/" + ch).href !== att.ar || dR.querySelector("script") || dR.querySelector(`a[href="${cible}"]`) === null) pb.push("ar/" + p + " : renvoi vers l'adresse principale");
   }
-  check(`une adresse par langue : ${fichiers.length} pages françaises + ${fichiers.length} pages arabes (ar/), hreflang fr / ar / x-default réciproques, canonical, og:locale, une seule langue par page, titres arabes uniques ≤ 70, descriptions arabes 40-165, liens internes valides dans la même langue${pb.length ? " — " + pb.slice(0, 6).join(" | ") : ""}`, !pb.length);
+  check(`une adresse par langue : ${fichiers.length} pages arabes (adresse principale) + ${fichiers.length} pages françaises (fr/), hreflang ar / fr / x-default (= arabe) réciproques, canonical, og:url, og:locale, une seule langue par page, titres arabes uniques ≤ 70, descriptions arabes 40-165, liens internes valides dans la même langue, anciennes adresses ar/ = renvois noindex${pb.length ? " — " + pb.slice(0, 6).join(" | ") : ""}`, !pb.length);
   const sm = lire("sitemap.xml");
-  check("une adresse par langue : plan du site avec chaque page française ET sa page arabe (ar/)", fichiers.filter(p => p !== "pass/conditions/index.html").every(p => { const c = p.replace(/index\.html$/, ""); return sm.includes(`<loc>${SITE}${c}</loc>`) && sm.includes(`<loc>${SITE}ar/${c}</loc>`); }));
-  // anciens liens « ?lang=ar » (partagés avant le 21/11/2026) : renvoyés vers la page arabe ; jamais pour un robot ni sans demande
+  check("une adresse par langue : plan du site avec chaque page arabe (racine) ET sa page française (fr/), sans les renvois ar/", fichiers.filter(p => p !== "pass/conditions/index.html").every(p => { const c = p.replace(/index\.html$/, ""); return sm.includes(`<loc>${SITE}${c}</loc>`) && sm.includes(`<loc>${SITE}fr/${c}</loc>`); })
+    && !sm.includes(SITE + "ar/"));
+  // anciens liens « ?lang=fr » (partagés avant le 21/11/2026) : renvoyés vers la page française fr/… ; jamais pour un robot ni sans demande
   { const ancien = async (q, opts = {}) => { const html = lire(DOCS[0].slug + "/index.html").replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
         (_, a, src) => `<script>${readFileSync(join(root, DOCS[0].slug, src), "utf8")}</script>`);
       const dom = new JSDOM(html, { url: SITE + DOCS[0].slug + "/" + q + "#remplir", runScripts: "dangerously", pretendToBeVisual: true, referrer: opts.referrer,
         beforeParse(w) { w.allerVers = u => { w.__allerVers = u; }; if (opts.langue) w.localStorage.setItem("langue", opts.langue); if (opts.robot) Object.defineProperty(w.navigator, "webdriver", { get: () => true }); } });
       await new Promise(ok => dom.window.addEventListener("load", ok)); return dom.window; };
-    let w = await ancien("?lang=ar");
-    check("une adresse par langue : ancien lien « ?lang=ar » → page arabe ar/… (ancre gardée)", w.__allerVers && new w.URL(w.__allerVers, w.location.href).href === SITE + "ar/" + DOCS[0].slug + "/#remplir");
-    w = await ancien("", { langue: "ar" });
-    check("une adresse par langue : lien partagé ou Google (sans page du site avant) : la page française reste française, même si l'arabe a été choisi avant", !w.__allerVers && w.document.documentElement.lang === "fr");
-    w = await ancien("", { langue: "ar", referrer: SITE });
-    check("une adresse par langue : visiteur venu d'une page du site qui avait choisi l'arabe → page arabe", w.__allerVers && new w.URL(w.__allerVers, w.location.href).href === SITE + "ar/" + DOCS[0].slug + "/#remplir");
-    w = await ancien("?lang=ar", { robot: true });
+    let w = await ancien("?lang=fr");
+    check("une adresse par langue : ancien lien « ?lang=fr » → page française fr/… (ancre gardée)", w.__allerVers && new w.URL(w.__allerVers, w.location.href).href === SITE + "fr/" + DOCS[0].slug + "/#remplir");
+    w = await ancien("?lang=ar");
+    check("une adresse par langue : ancien lien « ?lang=ar » → reste à l'adresse principale (arabe)", !w.__allerVers && w.document.documentElement.lang === "ar");
+    w = await ancien("", { langue: "fr" });
+    check("une adresse par langue : lien partagé ou Google (sans page du site avant) : la page arabe reste arabe, même si le français a été choisi avant", !w.__allerVers && w.document.documentElement.lang === "ar");
+    w = await ancien("", { langue: "fr", referrer: SITE + "fr/" });
+    check("une adresse par langue : visiteur venu d'une page du site qui avait choisi le français → page française", w.__allerVers && new w.URL(w.__allerVers, w.location.href).href === SITE + "fr/" + DOCS[0].slug + "/#remplir");
+    w = await ancien("", { langue: "fr", referrer: SITE + "ar/" + DOCS[0].slug + "/" });
+    check("une adresse par langue : arrivé par une ancienne adresse ar/ (renvoi) → reste en arabe, même si le français a été choisi avant", !w.__allerVers);
+    w = await ancien("?lang=fr", { robot: true });
     check("une adresse par langue : jamais de renvoi pour un robot (Google lit chaque adresse telle quelle)", !w.__allerVers); }
 }
 // Page 404 commune (17/11/2026, règle commune § 58 point 14 ; modèle : outils communs/page-404 de projets-ahmed) : sinon GitHub montre sa page anglaise
 check("page 404 commune à la racine publiée : 404.html (nom du site, couleur) + 404.js qui cherche la page (« Recherche de la page »)",
   existsSync(join(root, "404.html")) && existsSync(join(root, "404.js")) && lire("404.html").includes("<title>Page introuvable — Documents Tunisie</title>")
   && lire("404.html").includes('<script src="/404.js"></script>') && lire("404.js").includes("Recherche de la page"));
-check("À propos : la page introuvable et les liens Confidentialité / Conditions sont expliqués (FR + AR)", lire("a-propos/index.html").includes("Page introuvable, confidentialité, conditions") && lire("ar/a-propos/index.html").includes("صفحة غير موجودة، الخصوصية، الشروط"));
+check("À propos : la page introuvable et les liens Confidentialité / Conditions sont expliqués (FR + AR)", lire("fr/a-propos/index.html").includes("Page introuvable, confidentialité, conditions") && lire("a-propos/index.html").includes("صفحة غير موجودة، الخصوصية، الشروط"));
 // « Comment ça marche ? » de l'accueil (Ahmed, 22/10/2026) : les 3 étapes illustrées restent sur UNE rangée au téléphone,
 // numéro 1-2-3 en pastille sur l'icône (titres courts, 2 lignes au plus à 390 px : mesuré dans Chromium le 22/10/2026)
 { const d = new JSDOM(lire("index.html")).window.document, css = lire("assets/style.css");
@@ -639,9 +656,9 @@ check("À propos : la page introuvable et les liens Confidentialité / Condition
 // une ligne, 6-7 défilent dans la rangée (jamais la page), titres courts en 2 lignes au plus, aucun mot coupé, FR et AR.
 { const { ETAPES_COURTES } = req(join(root, "assets/documents.js")), css = lire("assets/style.css");
   for (const d of TOUS) {
-    const doc = new JSDOM(lire(d.slug + "/index.html")).window.document;
+    const doc = new JSDOM(lire("fr/" + d.slug + "/index.html")).window.document;
     const det = [...doc.querySelectorAll("#etapes ol.schema > li")], cases = [...doc.querySelectorAll("#etapes nav.rangee-etapes ol > li")];
-    const casesAr = [...new JSDOM(lire("ar/" + d.slug + "/index.html")).window.document.querySelectorAll("#etapes nav.rangee-etapes ol > li")];   // page arabe (ar/)
+    const casesAr = [...new JSDOM(lire(d.slug + "/index.html")).window.document.querySelectorAll("#etapes nav.rangee-etapes ol > li")];   // page arabe (adresse principale)
     const rangee = doc.querySelector("#etapes nav.rangee-etapes");
     check(`${d.slug} : rangée des étapes au-dessus de la liste détaillée, autant de cases que d'étapes (${d.etapes.length})`, !!rangee && cases.length === d.etapes.length && det.length === d.etapes.length && !!(rangee.compareDocumentPosition(doc.querySelector("#etapes ol.schema")) & 4));
     check(`${d.slug} : rangée numérotée 1..n, chaque case = vrai lien vers son étape détaillée (#etape-N existe)`, cases.every((li, i) => { const a = li.querySelector("a[href]"); return a && a.getAttribute("href") === "#etape-" + (i + 1) && li.querySelector(".num")?.textContent === String(i + 1) && det[i]?.id === "etape-" + (i + 1); }));
@@ -661,7 +678,7 @@ for (const p of ["index.html", DOCS[0].slug + "/index.html"]) {
   b?.click(); await new Promise(ok => setTimeout(ok, 0));
   // partage par lien (demande d'Ahmed) : page vidéo du site + adresse du site, dans la langue de la page (arabe par défaut)
   const lg = doc.documentElement.lang, q = lg === "ar" ? "" : "?lang=" + lg;
-  const adresse = "https://documents.clicvia.com/video/" + q, siteLg = "https://documents.clicvia.com/" + (lg === "ar" ? "ar/" : "");   // une adresse par langue
+  const adresse = "https://documents.clicvia.com/video/" + q, siteLg = "https://documents.clicvia.com/" + (lg === "ar" ? "" : "fr/");   // une adresse par langue
   check(`${p} : sans navigator.share, le clic ouvre wa.me avec la page vidéo + l'adresse du site`, ouverts.length === 1 && ouverts[0][0].startsWith("https://wa.me/?text=")
     && decodeURIComponent(ouverts[0][0].slice(20)).endsWith(" " + adresse) && decodeURIComponent(ouverts[0][0]).includes("Le site : " + siteLg + "\n") && ouverts[0][1] === "_blank");
 }
@@ -731,7 +748,7 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
 
 // 25/10/2026 (RÈGLE d'Ahmed, règle commune § 44 : « la page Comment fonctionne le site doit être mise à jour chaque fois qu'on modifie le site ») :
 // chaque fonction visible du site (repère dans le code ou les pages) doit être expliquée dans a-propos/ ; nouvelle fonction = une ligne ici + son explication FR + AR dans tools/generer.mjs
-{ const brut = lire("a-propos/index.html"), ap = brut.replace(/<[^>]+>/g, " ").replace(/[\u00a0\u2068\u2069]/g, " ").replace(/\s+/g, " ");
+{ const brut = lire("fr/a-propos/index.html"), ap = brut.replace(/<[^>]+>/g, " ").replace(/[\u00a0\u2068\u2069]/g, " ").replace(/\s+/g, " ");
   const acc = lire("index.html"), js = lire("assets/page.js") + lire("assets/modele.js") + lire("assets/pass.js") + lire("tools/generer.mjs");
   const FONCTIONS = [
     ["recherche (au son, nombre de résultats) et catégories", /afficherCompte/.test(js) && /id="recherche"/.test(acc), /Chercher un document : la case de recherche[^.]*au son[^.]*nombre de documents/],
@@ -743,7 +760,7 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     ["sources citées et « à vérifier »", true, /Sources citées : chaque page donne ses sources officielles/],
     ["annuaires gratuits et calculateur de crédit", /cat-annuaire/.test(acc) && /outils\.clicvia\.com\/credit/.test(js), /Annuaires gratuits : liens vers nos annuaires[^.]*calculateur de crédit/],
     ["langue FR / AR", /\.langue/.test(js), /Français \/ arabe : le bouton de langue/],
-    ["une adresse par langue (ar/)", existsSync(join(root, "ar/index.html")) && /data-langue-fixe/.test(js), /Une adresse par langue : chaque page existe en français à son adresse et en arabe sous « ar\/ »/],
+    ["une adresse par langue (arabe à l'adresse principale, français sous fr/)", existsSync(join(root, "fr/index.html")) && /data-langue-fixe/.test(js), /Une adresse par langue : chaque page existe en arabe à l'adresse principale[\s\S]{0,80}en français sous « fr\/ »/],
     ["bouton Partager", /\.partager/.test(js), /Partager : le bouton rond/],
     ["Votre avis", /id="avis"/.test(acc), /Votre avis : un formulaire/],
     ["recherches sans résultat comptées", /recherche-vide/.test(js), /Documents demandés : un mot cherché sans résultat/],
@@ -756,8 +773,8 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     ["site indépendant", true, /Ce site est indépendant/]];
   const manque = FONCTIONS.filter(([, sur, re]) => sur && !re.test(ap)).map(([n]) => n);
   check(`page « Comment fonctionne le site ? » à jour : titre et chaque fonction du site expliquée (${FONCTIONS.length} fonctions)` + (manque.length ? " — manque : " + manque.join(", ") : ""),
-    manque.length === 0 && /<h1>[^]*?Comment fonctionne le site \?[^]*?<\/h1>/.test(brut) && /<h1>[^]*?كيف يعمل الموقع؟[^]*?<\/h1>/.test(lire("ar/a-propos/index.html"))
-    && /عنوان لكل لغة/.test(lire("ar/a-propos/index.html"))
+    manque.length === 0 && /<h1>[^]*?Comment fonctionne le site \?[^]*?<\/h1>/.test(brut) && /<h1>[^]*?كيف يعمل الموقع؟[^]*?<\/h1>/.test(lire("a-propos/index.html"))
+    && /عنوان لكل لغة[\s\S]{0,80}هو العنوان الرئيسي[\s\S]{0,120}تحت «⁨fr\/⁩»/.test(lire("a-propos/index.html"))
     && /a-propos\/">\$\{T\("Comment fonctionne le site \?"/.test(lire("assets/page.js")) && /id="lien-fonctionnement"/.test(acc)); }
 check("langue par défaut = ARABE (décision d'Ahmed), seule une langue fr/ar enregistrée est reprise (mémoire partagée entre sites)", (() => { const js = readFileSync(join(root, "assets/page.js"), "utf8"); return /let langue = "ar"/.test(js) && js.includes("/^(fr|ar)$/.test(") && js.includes('langue = gardee || "ar"'); })());
 console.log(erreurs ? `\n${erreurs} PROBLÈME(S)` : "\nTOUT PASSE");
