@@ -201,3 +201,8 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   `installer.py site "Documents Tunisie" "#8C2B3A"`) : cherche la page sur nos sites avant « Page introuvable ».
 - Pied (assets/page.js) : liens https://clicvia.com/confidentialite/ et /conditions/ (versions ar/ quand la page est en arabe) ; ligne
   ajoutée dans « Comment fonctionne le site ? ». test_site.mjs bloque si la 404 ou un lien manque (chaque page, AR + FR) ; 404.html exclue de test_sw / test_avis.
+
+## 21/11/2026 — Mode sombre lisible (signalé par Ahmed : mots illisibles en sombre)
+- En sombre, `--p` / `--or` deviennent clairs : le texte blanc posé dessus (bouton « إرسال », PDF, catégories, vidéo, puces des étapes, paiement) passait sous 3 de contraste.
+  Bloc « Mode sombre lisible » à la fin de `assets/style.css` (`@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) … }`) : texte foncé sur l'accent, fonds blancs codés en dur -> `var(--carte)`, verts WhatsApp foncés, fond de secours du bandeau foncé. Mode clair inchangé.
+- Règle : toute nouvelle couleur d'accent avec texte blanc = sa ligne dans ce bloc ; contrôle Playwright (contraste ≥ 4,5 en sombre, accueil + pass + modèles) : 0 défaut. `?v=` refait par generer.mjs.
