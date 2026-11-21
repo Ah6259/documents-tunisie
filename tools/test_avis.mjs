@@ -12,6 +12,7 @@ import { dirname, join } from "path";
 const SITE = "Documents Tunisie";                                         // valeur du champ caché « site »
 const BASE = "https://documents.clicvia.com/";            // adresse de l'accueil en ligne
 const IGNORER = ["node_modules", ".git", "tools", "captures", "preuves conditions d'utilisation",
+  "ar",   // ar/ = renvois des adresses arabes du matin du 21/11/2026 vers l'adresse principale (pages sans script, vérifiées par test_site.mjs)
   "404.html"];   // page 404 COMMUNE (outils communs/page-404, 17/11/2026) : page autonome, sans pied ni service worker ; vérifiée par test_site.mjs
 // --------------------------------------------------------------------------------
 const FORMSPREE = "https://formspree.io/f/mwlpakqj";
@@ -71,10 +72,11 @@ function ressources() {
   }
   return new Chargeur();
 }
-// une adresse par langue (21/11/2026) : la page arabe d'une page est ar/<chemin> ; le bouton de langue n'y change pas d'adresse (window.allerVers)
-async function ouvrir(chemin, { lang = "fr" } = {}) {
-  if (lang === "ar" && !chemin.startsWith("ar/") && existsSync(join(root, "ar", chemin))) chemin = "ar/" + chemin;
-  if (chemin.startsWith("ar/")) lang = "ar";
+// une adresse par langue (21/11/2026) : la page arabe est à l'adresse principale <chemin>, la page française sous fr/<chemin> ;
+// le bouton de langue n'y change pas d'adresse (window.allerVers). telQuel : ouvrir le fichier donné, sans choisir la langue.
+async function ouvrir(chemin, { lang = "fr", telQuel = false } = {}) {
+  if (!telQuel && lang === "fr" && existsSync(join(root, "fr", chemin))) chemin = "fr/" + chemin;
+  if (chemin.startsWith("fr/")) lang = "fr"; else if (existsSync(join(root, "fr", chemin))) lang = "ar";
   const fautes = [];
   const vc = new VirtualConsole();
   vc.on("jsdomError", e => { if (!/Not implemented|Could not load (img|link|script)/.test(e.message)) fautes.push(e.message); });
@@ -101,8 +103,8 @@ let w = await ouvrir("index.html"), d = w.document;
 check("accueil : aucune erreur JavaScript" + (w.fautes.length ? " — " + w.fautes[0] : ""), !w.fautes.length);
 const sec = d.getElementById("avis"), form = d.getElementById("avis-form");
 check("accueil : section #avis présente avec le formulaire #avis-form", !!sec && !!form && sec.contains(form));
-check("section : titre et textes en français (page française) ET en arabe (page arabe ar/)", !!sec && /Votre avis/.test(sec.innerHTML) && existsSync(join(root, "ar/index.html"))
-  && /<section class="carte avis" id="avis"[\s\S]*?رأيك يهمّنا/.test(lire("ar/index.html")));
+check("section : titre et textes en français (page française fr/) ET en arabe (page arabe, adresse principale)", !!sec && /Votre avis/.test(sec.innerHTML) && existsSync(join(root, "fr/index.html"))
+  && /<section class="carte avis" id="avis"[\s\S]*?رأيك يهمّنا/.test(lire("index.html")));
 check("formulaire : action = " + FORMSPREE + ", méthode POST", form?.getAttribute("action") === FORMSPREE && /post/i.test(form?.getAttribute("method") || ""));
 const msg = form?.querySelector("textarea[name=message]"), mail = form?.querySelector("input[name=email]");
 check("message : obligatoire, 1000 caractères max", !!msg && msg.required && msg.maxLength === 1000);
@@ -150,8 +152,8 @@ const a = w.appels[0] || { opts: {} };
 const f = a.opts.body ? champs(a.opts.body) : {};
 const accept = a.opts.headers && (a.opts.headers.Accept || a.opts.headers.accept);
 check("envoi vers " + FORMSPREE + " en POST, Accept: application/json", a.url === FORMSPREE && a.opts.method === "POST" && accept === "application/json");
-check(`champs envoyés : site = « ${SITE} », page = adresse de l'accueil, message, note, email`,
-  f.site === SITE && f.page === BASE + "?lang=fr" && f.message === "Test du formulaire d'avis" && f.note === "🙂 Bien" && f.email === "lecteur@example.com");
+check(`champs envoyés : site = « ${SITE} », page = adresse de l'accueil français (fr/), message, note, email`,
+  f.site === SITE && f.page === BASE + "fr/?lang=fr" && f.message === "Test du formulaire d'avis" && f.note === "🙂 Bien" && f.email === "lecteur@example.com");
 check("champ piège _gotcha envoyé vide (Formspree rejette les robots)", f._gotcha === "");
 check("après l'envoi : confirmation « Merci ! Votre avis a bien été envoyé » DANS la carte avec l'adresse de réponse, formulaire vidé et caché, bouton réactivé",
   (m => !!m && !m.hidden && sec.contains(m) && /Merci ! Votre avis a bien été envoyé/.test(m.textContent) && /lecteur@example\.com/.test(m.textContent))(d.getElementById("avis-merci"))
@@ -187,12 +189,12 @@ w.close();
 // ---- 3. Lien « Votre avis » dans le pied de page de TOUTES les pages ----------------------
 const sansLien = [], fautes = [];
 for (const p of pages) {
-  const ww = await ouvrir(p);
+  const ww = await ouvrir(p, { telQuel: true });
   const pied = ww.document.getElementById("pied") || ww.document.querySelector("footer");
   const liens = pied ? [...pied.querySelectorAll("a[href]")] : [];
   const ok = liens.some(l => { const u = new URL(l.getAttribute("href"), ww.location.href);
-    const enAr = p.startsWith("ar/");      // page arabe : l'accueil arabe (ar/#avis), texte « رأيك »
-    return u.hash === "#avis" && (u.origin + u.pathname).replace(/index\.html$/, "") === BASE + (enAr ? "ar/" : "") && (enAr ? /رأيك/ : /Votre avis/).test(l.textContent); });
+    const enAr = ww.document.documentElement.lang === "ar", enFr = p.startsWith("fr/");   // page française fr/ : accueil français (fr/#avis), texte « Votre avis »
+    return u.hash === "#avis" && (u.origin + u.pathname).replace(/index\.html$/, "") === BASE + (enFr ? "fr/" : "") && (enAr ? /رأيك/ : /Votre avis/).test(l.textContent); });
   if (!ok) sansLien.push(p);
   if (ww.fautes.length) fautes.push(p + " : " + ww.fautes[0]);
   ww.close();

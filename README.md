@@ -20,7 +20,7 @@ Adresse prévue : https://documents.clicvia.com/ (GitHub Pages, branche `main`).
 |---|---|
 | `assets/documents.js` | les documents : champs, modèles FR/AR, étapes, pièces, FAQ, sources |
 | `assets/modele.js` | moteur : formulaire, aperçu, montants en lettres, contrôle, PDF |
-| `tools/langues.mjs` | une adresse par langue : tire de chaque page bilingue la page française (racine) et la page arabe (`ar/`) |
+| `tools/langues.mjs` | une adresse par langue : tire de chaque page bilingue la page arabe (racine, langue principale), la page française (`fr/`) et les renvois `ar/` |
 | `assets/page.js` | langue, en-tête et pied communs, date `MAJ` (unique), protection anti-copie et anti-cadre |
 | `assets/style.css` | présentation (couleur bordeaux), impression A4 |
 | `assets/photos/` | photos des bandeaux (Wikimedia Commons, licences libres, `credits.json`) |
@@ -57,6 +57,6 @@ changer `CACHE_VERSION` dans `sw.js`. Test : `node tools/test_sw.mjs`.
 **Points encore « à vérifier »** : ils sont marqués sur chaque page concernée (jamais inventés).
 
 ## Nouveautés
-- 21/11/2026 : **une adresse par langue** : chaque page existe en français à son adresse et en arabe sous `ar/` (ex. `/ar/procuration/`), avec liens hreflang ; fabriquées par `node tools/generer.mjs` (`tools/langues.mjs`) — ne jamais modifier `ar/` à la main.
+- 21/11/2026 : **une adresse par langue, l'arabe à l'adresse principale** (décision d'Ahmed : les Tunisiens lisent l'arabe) : chaque page existe en arabe à son adresse (ex. `/procuration/`) et en français sous `fr/` (ex. `/fr/procuration/`), avec liens hreflang (x-default = arabe) ; les anciennes adresses `ar/…` renvoient vers l'adresse principale ; fabriquées par `node tools/generer.mjs` (`tools/langues.mjs`) — ne jamais modifier `fr/` ni `ar/` à la main.
 - 06/10/2026 : Pass Journée (7 DT, 24 heures) ; 1 document PDF gratuit par jour ; bouton « Avocats et notaires » vers l'annuaire.
 - 05/10/2026 : nouvelle icône ; PDF sans mention du site et mise en page de lettre ; recherches sans résultat notées pour ajouter les documents demandés ; robot de nuit privé.

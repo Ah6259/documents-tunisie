@@ -11,6 +11,7 @@ const RACINE = "/documents-tunisie/";                 // portée du service work
 const JS_COMMUN = "assets/page.js";           // fichier JS chargé par toutes les pages, qui enregistre sw.js
 const EXCLUS = [];            // pages qui ne doivent JAMAIS être mises en cache
 const IGNORER = ["node_modules", ".git", "tools", "captures", "preuves conditions d'utilisation",
+  "ar",   // ar/ = renvois des adresses arabes du matin du 21/11/2026 vers l'adresse principale (pages sans script, vérifiées par test_site.mjs)
   "404.html"];   // page 404 COMMUNE (outils communs/page-404, 17/11/2026) : page autonome, sans pied ni service worker ; vérifiée par test_site.mjs
 // --------------------------------------------------------------------------------
 

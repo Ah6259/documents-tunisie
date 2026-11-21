@@ -15,13 +15,14 @@ const SITE = "https://documents.clicvia.com/";
 (function () {
   const html = document.documentElement;
   const racine = html.dataset.racine || "";                      // dossier des FICHIERS (style, scripts, images)
-  // UNE ADRESSE PAR LANGUE (21/11/2026, tools/langues.mjs) : la page française est à son adresse, la page arabe dans ar/.
+  // UNE ADRESSE PAR LANGUE (21/11/2026, tools/langues.mjs) : l'ARABE est à l'adresse principale (décision d'Ahmed : « les Tunisiens
+  // lisent l'arabe »), le français dans fr/ ; les adresses ar/ du matin du 21/11 sont de simples renvois vers la racine.
   // Sur ces pages (data-langue-fixe), la langue est celle de l'ADRESSE : le bouton de langue ouvre l'autre adresse
   // (data-autre-langue, mêmes paramètres, même ancre) ; un ancien lien « ?lang=ar », ou un visiteur venu d'une page du site qui
   // avait choisi l'autre langue, est renvoyé vers la bonne adresse. Jamais pour un robot (Google, visiteur simulé), un lien
   // partagé ou dans un cadre. Seule la page vidéo (video/) garde une adresse et ?lang=.
   const FIXE = html.dataset.langueFixe === "fr" || html.dataset.langueFixe === "ar" ? html.dataset.langueFixe : "";
-  const site = html.dataset.site !== undefined ? html.dataset.site : racine;   // dossier des PAGES (ar/… sur une page arabe)
+  const site = html.dataset.site !== undefined ? html.dataset.site : racine;   // dossier des PAGES (fr/… sur une page française)
   window.racinePages = () => site;
   // ARABE par défaut (décision d'Ahmed : la plupart des documents se font en arabe en Tunisie) ; le choix du visiteur est gardé
   let langue = "ar", gardee = "";
@@ -39,7 +40,8 @@ const SITE = "https://documents.clicvia.com/";
   if (FIXE) {
     let robot = false;
     try { robot = navigator.webdriver === true || window.top !== window.self; } catch (e) { robot = true; }
-    const duSite = (document.referrer || "").indexOf(location.origin + "/") === 0;
+    // venu d'une page du site (mais pas d'un renvoi ar/… : ce lien demandait l'arabe)
+    const duSite = (document.referrer || "").indexOf(location.origin + "/") === 0 && (document.referrer || "").indexOf(location.origin + "/ar/") !== 0;
     const voulue = (demande === "ar" || demande === "fr") ? demande : (duSite ? gardee : "");
     langue = FIXE;
     if (voulue && voulue !== FIXE && !robot) aller(voulue);
@@ -226,8 +228,8 @@ window.VIDEO_SITE = {"base": BASE_SITE, "defaut": "ar", "nom": {"fr": "Documents
     var chemin = location.pathname, pro = false;
     for (var i = 0; i < (S.pro || []).length; i++) if (chemin.indexOf(S.base + S.pro[i]) === 0) pro = true;
     var l = langue(), q = l !== S.defaut ? "?lang=" + l : "";
-    // une adresse par langue (21/11/2026) : le site en arabe est sous ar/, en français à la racine (plus de ?lang= pour les pages)
-    return { page: ORIGINE + S.base + (pro ? "video-pro/" : "video/") + q, site: ORIGINE + S.base + (pro ? S.site_pro + q + (S.ancre_pro || "") : (l === "ar" ? "ar/" : "")),
+    // une adresse par langue (21/11/2026) : le site en arabe est à la racine, en français sous fr/ (plus de ?lang= pour les pages)
+    return { page: ORIGINE + S.base + (pro ? "video-pro/" : "video/") + q, site: ORIGINE + S.base + (pro ? S.site_pro + q + (S.ancre_pro || "") : (l === "fr" ? "fr/" : "")),
              titre: M(pro ? S.titre_pro : S.nom) };
   };
   window.partagerLien = function (titre, site) {
@@ -259,8 +261,8 @@ window.VIDEO_SITE = {"base": BASE_SITE, "defaut": "ar", "nom": {"fr": "Documents
     // lien discret « Vidéo de présentation » en bas de l'accueil et de À propos -> la page vidéo
     var p = location.pathname.replace(/index\.html$/, "");
     var bs = document.querySelector(".btn-video-site");          // page vidéo : « Ouvrir le site » dans la langue choisie
-    if (bs) bs.setAttribute("href", S.base + (l === "ar" ? "ar/" : ""));
-    if (p === S.base || p === S.base + "a-propos/" || p === S.base + "ar/" || p === S.base + "ar/a-propos/") {
+    if (bs) bs.setAttribute("href", S.base + (l === "fr" ? "fr/" : ""));
+    if (p === S.base || p === S.base + "a-propos/" || p === S.base + "fr/" || p === S.base + "fr/a-propos/") {
       var b = document.getElementById("lien-video");
       if (!b) {
         b = document.createElement("p"); b.id = "lien-video"; b.className = "lien-video"; b.appendChild(document.createElement("a"));
