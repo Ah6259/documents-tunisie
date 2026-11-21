@@ -51,6 +51,11 @@ const SABOTAGES = [
   ["Pass Journée : mention du Pass ajoutée dans le PDF", d => changer(d, "assets/modele.js", "${doc[L](lecteur(doc, val, L))}</article>", "${doc[L](lecteur(doc, val, L))}<p>Pass Journée</p></article>")],
   // lien vers l'annuaire Avocats et notaires (06/10/2026)
   ["bouton « Avocats et notaires » retiré de la rangée des catégories de l'accueil", d => changer(d, "tools/generer.mjs", "${LIEN_AVOCATS}</div>", "</div>")],
+  // une adresse par langue (21/11/2026, tools/langues.mjs)
+  ["une adresse par langue : lien hreflang vers la page arabe retiré", d => changer(d, "tools/langues.mjs", '<link rel="alternate" hreflang="ar" href="${URL_SITE}ar/${chemin}">\\n', "")],
+  ["une adresse par langue : la page arabe garde le texte français", d => changer(d, "tools/langues.mjs", 'let ar = retirerLangue(page, "fr");', "let ar = page;")],
+  ["une adresse par langue : le bouton de langue ne change plus d'adresse", d => changer(d, "assets/page.js", 'FIXE ? aller(FIXE === "ar" ? "fr" : "ar") : appliquer', "appliquer")],
+  ["une adresse par langue : pages arabes absentes du plan du site", d => changer(d, "tools/generer.mjs", 'pagesFr.flatMap(u => [u, "ar/" + u])', "pagesFr")],
   ["lien « Avocats et notaires » retiré de l'en-tête", d => changer(d, "assets/page.js", '<a class="entete-annuaire"', '<a class="x"')],
 ];
 let rates = 0;

@@ -14,19 +14,43 @@ const SITE = "https://documents.clicvia.com/";
 
 (function () {
   const html = document.documentElement;
-  const racine = html.dataset.racine || "";
+  const racine = html.dataset.racine || "";                      // dossier des FICHIERS (style, scripts, images)
+  // UNE ADRESSE PAR LANGUE (21/11/2026, tools/langues.mjs) : la page française est à son adresse, la page arabe dans ar/.
+  // Sur ces pages (data-langue-fixe), la langue est celle de l'ADRESSE : le bouton de langue ouvre l'autre adresse
+  // (data-autre-langue, mêmes paramètres, même ancre) ; un ancien lien « ?lang=ar », ou un visiteur venu d'une page du site qui
+  // avait choisi l'autre langue, est renvoyé vers la bonne adresse. Jamais pour un robot (Google, visiteur simulé), un lien
+  // partagé ou dans un cadre. Seule la page vidéo (video/) garde une adresse et ?lang=.
+  const FIXE = html.dataset.langueFixe === "fr" || html.dataset.langueFixe === "ar" ? html.dataset.langueFixe : "";
+  const site = html.dataset.site !== undefined ? html.dataset.site : racine;   // dossier des PAGES (ar/… sur une page arabe)
+  window.racinePages = () => site;
   // ARABE par défaut (décision d'Ahmed : la plupart des documents se font en arabe en Tunisie) ; le choix du visiteur est gardé
-  let langue = "ar";
-  try { langue = (/^(fr|ar)$/.test(localStorage.getItem("langue") || "") ? localStorage.getItem("langue") : "") || "ar"; } catch (e) {}
+  let langue = "ar", gardee = "";
+  try { gardee = /^(fr|ar)$/.test(localStorage.getItem("langue") || "") ? localStorage.getItem("langue") : ""; } catch (e) {}
+  langue = gardee || "ar";
   const demande = new URLSearchParams(location.search).get("lang");
   if (demande === "ar" || demande === "fr") langue = demande;
+  const aller = l => {                                            // autre adresse de la même page, mêmes paramètres, même ancre
+    try { localStorage.setItem("langue", l); } catch (e) {}
+    const q = new URLSearchParams(location.search); q.delete("lang");
+    const u = html.dataset.autreLangue + (q.toString() ? "?" + q : "") + location.hash;
+    if (window.allerVers) return window.allerVers(u);            // pour les tests
+    try { location.replace(u); } catch (e) {}
+  };
+  if (FIXE) {
+    let robot = false;
+    try { robot = navigator.webdriver === true || window.top !== window.self; } catch (e) { robot = true; }
+    const duSite = (document.referrer || "").indexOf(location.origin + "/") === 0;
+    const voulue = (demande === "ar" || demande === "fr") ? demande : (duSite ? gardee : "");
+    langue = FIXE;
+    if (voulue && voulue !== FIXE && !robot) aller(voulue);
+  }
   window.T = (fr, ar) => html.lang === "ar" ? ar : fr;
 
   function cadre() {
     const e = document.getElementById("entete");
     if (e) e.innerHTML = `
       <div class="wrap">
-        <a class="logo" href="${racine || "./"}">
+        <a class="logo" href="${site || "./"}">
           <img class="logo-mark" src="${racine}assets/logo.svg" alt="" width="34" height="34">
           <span class="logo-nom">${T("Documents Tunisie", "وثائق تونس")}
             <small>${T("1 PDF gratuit par jour · français et arabe", "PDF مجاني كل يوم · بالعربية والفرنسية")}</small></span>
@@ -40,12 +64,12 @@ const SITE = "https://documents.clicvia.com/";
       <div class="wrap">
         <div class="pied-logo"><img src="${racine}assets/logo.svg" alt="" width="24" height="24"> ${T("Documents Tunisie", "وثائق تونس")}</div>
         <nav>
-          <a href="${racine || "./"}">${T("Tous les documents", "كل الوثائق")}</a>
-          <a href="${racine}vente-voiture/">${T("Vendre une voiture", "بيع سيارة")}</a>
-          <a href="${racine}location-maison/">${T("Louer un logement", "كراء مسكن")}</a>
+          <a href="${site || "./"}">${T("Tous les documents", "كل الوثائق")}</a>
+          <a href="${site}vente-voiture/">${T("Vendre une voiture", "بيع سيارة")}</a>
+          <a href="${site}location-maison/">${T("Louer un logement", "كراء مسكن")}</a>
           <a href="https://avocats.clicvia.com/" rel="noopener noreferrer" target="_blank" data-annuaire="lien-site/avocats">${T("Avocats et notaires", "محامون وعدول")}</a>
-          <a href="${racine}a-propos/">${T("Comment fonctionne le site ?", "كيف يعمل الموقع؟")}</a>
-          <a href="${racine}#avis">${T("Votre avis", "رأيك")}</a>
+          <a href="${site}a-propos/">${T("Comment fonctionne le site ?", "كيف يعمل الموقع؟")}</a>
+          <a href="${site}#avis">${T("Votre avis", "رأيك")}</a>
         <a href="https://clicvia.com/" rel="noopener" target="_blank">${T("Tous nos services", "كل خدماتنا")}</a>
         <a href="${T("https://clicvia.com/confidentialite/", "https://clicvia.com/ar/confidentialite/")}" rel="noopener" target="_blank">${T("Confidentialité", "الخصوصية")}</a>
         <a href="${T("https://clicvia.com/conditions/", "https://clicvia.com/ar/conditions/")}" rel="noopener" target="_blank">${T("Conditions d'utilisation", "شروط الاستعمال")}</a>
@@ -56,7 +80,7 @@ const SITE = "https://documents.clicvia.com/";
         <p>${T("Les noms et marques cités appartiennent à leurs propriétaires.", "الأسماء والعلامات المذكورة على ملك أصحابها.")}</p>
         <p>© 2026 Documents Tunisie — ${T("tous droits réservés.", "جميع الحقوق محفوظة.")}</p>
       </div>`;
-    document.querySelectorAll(".langue").forEach(b => b.addEventListener("click", () => appliquer(html.lang === "ar" ? "fr" : "ar")));
+    document.querySelectorAll(".langue").forEach(b => b.addEventListener("click", () => FIXE ? aller(FIXE === "ar" ? "fr" : "ar") : appliquer(html.lang === "ar" ? "fr" : "ar")));
     // bouton Partager (demande d'Ahmed) : menu de partage du téléphone, sinon WhatsApp avec le lien de la page
     document.querySelectorAll(".partager").forEach(b => b.addEventListener("click", async () => {
       const url = location.href.split("#")[0].replace(/[?&]lang=(fr|ar)/, ""), titre = document.title.split(" | ")[0];
@@ -73,7 +97,7 @@ const SITE = "https://documents.clicvia.com/";
 
   function appliquer(l) {
     html.lang = l; html.dir = l === "ar" ? "rtl" : "ltr";
-    try { localStorage.setItem("langue", l); } catch (e) {}
+    if (!FIXE) { try { localStorage.setItem("langue", l); } catch (e) {} }   // page à langue fixe : on garde seulement un vrai choix (bouton)
     cadre();
     document.dispatchEvent(new Event("langue"));
   }
@@ -202,7 +226,8 @@ window.VIDEO_SITE = {"base": BASE_SITE, "defaut": "ar", "nom": {"fr": "Documents
     var chemin = location.pathname, pro = false;
     for (var i = 0; i < (S.pro || []).length; i++) if (chemin.indexOf(S.base + S.pro[i]) === 0) pro = true;
     var l = langue(), q = l !== S.defaut ? "?lang=" + l : "";
-    return { page: ORIGINE + S.base + (pro ? "video-pro/" : "video/") + q, site: ORIGINE + S.base + (pro ? S.site_pro : "") + q + (pro ? (S.ancre_pro || "") : ""),
+    // une adresse par langue (21/11/2026) : le site en arabe est sous ar/, en français à la racine (plus de ?lang= pour les pages)
+    return { page: ORIGINE + S.base + (pro ? "video-pro/" : "video/") + q, site: ORIGINE + S.base + (pro ? S.site_pro + q + (S.ancre_pro || "") : (l === "ar" ? "ar/" : "")),
              titre: M(pro ? S.titre_pro : S.nom) };
   };
   window.partagerLien = function (titre, site) {
@@ -233,7 +258,9 @@ window.VIDEO_SITE = {"base": BASE_SITE, "defaut": "ar", "nom": {"fr": "Documents
     }
     // lien discret « Vidéo de présentation » en bas de l'accueil et de À propos -> la page vidéo
     var p = location.pathname.replace(/index\.html$/, "");
-    if (p === S.base || p === S.base + "a-propos/") {
+    var bs = document.querySelector(".btn-video-site");          // page vidéo : « Ouvrir le site » dans la langue choisie
+    if (bs) bs.setAttribute("href", S.base + (l === "ar" ? "ar/" : ""));
+    if (p === S.base || p === S.base + "a-propos/" || p === S.base + "ar/" || p === S.base + "ar/a-propos/") {
       var b = document.getElementById("lien-video");
       if (!b) {
         b = document.createElement("p"); b.id = "lien-video"; b.className = "lien-video"; b.appendChild(document.createElement("a"));

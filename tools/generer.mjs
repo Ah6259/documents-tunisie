@@ -6,6 +6,7 @@ import { createHash } from "crypto";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createRequire } from "module";
+import { versions } from "./langues.mjs";
 
 export function pages(root) {
   const lire = f => readFileSync(join(root, f), "utf8");
@@ -232,7 +233,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
       : d.contrat
       ? `${d.titre.fr.replace(" : les étapes", "")} en Tunisie : les étapes (légalisation, enregistrement) – ${d.titre.ar.split(":")[0]}`
       : `Modèle gratuit ${elision(d.titre.fr)} en Tunisie (PDF, français et arabe) – ${d.titre.ar}`;
-    const desc = `${d.contrat || d.guide ? "Guide gratuit" : "Modèle gratuit"}. ${d.bref.fr.length > 150 ? d.bref.fr.slice(0, d.bref.fr.lastIndexOf(" ", 147)) + "…" : d.bref.fr} ${d.titre.ar}.`;
+    const desc = `${d.contrat || d.guide ? "Guide gratuit" : "Modèle gratuit"}. ${d.bref.fr.length > 150 ? d.bref.fr.slice(0, d.bref.fr.lastIndexOf(" ", 147)) + "…" : d.bref.fr}`;   // 21/11/2026 : plus de titre arabe ici (page française seule ; la page ar/ a sa description arabe)
     const faq = { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: d.faq.flatMap(q => ["fr", "ar"].map(L => ({
       "@type": "Question", name: q[L][0], acceptedAnswer: { "@type": "Answer", text: q[L][1] } }))) };
     const fil = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
@@ -430,6 +431,7 @@ ${pied}`;
     <li><b>Sources citées</b> : chaque page donne ses sources officielles et sa date de vérification ; ce qui n'est pas confirmé est marqué « à vérifier ».</li>
     <li><b>Annuaires gratuits</b> : liens vers nos annuaires (avocats et notaires, comptables, prestataires de mariage) et vers le calculateur de crédit, quand c'est utile.</li>
     <li><b>Français / arabe</b> : le bouton de langue en haut de chaque page change la page et le document.</li>
+    <li><b>Une adresse par langue</b> : chaque page existe en français à son adresse et en arabe sous « ar/ » (par exemple documents.clicvia.com/ar/procuration/) ; le bouton de langue ouvre l'autre adresse, et le document peut toujours être fait en français, en arabe ou dans les deux langues.</li>
     <li><b>Partager</b> : le bouton rond en haut de la page envoie le lien (menu du téléphone ou WhatsApp).</li>
     <li><b>Votre avis</b> : un formulaire en bas de l'accueil ; il n'est envoyé que si vous cliquez sur « Envoyer ».</li>
     <li><b>Documents demandés</b> : un mot cherché sans résultat est compté (sans les chiffres) ; les documents les plus demandés sont ajoutés au site.</li>
@@ -447,6 +449,7 @@ ${pied}`;
     <li><b>مصادر مذكورة</b>: كل صفحة تذكر مصادرها الرسمية وتاريخ التثبت؛ وما لم يتأكد يحمل عبارة «يُتثبت منه».</li>
     <li><b>أدلة مجانية</b>: روابط نحو أدلتنا (المحامون وعدول الإشهاد، المحاسبون، مزودو خدمات الأعراس) ونحو حاسبة القروض، عند الحاجة.</li>
     <li><b>العربية / الفرنسية</b>: زر اللغة أعلى كل صفحة يغيّر الصفحة والوثيقة.</li>
+    <li><b>عنوان لكل لغة</b>: لكل صفحة عنوان بالفرنسية وعنوان بالعربية تحت «⁨ar/⁩» (مثلا ⁨documents.clicvia.com/ar/procuration/⁩)؛ زر اللغة يفتح العنوان الآخر، ويمكن دائما صنع الوثيقة بالعربية أو بالفرنسية أو باللغتين.</li>
     <li><b>مشاركة</b>: الزر الدائري أعلى الصفحة يرسل الرابط (قائمة الهاتف أو واتساب).</li>
     <li><b>رأيك</b>: استمارة أسفل الصفحة الرئيسية، لا تُرسل إلا عند الضغط على «إرسال».</li>
     <li><b>الوثائق المطلوبة</b>: الكلمة التي لا نتيجة لها تُحسب (دون الأرقام)؛ ونضيف الوثائق الأكثر طلبًا.</li>
@@ -604,8 +607,17 @@ ${pied}`;
     out["pass/conditions/index.html"] = s;
   }
 
+  /* ---------------- une adresse par langue (21/11/2026, tools/langues.mjs) ----------------
+     chaque page bilingue devient <chemin> (français seul) + ar/<chemin> (arabe seul). Ne jamais modifier ar/ à la main. */
+  const miroir = new Set(Object.keys(out).filter(f => f.endsWith("index.html")).map(f => f.replace(/index\.html$/, "")));
+  for (const f of Object.keys(out).filter(f => f.endsWith("index.html"))) {
+    const { fr, ar } = versions(out[f], f, miroir);
+    out[f] = fr; out["ar/" + f] = ar;
+  }
+
   /* ---------------- plan du site ---------------- */
-  const urls = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), ...GUIDES.map(d => d.slug + "/"), "a-propos/", "pass/", "video/"];   // video/ : page vidéo (tools/page_video.mjs)
+  const pagesFr = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), ...GUIDES.map(d => d.slug + "/"), "a-propos/", "pass/"];
+  const urls = [...pagesFr.flatMap(u => [u, "ar/" + u]), "video/"];   // video/ : page vidéo (tools/page_video.mjs), une seule adresse (?lang=)
   const [j, m, a] = MAJ.split("/");
   out["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -622,5 +634,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   for (const [f, s] of Object.entries(p)) { mkdirSync(dirname(join(root, f)), { recursive: true }); writeFileSync(join(root, f), s); }
   // pages vidéo (video/) tirées de la page À propos : mêmes en-tête, pied, CSP et ?v= (tools/page_video.mjs)
   (await import("./page_video.mjs")).pagesVideo(root);
+  // la page vidéo est tirée de a-propos/ (français à langue fixe) : elle garde UNE adresse, sa langue vient de ?lang= (défaut : arabe)
+  { const f = join(root, "video/index.html"), h = readFileSync(f, "utf8").replace(/ data-langue-fixe="fr" data-autre-langue="[^"]*"/, "");
+    writeFileSync(f, h); }
   console.log(Object.keys(p).length + " fichiers écrits");
 }
