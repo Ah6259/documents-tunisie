@@ -234,3 +234,11 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   pas de renvoi pour un robot, un lien partagé ou une arrivée par ar/) ; 7 sabotages ; test_avis, test_video, test_sw et les scénarios du visiteur
   simulé adaptés (fr/ et racine). Ligne « Une adresse par langue » dans « Comment fonctionne le site ? » + `FONCTIONS`. `CACHE_VERSION` 7.
 - Même jour : contraste ≥ 4,5 en mode clair : étiquette « À vérifier » (`--or-texte`), boutons WhatsApp `.partage` / `.btn-wa` en #167A43.
+
+## 21-22/11/2026 — Google + IA (demande d'Ahmed : « que Google et les IA indexent nos sites »)
+- État Search Console (21/11) : documents.clicvia.com/ et /fr/ « URL is unknown to Google » (jamais découvertes : le passage de l'arabe à la
+  racine date du 21/11 ; plan du site à renvoyer dans Search Console par Ahmed).
+- Accueil : JSON-LD WebSite + éditeur `Organization` Clicvia (sameAs page Facebook) dans `tools/generer.mjs` (gardé par langues.mjs sur les deux langues).
+- `llms.txt` réécrit (arabe à la racine, français sous fr/, liste des modèles et démarches, SANS chiffre) ; l'ancien (outil commun du 13/10)
+  donnait les adresses d'AVANT le changement de langue.
+- « Comment fonctionne le site ? » (AR + FR) : « Publié par Clicvia… pour nous écrire : Votre avis » (carte « Méthode et sources officielles »).

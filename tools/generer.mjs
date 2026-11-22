@@ -365,7 +365,8 @@ ${pied}`;
 
   /* ---------------- accueil ---------------- */
   {
-    const faq = { "@context": "https://schema.org", "@type": "WebSite", name: "Documents Tunisie", url: URL, inLanguage: ["fr", "ar"] };
+    const faq = { "@context": "https://schema.org", "@type": "WebSite", name: "Documents Tunisie", url: URL, inLanguage: ["fr", "ar"],
+      publisher: { "@type": "Organization", name: "Clicvia", url: "https://clicvia.com/", sameAs: ["https://www.facebook.com/1327283777142447"] } };   // éditeur (21/11/2026, Google + IA)
     let s = tete({ titre: "Documents Tunisie — modèles à remplir, 1 PDF gratuit par jour (français et arabe) – نماذج وثائق تونسية",
       desc: "Modèles tunisiens à remplir sur téléphone : procuration, attestation de travail, demande de congé, autorisation de voyage… 1 PDF gratuit par jour en français ou en arabe, et les étapes officielles gratuites. نماذج بالعربية.",
       chemin: "", racine: "", scripts: ["son.js", "page.js", "avis.js"], jsonld: [faq] });
@@ -465,6 +466,8 @@ ${pied}`;
 <section class="carte">${h2("livre", "Méthode et sources officielles", "المنهجية والمصادر الرسمية")}
   <p data-l="fr">Les textes des modèles sont <b>écrits par nous</b> à partir des textes de loi et des sites officiels ; ils ne sont copiés d'aucun autre site. Chaque page cite ses sources et sa date de vérification (<span data-maj>${MAJ}</span>). <b>Mises à jour automatiques</b> : un robot vérifie chaque mois que ces sources répondent toujours. Ce site est <b>indépendant</b> : il n'a aucun lien avec l'administration.</p>
   <p data-l="ar">نصوص النماذج <b>من تحريرنا</b> انطلاقا من النصوص القانونية والمواقع الرسمية، ولم تُنقل من أي موقع آخر. كل صفحة تذكر مصادرها وتاريخ التثبت (<span data-maj>${MAJ}</span>). <b>تحيين آلي</b>: يتثبت روبوت كل شهر من أن هذه المصادر لا تزال متاحة. هذا الموقع <b>مستقل</b>: لا علاقة له بالإدارة.</p>
+  <p data-l="fr">Publié par <b>Clicvia</b> (<a href="https://clicvia.com/" rel="noopener">clicvia.com</a>), qui réunit des services pratiques et gratuits pour la Tunisie. Pour nous écrire : le formulaire « Votre avis » en bas de l'accueil.</p>
+  <p data-l="ar">ينشره ⁨Clicvia⁩ (<a href="https://clicvia.com/ar/" rel="noopener">clicvia.com</a>)، الذي يجمع خدمات عملية مجانية لتونس. لتكتب لنا: استمارة « رأيك » أسفل الصفحة الرئيسية.</p>
   ${sourcesHTML(Object.keys(SOURCES))}
 </section>
 <section class="carte averifier">${h2("alerte", "Limites", "الحدود")}
