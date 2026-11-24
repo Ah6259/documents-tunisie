@@ -121,6 +121,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
   la saisie reste) et sur `pass/` (prix, avantages, « Paiement » D17/IZI 24 321 390, WhatsApp vert, formulaire Formspree
   `mwlpakqj` avec ligne `pour_activer`, « J'ai un code ») + `pass/conditions/` (vendeur « l'éditeur du site », jamais de nom de société,
   pas de TTC, pas de renouvellement automatique, aucune période payée remboursée, INPDP sans numéro). Pages fabriquées par generer.mjs.
+- **E-mail OBLIGATOIRE (règle d'Ahmed, 24/11/2026)** : champ `#pass-email` (`type="email" name="email" required`) après le téléphone dans `#pass-form` (generer.mjs) ; `assets/pass.js` refuse un e-mail vide ou invalide et l'envoie à Formspree (champ `email` ; la ligne `pour_activer` est inchangée). Un e-mail automatique enverra bientôt le code et les étapes du paiement. E-mail ajouté aux textes « données personnelles » (formulaire, conditions art. 9, À propos). Tests dans test_site.mjs (AR + FR, jsdom : vide / invalide refusés, rien n'est envoyé).
 - Codes : dépôt **PRIVÉ** `Ah6259/documents-pass` (dossier `../pass (prive)`), bouton `pass` (paye / arret / liste) depuis
   l'application GitHub, nettoyage toutes les 6 h. Le site ne reçoit que `donnees/pass.json` : empreinte PBKDF2-SHA-256 salée (100 000 tours)
   + heure de fin UTC (24 h après « paye »). Clé de déploiement « robot-pass » (écriture sur ce dépôt seulement) dans le secret `CLE_SITE`.

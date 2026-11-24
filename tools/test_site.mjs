@@ -471,12 +471,25 @@ async function taperCode(w, code) {
   const soumettre = () => pf.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
   pf.elements.nom.value = "Client Factice"; pf.elements.telephone.value = "123"; soumettre();
   check("pass/ : téléphone faux refusé (8 chiffres), rien n'est envoyé", envois.length === 0 && /8 chiffres/.test(doc.getElementById("pass-status").textContent));
+  // -- 24/11/2026 (règle d'Ahmed) : e-mail OBLIGATOIRE (il y reçoit son code et les étapes du paiement), dans chaque langue
+  for (const f of ["pass/index.html", "fr/pass/index.html"]) {
+    const h = lire(f), champEmail = (h.match(/<input[^>]*name="email"[^>]*>/) || [""])[0];
+    const iTel = h.indexOf('id="pass-tel"'), iMail = h.indexOf('id="pass-email"'), iCond = h.indexOf('id="pass-conditions"');
+    check(`${f} : e-mail obligatoire (type="email" name="email" required, après le téléphone, avec son étiquette)`,
+      /type="email"/.test(champEmail) && /\brequired\b/.test(champEmail) && /id="pass-email"/.test(champEmail) && /maxlength="200"/.test(champEmail) && /autocomplete="email"/.test(champEmail)
+      && iTel > 0 && iMail > iTel && iCond > iMail && /<label[^>]*for="pass-email"/.test(h)
+      && (f.startsWith("fr/") ? /E-mail \(vous y recevez votre code et les étapes du paiement\)/ : /البريد الإلكتروني \(يصلك عليه رمزك وخطوات الدفع\)/).test(h));
+  }
   pf.elements.telephone.value = "+216 98 765 432"; soumettre();
+  check("pass/ : e-mail vide refusé (« Indiquez votre e-mail »), rien n'est envoyé", envois.length === 0 && /(Indiquez votre e-mail|اكتب بريدك الإلكتروني)/.test(doc.getElementById("pass-status").textContent));
+  pf.elements.email.value = "client@factice"; soumettre();
+  check("pass/ : e-mail invalide refusé, rien n'est envoyé", envois.length === 0 && /(E-mail invalide|البريد الإلكتروني غير صحيح)/.test(doc.getElementById("pass-status").textContent));
+  pf.elements.email.value = "client@factice.tn"; soumettre();
   check("pass/ : conditions non cochées refusées, rien n'est envoyé", envois.length === 0 && /conditions/.test(doc.getElementById("pass-status").textContent));
   pf.elements.conditions.checked = true; soumettre();
   await attendre(() => !doc.getElementById("apres-pass").hidden);
   check("pass/ : demande envoyée à Formspree (site, ligne « pour_activer » prête pour le bouton GitHub), écran de paiement affiché",
-    envois.length === 1 && envois[0].get("site") === "Documents Tunisie" && envois[0].get("telephone") === "98765432" && envois[0].get("pour_activer") === "action: paye ; nom: Client Factice ; telephone: 98765432"
+    envois.length === 1 && envois[0].get("site") === "Documents Tunisie" && envois[0].get("telephone") === "98765432" && envois[0].get("email") === "client@factice.tn" && envois[0].get("pour_activer") === "action: paye ; nom: Client Factice ; telephone: 98765432"
     && !doc.getElementById("apres-pass").hidden && pf.hidden);
   check("pass/ : message WhatsApp de la preuve complété avec le nom et le téléphone", decodeURIComponent(doc.getElementById("pass-preuve-apres").href).includes("Client Factice — 98765432"));
   const cond = (await pagePass("pass/conditions/index.html", { horloge: H })).document.body.textContent;
