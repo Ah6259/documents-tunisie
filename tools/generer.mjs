@@ -537,13 +537,13 @@ ${pied}`;
 <section class="carte">
   <h2>${bi("Comment ça marche ?", "كيف يعمل؟")}</h2>
   <ol class="etapes" data-l="fr">
-    <li>Remplissez le formulaire ci-dessous (nom et téléphone WhatsApp).</li>
+    <li>Remplissez le formulaire ci-dessous (nom, téléphone WhatsApp et e-mail).</li>
     <li>Payez 7 DT par D17 ou IZI au 24 321 390 et envoyez la preuve par WhatsApp.</li>
     <li>Vous recevez votre <b>code d'accès</b> par WhatsApp. Le Pass dure 24 heures à partir de cet envoi.</li>
     <li>Tapez ce code une seule fois dans « J'ai un code » (ou sur la page du document) : tous les documents se téléchargent.</li>
   </ol>
   <ol class="etapes" data-l="ar">
-    <li>املأ الاستمارة أسفله (الاسم وهاتف واتساب).</li>
+    <li>املأ الاستمارة أسفله (الاسم وهاتف واتساب والبريد الإلكتروني).</li>
     <li>ادفع ⁨7⁩ د عبر ⁨D17⁩ أو ⁨IZI⁩ على الرقم ⁨24 321 390⁩ وأرسل الإثبات عبر واتساب.</li>
     <li>يصلك <b>رمز الدخول</b> عبر واتساب. تدوم الباقة ⁨24⁩ ساعة ابتداءً من هذا الإرسال.</li>
     <li>اكتب الرمز مرة واحدة في «لدي رمز» (أو في صفحة الوثيقة): تُحمَّل كل الوثائق.</li>
