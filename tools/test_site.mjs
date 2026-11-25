@@ -295,7 +295,7 @@ const EMPREINTE = async (code, sel, tours) => {
 };
 check("vecteur commun avec le robot du dépôt privé (Python) : PBKDF2-SHA-256, 100 000 tours",
   await EMPREINTE("ABCD2345", "sel-de-test", 100000) === "517bf9a9ea3ad38b3adcbeef5808d4efe420fbf10a2b7bd9179640f4d1c7c2dd");
-async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois = [], retouche = null } = {}) {
+async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois = [], emails = [], echecs = 0, retouche = null } = {}) {
   if (stockage.langue !== "ar" && existsSync(join(root, "fr", chemin))) chemin = "fr/" + chemin;   // une adresse par langue (français sous fr/)
   const dossier = dirname(join(root, chemin));
   const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
@@ -310,7 +310,8 @@ async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois =
       Object.defineProperty(w, "crypto", { value: webcrypto, configurable: true });
       w.TextEncoder = TextEncoder;
       w.fetch = async (url, o) => {
-        if (/formspree/.test(url)) { envois.push(o.body); return { ok: true, status: 200, json: async () => ({ ok: true }) }; }
+        if (/api-email\.clicvia\.com/.test(url)) { emails.push([url, o]); return { ok: true, status: 200, json: async () => ({ ok: true }) }; }   // e-mail automatique (A.17) : à part
+        if (/formspree/.test(url)) { if (echecs > 0) { echecs--; throw new Error("réseau coupé"); } envois.push(o.body); return { ok: true, status: 200, json: async () => ({ ok: true }) }; }
         if (!liste) throw new Error("hors connexion");
         return { ok: true, status: 200, json: async () => JSON.parse(JSON.stringify(liste)) };
       };
@@ -332,6 +333,24 @@ async function taperCode(w, code) {
   await attendre(() => st.textContent && !/Vérification/.test(st.textContent));
   return st;
 }
+// E-mail automatique (A.17, 25/11/2026) : le JSON envoyé doit être ACCEPTÉ par le vrai verifier() du service (worker.js + sites.json du
+// dépôt PRIVÉ projets-ahmed, cherché à côté de ce dépôt). Absent (GitHub) : contrôle sauté, jamais en échec.
+const EMAIL_DIR = [join(ici, "../.."), join(ici, "../../projets-ahmed"), join(ici, "../../../projets-ahmed"), "/home/user/projets-ahmed"]
+  .map(d => join(d, "outils communs", "email-clients")).find(d => existsSync(join(d, "worker.js")) && existsSync(join(d, "sites.json")));
+let WORKER = null;
+if (EMAIL_DIR) {
+  const { mkdtempSync, writeFileSync } = await import("fs"), { tmpdir } = await import("os"), { pathToFileURL } = await import("url");
+  const w = readFileSync(join(EMAIL_DIR, "worker.js"), "utf8"), sj = readFileSync(join(EMAIL_DIR, "sites.json"), "utf8").trim();
+  if (w.includes("/*SITES_ICI*/ {}")) {
+    const f = join(mkdtempSync(join(tmpdir(), "email-")), "worker.mjs"); writeFileSync(f, w.replace("/*SITES_ICI*/ {}", sj));
+    WORKER = await import(pathToFileURL(f).href);
+  }
+}
+const accepteParWorker = (j, L) => {
+  if (!WORKER) { if (!muet) console.log("     (vrai verifier() du service d'e-mail introuvable : contrôle sauté)"); return true; }
+  const v = WORKER.verifier(j, "https://documents.clicvia.com");
+  return !!v.d && v.d.cle === "documents" && v.d.langue === L && v.d.code === j.code && v.d.prix === 7 && v.d.lien === (L === "ar" ? "https://documents.clicvia.com/pass/" : "https://documents.clicvia.com/fr/pass/");
+};
 // 25/11/2026 (parcours commun des Pass, règle § 70) : code de commande créé AU FORMULAIRE, « Dernière étape », mémoire « pass-commande »
 const PHRASES_CODE = {
   fr: ["C'est votre numéro de commande : écrivez-le dans le motif du paiement, il nous sert à reconnaître votre paiement.", "Vous le recevez aussi par e-mail.",
@@ -344,11 +363,11 @@ async function passCommande(w, code, L, nom) {
   check(`${L} « Dernière étape » : le code de commande en GROS (dir="ltr"), avec la phrase « numéro de commande… motif du paiement » juste à côté`,
     !ap.hidden && grand && grand.textContent === code && grand.getAttribute("dir") === "ltr" && txt.includes(sansIsol(PHRASES_CODE[L][0]))
     && grand.parentElement.contains(ap.querySelector(".code-explication")));
-  // e-mail automatique pas encore en service : « Vous le recevez aussi par e-mail » ne doit PAS être visible aujourd'hui
+  // e-mail automatique EN SERVICE (25/11/2026) : « Vous le recevez aussi par e-mail » est visible à côté du code
   const emails = [...doc.querySelectorAll(".email-auto")], nbPhrase = (doc.body.innerHTML.match(new RegExp(PHRASES_CODE[L][1].replace(/[.]/g, "\\."), "g")) || []).length;
-  check(`${L} « Vous le recevez aussi par e-mail » : CACHÉE tant que l'e-mail automatique n'est pas en service (EMAIL_AUTO = false)`,
-    emails.length >= 2 && emails.every(x => x.hidden) && nbPhrase === emails.length && emails.every(x => sansIsol(x.textContent).includes(sansIsol(PHRASES_CODE[L][1])))
-    && /const EMAIL_AUTO = false;/.test(lire("assets/pass.js")));
+  check(`${L} « Vous le recevez aussi par e-mail » : AFFICHÉE (e-mail automatique en service, EMAIL_AUTO = true)`,
+    emails.length >= 2 && emails.every(x => !x.hidden) && nbPhrase === emails.length && emails.every(x => sansIsol(x.textContent).includes(sansIsol(PHRASES_CODE[L][1])))
+    && /const EMAIL_AUTO = true;/.test(lire("assets/pass.js")));
   const paie = ap.querySelector(".paie"), motif = ap.querySelector(".motif-code");
   check(`${L} « Dernière étape » : paiement en 3 étapes (D17 / IZI, écrans d'exemple, ${L === "ar" ? "24321390 sans espaces" : "24 321 390"}) et MOTIF = le code`,
     paie && paie.querySelectorAll("ol.paie-etapes > li").length === 3 && paie.querySelector('img[alt="D17"]') && paie.querySelector('img[alt="IZI"]') && paie.querySelector(".aide-transfert img")
@@ -486,8 +505,8 @@ async function passCommande(w, code, L, nom) {
   }
 
   // page pass/ : prix, paiement, WhatsApp, formulaire, conditions
-  const envois = [];
-  w = await pagePass("pass/index.html", { horloge: H, envois }); doc = w.document;
+  const envois = [], emails = [];
+  w = await pagePass("pass/index.html", { horloge: H, envois, emails }); doc = w.document;
   const t = doc.body.textContent;
   check("pass/ : prix 7 DT, tous les documents pendant 24 heures, valable 24 heures à partir de l'ouverture du code", /7 DT/.test(doc.querySelector(".prix-pass").textContent) && /tous les documents pendant 24 heures/.test(t) && /Valable 24 heures à partir de l'ouverture de votre code/.test(t));
   check("pass/ : bouton « Paiement » (details) avec D17 et IZI (liens vers les applications officielles, Google Play + iPhone) au 24 321 390, mode d'emploi, plus de Wafacash, motif = le code de commande", doc.querySelector("details#paiement > summary")?.textContent.includes("Paiement")
@@ -513,22 +532,31 @@ async function passCommande(w, code, L, nom) {
       && (f.startsWith("fr/") ? /E-mail<\/span>/ : /البريد الإلكتروني<\/span>/).test((h.match(/<label[^>]*for="pass-email"[\s\S]*?<\/label>/) || [""])[0]));
   }
   pf.elements.telephone.value = "+216 98 765 432"; soumettre();
-  check("pass/ : e-mail vide refusé (« Indiquez votre e-mail. », sans promesse d'envoi par e-mail tant que EMAIL_AUTO = false), rien n'est envoyé",
-    envois.length === 0 && /^(Indiquez votre e-mail\.|اكتب بريدك الإلكتروني\.)$/.test(doc.getElementById("pass-status").textContent.trim()));
-  // promesse « vous y recevez votre code et les étapes du paiement » : INVISIBLE aujourd'hui (EMAIL_AUTO = false), FR + AR
+  check("pass/ : e-mail vide refusé (« Indiquez votre e-mail : vous y recevez votre code et les étapes du paiement. », e-mail automatique en service), rien n'est envoyé (ni Formspree ni le service d'e-mail)",
+    envois.length === 0 && emails.length === 0 && doc.getElementById("pass-status").textContent.trim() === "Indiquez votre e-mail : vous y recevez votre code et les étapes du paiement.");
+  // promesse « vous y recevez votre code et les étapes du paiement » : AFFICHÉE (EMAIL_AUTO = true), FR + AR
   for (const L of ["fr", "ar"]) {
     const wp = L === "fr" ? w : await pagePass("pass/index.html", { horloge: H, stockage: { langue: "ar" } });
     const lab = wp.document.querySelector('label[for="pass-email"]'), pr = lab && lab.querySelector(".email-promesse");
-    const visible = [...lab.childNodes].filter(n => !(n.nodeType === 1 && n.hidden)).map(n => n.textContent).join("");
-    check(`${L} étiquette de l'e-mail : « ${L === "fr" ? "E-mail" : "البريد الإلكتروني"} » seulement, promesse « vous y recevez votre code… » cachée (EMAIL_AUTO = false)`,
-      pr && pr.hidden && !/recevez|يصلك/.test(visible) && /(recevez votre code|يصلك عليه رمزك)/.test(pr.textContent));
+    check(`${L} étiquette de l'e-mail : « ${L === "fr" ? "E-mail (vous y recevez votre code et les étapes du paiement)" : "البريد الإلكتروني (يصلك عليه رمزك وخطوات الدفع)"} » : promesse AFFICHÉE (EMAIL_AUTO = true)`,
+      pr && !pr.hidden && (L === "fr" ? /vous y recevez votre code et les étapes du paiement/ : /يصلك عليه رمزك وخطوات الدفع/).test(pr.textContent));
+    if (L === "ar") { const fa = wp.document.getElementById("pass-form"), emA = [];
+      fa.elements.nom.value = "عميل"; fa.elements.telephone.value = "98765432"; fa.dispatchEvent(new wp.Event("submit", { bubbles: true, cancelable: true }));
+      check("ar : e-mail vide refusé avec la version longue « اكتب بريدك الإلكتروني: يصلك عليه رمزك وخطوات الدفع. »",
+        wp.document.getElementById("pass-status").textContent.trim() === "اكتب بريدك الإلكتروني: يصلك عليه رمزك وخطوات الدفع."); }
   }
-  { const envE = [], copie = (src, js) => /pass\.js$/.test(src) ? js.replace("const EMAIL_AUTO = false;", "const EMAIL_AUTO = true;") : js;
-    const we = await pagePass("pass/index.html", { horloge: H, envois: envE, retouche: copie }), fe = we.document.getElementById("pass-form");
+  { // retour en arrière en un mot : EMAIL_AUTO = false -> plus aucune promesse, erreur courte, AUCUNE demande au service d'e-mail
+    const envE = [], emE = [], copie = (src, js) => /pass\.js$/.test(src) ? js.replace("const EMAIL_AUTO = true;", "const EMAIL_AUTO = false;") : js;
+    const we = await pagePass("pass/index.html", { horloge: H, envois: envE, emails: emE, retouche: copie }), fe = we.document.getElementById("pass-form");
     fe.elements.nom.value = "Client Factice"; fe.elements.telephone.value = "98765432";
     fe.dispatchEvent(new we.Event("submit", { bubbles: true, cancelable: true }));
-    check("EMAIL_AUTO = true : l'étiquette et l'erreur de l'e-mail disent « vous y recevez votre code et les étapes du paiement »",
-      !we.document.querySelector('label[for="pass-email"] .email-promesse').hidden && /vous y recevez votre code et les étapes du paiement/.test(we.document.getElementById("pass-status").textContent) && envE.length === 0); }
+    const court = we.document.getElementById("pass-status").textContent.trim() === "Indiquez votre e-mail.";
+    fe.elements.email.value = "client@factice.tn"; fe.elements.conditions.checked = true;
+    fe.dispatchEvent(new we.Event("submit", { bubbles: true, cancelable: true }));
+    await attendre(() => !we.document.getElementById("apres-pass").hidden);
+    check("EMAIL_AUTO = false (retour en arrière) : promesses cachées, erreur courte « Indiquez votre e-mail. », Formspree reçoit la demande mais RIEN ne part au service d'e-mail",
+      we.document.querySelector('label[for="pass-email"] .email-promesse').hidden && court && envE.length === 1 && emE.length === 0
+      && [...we.document.querySelectorAll(".email-auto")].every(x => x.hidden)); }
   pf.elements.email.value = "client@factice"; soumettre();
   check("pass/ : e-mail invalide refusé, rien n'est envoyé", envois.length === 0 && /(E-mail invalide|البريد الإلكتروني غير صحيح)/.test(doc.getElementById("pass-status").textContent));
   pf.elements.email.value = "client@factice.tn"; soumettre();
@@ -541,6 +569,29 @@ async function passCommande(w, code, L, nom) {
     && CODE_JOLI.test(codeEnvoye) && envois[0].get("pour_activer") === `action: paye ; nom: Client Factice ; telephone: 98765432 ; code: ${codeEnvoye} ; email: client@factice.tn`
     && !doc.getElementById("apres-pass").hidden && pf.hidden);
   await passCommande(w, codeEnvoye, "fr", "Client Factice");
+  { const e = emails[0], j = e ? JSON.parse(e[1].body) : {};
+    check("e-mail automatique (FR) : UNE demande à https://api-email.clicvia.com/inscription (POST JSON, keepalive) avec site documents, langue fr, nom, e-mail, CE code de commande et la formule exacte du formulaire",
+      emails.length === 1 && e[0] === "https://api-email.clicvia.com/inscription" && e[1].method === "POST" && /application\/json/.test(e[1].headers["Content-Type"]) && e[1].keepalive === true
+      && Object.keys(j).sort().join() === "code,email,formule,langue,nom,site"
+      && j.site === "documents" && j.langue === "fr" && j.nom === "Client Factice" && j.email === "client@factice.tn" && j.code === codeEnvoye && j.formule === "Pass Journée - 7 DT - 24 heures");
+    check("e-mail automatique (FR) : le JSON envoyé est ACCEPTÉ par le vrai verifier() du service (sites.json « documents » : origine, code XXXX-XXXX, formule, prix 7, lien fr/pass/)", accepteParWorker(j, "fr")); }
+  check("CSP des pages du Pass (AR + FR) : connect-src autorise https://api-email.clicvia.com (sinon le navigateur bloque l'e-mail automatique)",
+    ["pass/index.html", "fr/pass/index.html"].every(f => /connect-src[^;]*https:\/\/api-email\.clicvia\.com/.test(lire(f))));
+  { // Formspree en panne au 1er essai : le client réessaie -> même code, et UN SEUL e-mail (jamais deux pour la même commande)
+    const envR = [], emR = [], wr = await pagePass("pass/index.html", { horloge: H, envois: envR, emails: emR, echecs: 1 }), fr_ = wr.document.getElementById("pass-form");
+    fr_.elements.nom.value = "Client Factice"; fr_.elements.telephone.value = "98765432"; fr_.elements.email.value = "client@factice.tn"; fr_.elements.conditions.checked = true;
+    fr_.dispatchEvent(new wr.Event("submit", { bubbles: true, cancelable: true }));
+    await attendre(() => /Échec de l'envoi/.test(wr.document.getElementById("pass-status").textContent) && !fr_.querySelector("button[type=submit]").disabled);
+    fr_.dispatchEvent(new wr.Event("submit", { bubbles: true, cancelable: true }));
+    await attendre(() => !wr.document.getElementById("apres-pass").hidden);
+    check("Formspree en panne puis nouvel essai : même code de commande, UNE seule demande d'e-mail",
+      envR.length === 1 && emR.length === 1 && JSON.parse(emR[0][1].body).code === envR[0].get("code")); }
+  { // champ piège anti-robot rempli : RIEN n'est envoyé, ni à Formspree ni au service d'e-mail
+    const envP = [], emP = [], wq = await pagePass("pass/index.html", { horloge: H, envois: envP, emails: emP }), fq = wq.document.getElementById("pass-form");
+    fq.elements.nom.value = "Robot"; fq.elements.telephone.value = "98765432"; fq.elements.email.value = "robot@factice.tn"; fq.elements.conditions.checked = true; fq.elements._gotcha.value = "x";
+    fq.dispatchEvent(new wq.Event("submit", { bubbles: true, cancelable: true }));
+    await new Promise(r => setTimeout(r, 60));
+    check("piège anti-robot rempli : aucune demande à Formspree ni au service d'e-mail", envP.length === 0 && emP.length === 0); }
   {
     // retour sur la page : bandeau « Votre commande en attente » + paiement + WhatsApp ; le site essaie le code tout seul
     const brut = codeEnvoye.replace("-", ""), memo = stock(w);
@@ -581,24 +632,29 @@ async function passCommande(w, code, L, nom) {
     check("codes de commande : crypto.getRandomValues, 8 caractères de l'alphabet des codes d'accès (sans O/0/I/1), 300 codes tous différents",
       lot.every(c => /^[A-HJ-NP-Z2-9]{8}$/.test(c)) && new Set(lot).size === 300 && /crypto\.getRandomValues/.test(lire("assets/pass.js")));
     // page ARABE (adresse principale) : même parcours
-    const envoisAr = [];
-    const wa = await pagePass("pass/index.html", { horloge: H, envois: envoisAr, stockage: { langue: "ar" } }), pa = wa.document.getElementById("pass-form");
+    const envoisAr = [], emailsAr = [];
+    const wa = await pagePass("pass/index.html", { horloge: H, envois: envoisAr, emails: emailsAr, stockage: { langue: "ar" } }), pa = wa.document.getElementById("pass-form");
     pa.elements.nom.value = "عميل تجريبي"; pa.elements.telephone.value = "98765432"; pa.elements.email.value = "client@factice.tn"; pa.elements.conditions.checked = true;
     pa.dispatchEvent(new wa.Event("submit", { bubbles: true, cancelable: true }));
     await attendre(() => !wa.document.getElementById("apres-pass").hidden);
     const codeAr = envoisAr[0] ? envoisAr[0].get("code") : "";
     check("page arabe : formulaire envoyé avec le code de commande et la ligne « pour_activer »", CODE_JOLI.test(codeAr) && envoisAr[0].get("pour_activer").endsWith(`; code: ${codeAr} ; email: client@factice.tn`));
     await passCommande(wa, codeAr, "ar", "عميل تجريبي");
-    // le jour où l'e-mail automatique est en service (EMAIL_AUTO = true dans assets/pass.js) : la phrase APPARAÎT (AR + FR)
+    { const j = emailsAr[0] ? JSON.parse(emailsAr[0][1].body) : {};
+      check("e-mail automatique (AR) : UNE demande au service en langue ar, avec CE code, le nom arabe, l'e-mail et la formule exacte",
+        emailsAr.length === 1 && emailsAr[0][0] === "https://api-email.clicvia.com/inscription" && j.site === "documents" && j.langue === "ar" && j.code === codeAr
+        && j.nom === "عميل تجريبي" && j.email === "client@factice.tn" && j.formule === "Pass Journée - 7 DT - 24 heures");
+      check("e-mail automatique (AR) : le JSON envoyé est ACCEPTÉ par le vrai verifier() du service (lien de la page arabe pass/)", accepteParWorker(j, "ar")); }
+    // retour en arrière (EMAIL_AUTO = false dans assets/pass.js) : la phrase DISPARAÎT et rien ne part au service (AR + FR)
     for (const L of ["ar", "fr"]) {
-      const envoisE = [], copie = (src, js) => /pass\.js$/.test(src) ? js.replace("const EMAIL_AUTO = false;", "const EMAIL_AUTO = true;") : js;
-      const we = await pagePass("pass/index.html", { horloge: H, envois: envoisE, stockage: { langue: L }, retouche: copie }), pe = we.document.getElementById("pass-form");
+      const envoisE = [], emE = [], copie = (src, js) => /pass\.js$/.test(src) ? js.replace("const EMAIL_AUTO = true;", "const EMAIL_AUTO = false;") : js;
+      const we = await pagePass("pass/index.html", { horloge: H, envois: envoisE, emails: emE, stockage: { langue: L }, retouche: copie }), pe = we.document.getElementById("pass-form");
       pe.elements.nom.value = "Client Factice"; pe.elements.telephone.value = "98765432"; pe.elements.email.value = "client@factice.tn"; pe.elements.conditions.checked = true;
       pe.dispatchEvent(new we.Event("submit", { bubbles: true, cancelable: true }));
       await attendre(() => !we.document.getElementById("apres-pass").hidden);
       const ph = we.document.querySelector("#apres-pass .email-auto");
-      check(`${L} EMAIL_AUTO = true (e-mail automatique en service) : « ${PHRASES_CODE[L][1]} » devient VISIBLE à côté du code`,
-        ph && !ph.hidden && sansIsol(ph.textContent).includes(sansIsol(PHRASES_CODE[L][1])));
+      check(`${L} EMAIL_AUTO = false (retour en arrière) : « ${PHRASES_CODE[L][1]} » reste CACHÉE et aucune demande au service d'e-mail`,
+        ph && ph.hidden && envoisE.length === 1 && emE.length === 0);
     }
   }
   // plus jamais « motif : nom et téléphone », plus jamais « vous recevrez votre code par WhatsApp »
@@ -606,10 +662,10 @@ async function passCommande(w, code, L, nom) {
     check("plus aucun « motif : nom et téléphone » ni « code reçu par WhatsApp » (pages du Pass, conditions, « Comment fonctionne le site ? », FAQ, script)",
       !/motif[^.<]{0,60}(nom et (votre )?t[ée]l[ée]phone|nom et le t[ée]l[ée]phone)|اسمك ورقم هاتفك|اسم المشتري ورقم هاتفه|recevrez votre code par WhatsApp|سيصلك رمزك عبر واتساب/i.test(tous_)
       && TOUS.every(d => !/motif[^.]{0,60}nom et (votre )?téléphone/i.test(JSON.stringify(d.faq || []))));
-    check("pages du Pass (AR + FR) : la phrase « aussi par e-mail » est cachée dès la page (attribut hidden), avant tout script",
+    check("pages du Pass (AR + FR) : la phrase « aussi par e-mail » est cachée dans la page (attribut hidden) et montrée par le script seulement (jamais promise sans lui)",
       ["pass/index.html", "fr/pass/index.html"].every(f => { const h = lire(f), n = (h.match(/class="email-auto"/g) || []).length;
         return n >= 2 && n === (h.match(/<span class="email-auto" hidden>/g) || []).length; }));
-    check("pages du Pass (AR + FR) : la promesse « vous y recevez votre code… » de l'étiquette de l'e-mail est cachée dès la page (attribut hidden), avant tout script",
+    check("pages du Pass (AR + FR) : la promesse « vous y recevez votre code… » de l'étiquette est cachée dans la page (attribut hidden) et montrée par le script seulement",
       ["pass/index.html", "fr/pass/index.html"].every(f => { const h = lire(f), n = (h.match(/class="email-promesse"/g) || []).length;
         return n === 1 && /<span class="email-promesse" hidden>/.test(h); }));
     check("« Comment fonctionne le site ? » (AR) : code de commande au formulaire, motif du paiement",
@@ -904,10 +960,13 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     ["1 PDF gratuit par jour et Pass Journée (prix, code)", existsSync(join(root, "pass/index.html")), /1 document PDF est gratuit chaque jour[\s\S]*Pass Journée \(payant, 7 DT\)[\s\S]*code/],
     ["rappel de fin du Pass", /afficherRappel/.test(js), /Peu avant la fin du Pass, un bandeau vous prévient/],
     ["code de commande créé au formulaire (motif du paiement) et commande en attente", /pass-commande/.test(js), /le formulaire vous donne tout de suite un code de commande ?, à écrire dans le motif du paiement[\s\S]{0,200}le site l'active tout seul/],
+    ["e-mail de confirmation automatique du Pass (A.17, 25/11/2026)", /const EMAIL_AUTO = true;/.test(js), /E-mail de confirmation : dans la minute qui suit[\s\S]*Resend\) ; rien n'est gardé/],
     ["vie privée", true, /Ce que vous écrivez dans les formulaires reste dans votre téléphone/],
     ["mises à jour automatiques", existsSync(join(root, "tools/surveiller_sources.mjs")), /Mises à jour automatiques : un robot vérifie chaque mois/],
     ["site indépendant", true, /Ce site est indépendant/]];
   const manque = FONCTIONS.filter(([, sur, re]) => sur && !re.test(ap)).map(([n]) => n);
+  check("« Comment fonctionne le site ? » (AR) : بريد التأكيد (e-mail de confirmation) + خدمة الإرسال لدينا (Resend)",
+    /بريد التأكيد: خلال دقيقة من إرسال الاستمارة/.test(sansIsol(lire("a-propos/index.html")).replace(/<[^>]+>/g, "")) && /بريد التأكيد يُرسل عبر خدمة الإرسال لدينا \(Resend\)؛ ولا يُحفظ شيء\./.test(sansIsol(lire("a-propos/index.html")).replace(/<[^>]+>/g, "")));
   check(`page « Comment fonctionne le site ? » à jour : titre et chaque fonction du site expliquée (${FONCTIONS.length} fonctions)` + (manque.length ? " — manque : " + manque.join(", ") : ""),
     manque.length === 0 && /<h1>[^]*?Comment fonctionne le site \?[^]*?<\/h1>/.test(brut) && /<h1>[^]*?كيف يعمل الموقع؟[^]*?<\/h1>/.test(lire("a-propos/index.html"))
     && /عنوان لكل لغة[\s\S]{0,80}هو العنوان الرئيسي[\s\S]{0,120}تحت «⁨fr\/⁩»/.test(lire("a-propos/index.html"))

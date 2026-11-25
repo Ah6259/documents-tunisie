@@ -181,6 +181,7 @@ function brancherFormulairePass() {
   const champ = n => form.querySelector('[name="' + n + '"]');
   const val = n => { const x = champ(n); return x ? String(x.value || "").trim() : ""; };
   let codeEnCours = "";                       // même code si l'envoi échoue et que le client réessaie
+  let emailPour = "";                         // code de commande déjà envoyé au service d'e-mail
   form.addEventListener("submit", e => {
     e.preventDefault();
     if (bouton.disabled) return;
@@ -214,6 +215,13 @@ function brancherFormulairePass() {
     donnees.set("code", joliCode(commande.code));
     // ligne prête à coller dans le bouton GitHub « pass » (dépôt privé documents-pass, case « ligne »)
     donnees.set("pour_activer", "action: paye ; nom: " + val("nom") + " ; telephone: " + tel + " ; code: " + joliCode(commande.code) + " ; email: " + email);
+    // e-mail automatique au client (code, prix, paiement, WhatsApp, lien du Pass ; langue de la page ; Ahmed en copie) :
+    // UNE fois par code de commande (si Formspree échoue et que le client réessaie, pas de 2e e-mail)
+    if (emailPour !== commande.code) {
+      emailPour = commande.code;
+      envoyerEmail({ site: "documents", langue: document.documentElement.lang === "ar" ? "ar" : "fr", nom: val("nom"), email: email,
+        code: joliCode(commande.code), formule: commande.formule });
+    }
     bouton.disabled = true;
     dire("", "Envoi…", "جارٍ الإرسال…");
     fetch(form.getAttribute("action"), { method: "POST", body: donnees, headers: { "Accept": "application/json" } })
@@ -230,9 +238,20 @@ function brancherFormulairePass() {
 
 /* ---- code de commande (créé au formulaire) et commande en attente gardée sur le téléphone ---- */
 const FORMULE = "Pass Journée - 7 DT - 24 heures";
-// e-mail automatique (code + étapes du paiement) : PAS ENCORE en service. Tant que c'est false, la phrase
-// « Vous le recevez aussi par e-mail » reste cachée (elle serait fausse). Passer à true le jour où l'e-mail part vraiment.
-const EMAIL_AUTO = false;
+// E-mail automatique au client (A.17) : EN SERVICE depuis le 25/11/2026 (service commun « email-clients » : Worker Cloudflare
+// + Resend, copie à Ahmed ; clé « documents » de sites.json, dépôt privé projets-ahmed). EMAIL_AUTO = true : phrases
+// « vous y recevez votre code… » / « Vous le recevez aussi par e-mail » affichées et demande envoyée au service ;
+// false = tout caché, rien envoyé (retour en arrière en un mot si le service tombe).
+const EMAIL_AUTO = true;
+const EMAIL_API = "https://api-email.clicvia.com/inscription";
+// envoi au service d'e-mail : sans attendre la réponse, jamais bloquant (Formspree et le code restent la voie principale)
+function envoyerEmail(d) {
+  if (!EMAIL_AUTO || !window.fetch) return;
+  try {
+    fetch(EMAIL_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(d), keepalive: true })
+      .catch(function () {});
+  } catch (e) {}
+}
 function joliCode(c) { return c.slice(0, 4) + "-" + c.slice(4); }
 function nouveauCodeCommande() {
   const t = new Uint8Array(PASS.longueur);

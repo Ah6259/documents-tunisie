@@ -68,7 +68,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 
 ## Tests (obligatoires avant toute publication)
 - `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 1290 vérifications) → **TOUT PASSE**.
-- `node tools/sabotage.mjs` : 37 sabotages, tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- `node tools/sabotage.mjs` : sabotages (76 au 25/11/2026), tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
 - **Pas de faux boutons** (Ahmed, 06/10/2026) : badges « Gratuit / Données / Français et arabe » de l'accueil supprimés (cartes avec icône qui ne menaient nulle part) ; « Gratuit, sans inscription, rien n'est envoyé » est dans l'intro. Test sur toutes les pages + sabotage : aucune carte avec icône sans lien.
 - CSS : `[hidden]{display:none!important}` obligatoire (sinon un `display:flex/grid` rend visibles les éléments cachés par le JS : recherche, « aucun résultat ») ; test + sabotage (06/10/2026).
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
@@ -275,3 +275,17 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   comportement) ou case « ligne » (toute la ligne `pour_activer` collée) ; case « email » facultative.
 - Tests : bloc « parcours commun des Pass » de test_site.mjs (FR + AR) ; 23 sabotages « Pass : … » ajoutés dans sabotage.mjs (67 en tout) ; ligne FONCTIONS
   « code de commande créé au formulaire ».
+
+## 25/11/2026 — E-mail de confirmation automatique EN SERVICE (A.17, méthode commune `outils communs/email-clients/BRANCHER-UN-SITE.md` de projets-ahmed)
+- `assets/pass.js` : `EMAIL_AUTO = true` ; `envoyerEmail()` envoie au service commun `https://api-email.clicvia.com/inscription` (Worker Cloudflare
+  + Resend, copie à Ahmed) le JSON `{ site: "documents", langue: "ar"|"fr", nom, email, code: "ABCD-EF23", formule: "Pass Journée - 7 DT - 24 heures" }`
+  (champs attendus par `verifier()` de worker.js / clé `documents` de sites.json). Appelé UNE fois par code de commande, juste avant Formspree,
+  après toutes les vérifications, jamais si le piège `_gotcha` est rempli ; sans attendre la réponse, jamais bloquant (Formspree reste la voie principale).
+  Retour en arrière en un mot : `EMAIL_AUTO = false` (phrases cachées, rien envoyé ; testé).
+- Phrases « (vous y recevez votre code et les étapes du paiement) », « Vous le recevez aussi par e-mail » et erreur longue affichées par le script
+  (toujours `hidden` dans la page : jamais promises sans lui). CSP `connect-src` + `https://api-email.clicvia.com` (`EMAIL_API` de generer.mjs).
+- « Comment fonctionne le site ? » (AR + FR) : « E-mail de confirmation : dans la minute qui suit… » + « Vos données » (Resend, rien n'est gardé) ;
+  conditions art. 9 aussi. Ligne FONCTIONS.
+- Tests (test_site.mjs, FR + AR) : promesses visibles, e-mail vide refusé sans rien envoyer, UNE demande JSON au service avec CE code, CSP, un seul
+  e-mail si Formspree échoue puis le client réessaie, piège, retour en arrière, et le JSON ACCEPTÉ par le vrai `verifier()` (worker.js + sites.json lus
+  dans projets-ahmed s'il est à côté ; sinon contrôle sauté, jamais en échec sur GitHub). 9 sabotages de plus dans sabotage.mjs (76 en tout).
