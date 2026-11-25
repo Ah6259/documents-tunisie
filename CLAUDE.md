@@ -289,3 +289,18 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 - Tests (test_site.mjs, FR + AR) : promesses visibles, e-mail vide refusé sans rien envoyer, UNE demande JSON au service avec CE code, CSP, un seul
   e-mail si Formspree échoue puis le client réessaie, piège, retour en arrière, et le JSON ACCEPTÉ par le vrai `verifier()` (worker.js + sites.json lus
   dans projets-ahmed s'il est à côté ; sinon contrôle sauté, jamais en échec sur GitHub). 9 sabotages de plus dans sabotage.mjs (76 en tout).
+
+## 25/11/2026 — Pass : MODULE COMMUN du parcours d'achat (PASS.1, règle commune § 70.8 ; `outils communs/pass-commun/` de projets-ahmed)
+- La page pass/ (arabe) et fr/pass/ chargent `assets/pass.js` (codes d'accès, PDF gratuit du jour, Pass ouvert, rappels : inchangé), puis
+  **`assets/pass-commun.js`** (COPIE EXACTE du module de projets-ahmed, empreinte `assets/pass-commun.empreinte` : NE JAMAIS LA MODIFIER ICI ; on
+  améliore le module puis `python3 "outils communs/pass-commun/synchroniser.py"`), puis **`assets/pass-reglages.js`** (propre au site : arabe d'abord,
+  formule unique, code `PASS.alphabet` / `PASS.longueur` affiché ABCD-EF23, textes du site, `pour_activer`, `dejaActif`, `attendreRetour` = après la
+  revérification du Pass gardé (`window.PASS_PRET`), `essayerCode` = `activerCode()`, motif / ligne du bandeau / case du code remplis par
+  `apresRemplir`, `#commande-deja` au retour, `passOuvert` « Paiement reçu… », 2e bouton « Nouvelle commande » du bandeau relié au premier).
+  Restent dans pass.js : `FORMULE`, `joliCode`, `formuleLisible`, `lireCommande` (aussi `PassJour.commande`), `remettreCommande()` et, sur les pages de
+  modèle, `codeCommandeSurModele()` (code de la commande déjà écrit dans « J'ai déjà un code »). generer.mjs : 2 scripts sur pass/ (comptés dans le `?v=`),
+  attributs `data-code`… `data-email-auto`, `data-etat-commande`, ids `nouvelle-commande` / `nouvelle-commande-attente`.
+- Rien ne change pour le visiteur (comparaison avant / après AR + FR : 118 étapes sur 134 identiques, les autres = texte d'un bloc caché, attribut
+  interne, mémoire abîmée effacée) ; différence voulue : piège anti-robot rempli = commande pas gardée.
+- Tests : bloc « module commun du Pass » de test_site.mjs (empreinte, copie identique si projets-ahmed est à côté — variable `PROJETS_AHMED` —,
+  scripts, module branché) ; sabotage.mjs : les sabotages « Pass : … » visent maintenant pass-reglages.js / la copie du module, + 3 nouveaux (79).

@@ -18,7 +18,7 @@ export function pages(root) {
   const MAJ = lire("assets/page.js").match(/const MAJ = "([\d/]+)"/)[1];
   const URL = "https://documents.clicvia.com/";
   // ?v= : empreinte des fichiers communs (fins de ligne normalisées, pour que Windows et GitHub soient d'accord)
-  const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js", "assets/avis.js", "assets/pass.js", "assets/son.js"]
+  const V = createHash("sha256").update(["assets/style.css", "assets/page.js", "assets/modele.js", "assets/documents.js", "assets/avis.js", "assets/pass.js", "assets/son.js", "assets/pass-commun.js", "assets/pass-reglages.js"]
     .map(f => lire(f).replace(/\r\n/g, "\n")).join("\n")).digest("hex").slice(0, 10);
 
   const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -206,10 +206,10 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   const PASS_WA = "Bonjour, voici la preuve de paiement de mon Pass Journée (7 DT, Documents Tunisie).";
   const PHRASE_CODE = bi("C'est votre numéro de commande : écrivez-le dans le motif du paiement, il nous sert à reconnaître votre paiement.", "هذا رقم طلبك: اكتبه في خانة سبب الدفع، يساعدنا على التعرّف على دفعتك.")
     // e-mail automatique EN SERVICE (25/11/2026) : phrase cachée dans la page, montrée par assets/pass.js (EMAIL_AUTO = true) ; jamais promise sans le script
-    + `<span class="email-auto" hidden> ${bi("Vous le recevez aussi par e-mail.", "يصلك أيضًا عبر البريد الإلكتروني.")}</span>`;
+    + `<span class="email-auto" data-email-auto hidden> ${bi("Vous le recevez aussi par e-mail.", "يصلك أيضًا عبر البريد الإلكتروني.")}</span>`;
   const FILET = `<p class="filet">${bi("Vous avez oublié le code dans le motif ? Ce n'est pas grave : envoyez quand même la preuve sur WhatsApp, nous retrouvons votre demande.", "نسيت الرمز في سبب الدفع؟ لا بأس: أرسل الوصل على واتساب وسنجد طلبك.")}</p>`;
   const ENSUITE = `<p class="ensuite">${bi("Ensuite : votre code de commande s'ouvre dès réception du paiement (le code marche 10 minutes au plus après). Revenez sur cette page : le site essaie votre code tout seul et ouvre votre Pass Journée pour 24 heures. Vous pouvez aussi taper le code dans « J'ai un code » ou sur la page du document.", "بعد ذلك: يُفعَّل رقم طلبك بمجرد وصول الدفع (يعمل الرمز بعد ⁨10⁩ دقائق على الأكثر). عد إلى هذه الصفحة: يجرّب الموقع رمزك وحده ويفتح باقة اليوم لمدة ⁨24⁩ ساعة. يمكنك أيضًا كتابة الرمز في «لدي رمز» أو في صفحة الوثيقة.")}</p>`;
-  const NOUVELLE = `<button type="button" class="btn-clair nouvelle-commande">${bi("Nouvelle commande", "طلب جديد")}</button>`;
+  const NOUVELLE = id => `<button type="button" class="btn-clair nouvelle-commande" id="${id}">${bi("Nouvelle commande", "طلب جديد")}</button>`;
   const formCode = id => `<form class="code-form" id="${id}" novalidate>
       <label class="abo-etiquette" for="${id}-saisie">${bi("Votre code d'accès (8 caractères)", "رمز الدخول (8 حروف وأرقام)")}</label>
       <input type="text" id="${id}-saisie" name="code" required maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false">
@@ -503,7 +503,7 @@ ${pied}`;
   {
     let s = tete({ titre: "Pass Journée — tous les documents en PDF pendant 24 heures – باقة اليوم",
       desc: "Pass Journée de Documents Tunisie : 7 DT pour télécharger tous les modèles en PDF (français et arabe) pendant 24 heures. Sans Pass : 1 document gratuit par jour.",
-      chemin: "pass/", racine: "../", scripts: ["page.js", "pass.js"], jsonld: [] });
+      chemin: "pass/", racine: "../", scripts: ["page.js", "pass.js", "pass-commun.js", "pass-reglages.js"], jsonld: [] });
     s += corpsDebut(' data-page="pass"') + "\n";
     s += hero({ photo: "administration", racine: "../", fil: `<a href="../">${bi("Accueil", "الرئيسية")}</a>`, h1: bi("Pass Journée", "باقة اليوم"),
       intro: bi("Tous les documents en PDF pendant 24 heures, pour 7 DT. Sans Pass, 1 document PDF reste gratuit chaque jour, et les pages et les étapes restent gratuites.",
@@ -514,11 +514,11 @@ ${pied}`;
   <h2>${bi("Votre commande en attente", "طلبك في الانتظار")}</h2>
   <p class="commande-ligne" id="commande-ligne"></p>
   <p class="code-explication">${PHRASE_CODE}</p>
-  <p class="commande-etat" id="commande-etat" role="status" aria-live="polite"></p>
+  <p class="commande-etat" id="commande-etat" data-etat-commande role="status" aria-live="polite"></p>
   ${dlPaiement}
   ${btnWa("pass-preuve-attente")}
   ${FILET}
-  ${NOUVELLE}
+  ${NOUVELLE("nouvelle-commande-attente")}
 </section>
 <section class="carte abo code-haut" id="code-acces">
   <h2>${bi("J'ai un code", "لدي رمز")}</h2>
@@ -575,7 +575,7 @@ ${pied}`;
     <input type="text" id="pass-nom" name="nom" required maxlength="100" autocomplete="name">
     <label class="abo-etiquette" for="pass-tel">${bi("Téléphone WhatsApp (8 chiffres)", "هاتف واتساب (8 أرقام)")}</label>
     <input type="text" id="pass-tel" name="telephone" required inputmode="tel" maxlength="14" autocomplete="tel">
-    <label class="abo-etiquette" for="pass-email">${bi("E-mail", "البريد الإلكتروني")}<span class="email-promesse" hidden> ${bi("(vous y recevez votre code et les étapes du paiement)", "(يصلك عليه رمزك وخطوات الدفع)")}</span></label>
+    <label class="abo-etiquette" for="pass-email">${bi("E-mail", "البريد الإلكتروني")}<span class="email-promesse" data-email-auto hidden> ${bi("(vous y recevez votre code et les étapes du paiement)", "(يصلك عليه رمزك وخطوات الدفع)")}</span></label>
     <input type="email" id="pass-email" name="email" required maxlength="200" autocomplete="email">
     <label class="case"><input type="checkbox" name="conditions" value="oui" required id="pass-conditions"> <span><span data-l="fr">J'accepte les <a href="conditions/">conditions du Pass Journée</a>.</span><span data-l="ar">أوافق على <a href="conditions/">شروط باقة اليوم</a>.</span></span></label>
     <input type="hidden" name="site" value="Documents Tunisie">
@@ -599,7 +599,7 @@ ${pied}`;
     ${ENSUITE}
     ${FILET}
     <p class="petit">${bi("Pas de renouvellement automatique. Le Pass est valable 24 heures à partir de l'ouverture de votre code.", "لا تجديد آلي. الباقة صالحة ⁨24⁩ ساعة ابتداءً من تفعيل رمزك.")}</p>
-    ${NOUVELLE}
+    ${NOUVELLE("nouvelle-commande")}
   </div>
 </section>
 <p class="avert">${bi("Sans Pass, le site reste utilisable : toutes les pages, le remplissage, l'aperçu et les étapes sont gratuits, avec 1 document PDF gratuit par jour. Les modèles sont indicatifs et ne remplacent pas un avocat.", "دون باقة، يبقى الموقع قابلا للاستعمال: كل الصفحات والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم. النماذج استرشادية ولا تعوض المحامي.")}</p>

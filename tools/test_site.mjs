@@ -367,7 +367,7 @@ async function passCommande(w, code, L, nom) {
   const emails = [...doc.querySelectorAll(".email-auto")], nbPhrase = (doc.body.innerHTML.match(new RegExp(PHRASES_CODE[L][1].replace(/[.]/g, "\\."), "g")) || []).length;
   check(`${L} « Vous le recevez aussi par e-mail » : AFFICHÉE (e-mail automatique en service, EMAIL_AUTO = true)`,
     emails.length >= 2 && emails.every(x => !x.hidden) && nbPhrase === emails.length && emails.every(x => sansIsol(x.textContent).includes(sansIsol(PHRASES_CODE[L][1])))
-    && /const EMAIL_AUTO = true;/.test(lire("assets/pass.js")));
+    && /emailAuto: true,/.test(lire("assets/pass-reglages.js")));
   const paie = ap.querySelector(".paie"), motif = ap.querySelector(".motif-code");
   check(`${L} « Dernière étape » : paiement en 3 étapes (D17 / IZI, écrans d'exemple, ${L === "ar" ? "24321390 sans espaces" : "24 321 390"}) et MOTIF = le code`,
     paie && paie.querySelectorAll("ol.paie-etapes > li").length === 3 && paie.querySelector('img[alt="D17"]') && paie.querySelector('img[alt="IZI"]') && paie.querySelector(".aide-transfert img")
@@ -546,7 +546,7 @@ async function passCommande(w, code, L, nom) {
         wp.document.getElementById("pass-status").textContent.trim() === "اكتب بريدك الإلكتروني: يصلك عليه رمزك وخطوات الدفع."); }
   }
   { // retour en arrière en un mot : EMAIL_AUTO = false -> plus aucune promesse, erreur courte, AUCUNE demande au service d'e-mail
-    const envE = [], emE = [], copie = (src, js) => /pass\.js$/.test(src) ? js.replace("const EMAIL_AUTO = true;", "const EMAIL_AUTO = false;") : js;
+    const envE = [], emE = [], copie = (src, js) => /pass-reglages\.js$/.test(src) ? js.replace("emailAuto: true,", "emailAuto: false,") : js;
     const we = await pagePass("pass/index.html", { horloge: H, envois: envE, emails: emE, retouche: copie }), fe = we.document.getElementById("pass-form");
     fe.elements.nom.value = "Client Factice"; fe.elements.telephone.value = "98765432";
     fe.dispatchEvent(new we.Event("submit", { bubbles: true, cancelable: true }));
@@ -628,9 +628,10 @@ async function passCommande(w, code, L, nom) {
     wx = await pagePass("pass/index.html", { horloge: H, stockage: { "pass-commande": "{abîmé" } });
     check("mémoire « pass-commande » abîmée : pas de plantage, pas de bandeau", wx.document.getElementById("commande-attente").hidden && !wx.localStorage.getItem("pass-commande"));
     // codes créés par le navigateur : bon format, tous différents
-    const lot = Array.from({ length: 300 }, () => w.nouveauCodeCommande());
+    const lot = Array.from({ length: 300 }, () => w.PassCommun.nouveauCode(w.PassCommun.reglage.code.alphabet, w.PassCommun.reglage.code.longueur));
     check("codes de commande : crypto.getRandomValues, 8 caractères de l'alphabet des codes d'accès (sans O/0/I/1), 300 codes tous différents",
-      lot.every(c => /^[A-HJ-NP-Z2-9]{8}$/.test(c)) && new Set(lot).size === 300 && /crypto\.getRandomValues/.test(lire("assets/pass.js")));
+      lot.every(c => /^[A-HJ-NP-Z2-9]{8}$/.test(c)) && new Set(lot).size === 300 && /crypto\.getRandomValues/.test(lire("assets/pass-commun.js"))
+      && /code: \{ alphabet: PASS\.alphabet, longueur: PASS\.longueur,/.test(lire("assets/pass-reglages.js")));
     // page ARABE (adresse principale) : même parcours
     const envoisAr = [], emailsAr = [];
     const wa = await pagePass("pass/index.html", { horloge: H, envois: envoisAr, emails: emailsAr, stockage: { langue: "ar" } }), pa = wa.document.getElementById("pass-form");
@@ -647,7 +648,7 @@ async function passCommande(w, code, L, nom) {
       check("e-mail automatique (AR) : le JSON envoyé est ACCEPTÉ par le vrai verifier() du service (lien de la page arabe pass/)", accepteParWorker(j, "ar")); }
     // retour en arrière (EMAIL_AUTO = false dans assets/pass.js) : la phrase DISPARAÎT et rien ne part au service (AR + FR)
     for (const L of ["ar", "fr"]) {
-      const envoisE = [], emE = [], copie = (src, js) => /pass\.js$/.test(src) ? js.replace("const EMAIL_AUTO = true;", "const EMAIL_AUTO = false;") : js;
+      const envoisE = [], emE = [], copie = (src, js) => /pass-reglages\.js$/.test(src) ? js.replace("emailAuto: true,", "emailAuto: false,") : js;
       const we = await pagePass("pass/index.html", { horloge: H, envois: envoisE, emails: emE, stockage: { langue: L }, retouche: copie }), pe = we.document.getElementById("pass-form");
       pe.elements.nom.value = "Client Factice"; pe.elements.telephone.value = "98765432"; pe.elements.email.value = "client@factice.tn"; pe.elements.conditions.checked = true;
       pe.dispatchEvent(new we.Event("submit", { bubbles: true, cancelable: true }));
@@ -664,10 +665,10 @@ async function passCommande(w, code, L, nom) {
       && TOUS.every(d => !/motif[^.]{0,60}nom et (votre )?téléphone/i.test(JSON.stringify(d.faq || []))));
     check("pages du Pass (AR + FR) : la phrase « aussi par e-mail » est cachée dans la page (attribut hidden) et montrée par le script seulement (jamais promise sans lui)",
       ["pass/index.html", "fr/pass/index.html"].every(f => { const h = lire(f), n = (h.match(/class="email-auto"/g) || []).length;
-        return n >= 2 && n === (h.match(/<span class="email-auto" hidden>/g) || []).length; }));
+        return n >= 2 && n === (h.match(/<span class="email-auto" data-email-auto hidden>/g) || []).length; }));
     check("pages du Pass (AR + FR) : la promesse « vous y recevez votre code… » de l'étiquette est cachée dans la page (attribut hidden) et montrée par le script seulement",
       ["pass/index.html", "fr/pass/index.html"].every(f => { const h = lire(f), n = (h.match(/class="email-promesse"/g) || []).length;
-        return n === 1 && /<span class="email-promesse" hidden>/.test(h); }));
+        return n === 1 && /<span class="email-promesse" data-email-auto hidden>/.test(h); }));
     check("« Comment fonctionne le site ? » (AR) : code de commande au formulaire, motif du paiement",
       /تعطيك الاستمارة حالًا\s*(<b>)?رقم طلب/.test(sansIsol(lire("a-propos/index.html")))); }
   const cond = (await pagePass("pass/conditions/index.html", { horloge: H })).document.body.textContent;
@@ -960,7 +961,7 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     ["1 PDF gratuit par jour et Pass Journée (prix, code)", existsSync(join(root, "pass/index.html")), /1 document PDF est gratuit chaque jour[\s\S]*Pass Journée \(payant, 7 DT\)[\s\S]*code/],
     ["rappel de fin du Pass", /afficherRappel/.test(js), /Peu avant la fin du Pass, un bandeau vous prévient/],
     ["code de commande créé au formulaire (motif du paiement) et commande en attente", /pass-commande/.test(js), /le formulaire vous donne tout de suite un code de commande ?, à écrire dans le motif du paiement[\s\S]{0,200}le site l'active tout seul/],
-    ["e-mail de confirmation automatique du Pass (A.17, 25/11/2026)", /const EMAIL_AUTO = true;/.test(js), /E-mail de confirmation : dans la minute qui suit[\s\S]*Resend\) ; rien n'est gardé/],
+    ["e-mail de confirmation automatique du Pass (A.17, 25/11/2026)", /emailAuto: true,/.test(lire("assets/pass-reglages.js")), /E-mail de confirmation : dans la minute qui suit[\s\S]*Resend\) ; rien n'est gardé/],
     ["vie privée", true, /Ce que vous écrivez dans les formulaires reste dans votre téléphone/],
     ["mises à jour automatiques", existsSync(join(root, "tools/surveiller_sources.mjs")), /Mises à jour automatiques : un robot vérifie chaque mois/],
     ["site indépendant", true, /Ce site est indépendant/]];
@@ -972,5 +973,26 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     && /عنوان لكل لغة[\s\S]{0,80}هو العنوان الرئيسي[\s\S]{0,120}تحت «⁨fr\/⁩»/.test(lire("a-propos/index.html"))
     && /a-propos\/">\$\{T\("Comment fonctionne le site \?"/.test(lire("assets/page.js")) && /id="lien-fonctionnement"/.test(acc)); }
 check("langue par défaut = ARABE (décision d'Ahmed), seule une langue fr/ar enregistrée est reprise (mémoire partagée entre sites)", (() => { const js = readFileSync(join(root, "assets/page.js"), "utf8"); return /let langue = "ar"/.test(js) && js.includes("/^(fr|ar)$/.test(") && js.includes('langue = gardee || "ar"'); })());
+// 25/11/2026 (PASS.1, module commun du parcours d'achat, règle commune § 70.8) : assets/pass-commun.js = COPIE EXACTE du module de
+// projets-ahmed (« outils communs/pass-commun/pass-commun.js », recopié par synchroniser.py) ; assets/pass-reglages.js = ce qui est propre au site
+{ const copie = readFileSync(join(root, "assets/pass-commun.js")), emp = createHash("sha256").update(copie).digest("hex");
+  const attendue = existsSync(join(root, "assets/pass-commun.empreinte")) ? lire("assets/pass-commun.empreinte").trim() : "";
+  check("module commun du Pass : assets/pass-commun.js NON modifié dans le site (empreinte écrite par synchroniser.py)", emp === attendue);
+  // dépôt général à côté (variable PROJETS_AHMED, puis ../projets-ahmed…) ; absent sur GitHub : comparaison sautée
+  const PROJ = [process.env.PROJETS_AHMED, join(root, "../projets-ahmed"), join(root, "../../projets-ahmed"), join(root, "../.."), "/home/user/projets-ahmed"]
+    .filter(Boolean).find(x => existsSync(join(x, "outils communs/pass-commun/pass-commun.js")));
+  if (PROJ) check("module commun du Pass : copie identique au module de projets-ahmed (sinon : python3 synchroniser.py)",
+    readFileSync(join(PROJ, "outils communs/pass-commun/pass-commun.js")).equals(copie));
+  else console.log("(comparaison avec le module de projets-ahmed sautée : dépôt absent, normal sur GitHub)");
+  const scripts = h => (h.match(/<script defer src="[^"]*assets\/[^"?]+/g) || []).map(x => x.replace(/^.*assets\//, ""));
+  const sp = scripts(lire("pass/index.html")), sf = scripts(lire("fr/pass/index.html"));
+  check("module commun du Pass : pass/ et fr/pass/ chargent pass.js, puis pass-commun.js, puis pass-reglages.js (seulement ces pages)",
+    [sp, sf].every(x => x.indexOf("pass.js") >= 0 && x.indexOf("pass.js") < x.indexOf("pass-commun.js") && x.indexOf("pass-commun.js") === x.indexOf("pass-reglages.js") - 1)
+    && !/pass-commun\.js/.test(lire("index.html") + lire("procuration/index.html") + lire("pass/conditions/index.html"))
+    && !/brancherFormulairePass|nouveauCodeCommande|envoyerEmail|reprendreCommande/.test(lire("assets/pass.js")));
+  const h = { t: Date.parse("2026-10-09T10:00:00Z") }, wm = await pagePass("pass/index.html", { horloge: h });
+  check(`module commun du Pass : branché sur le formulaire (version ${wm.PassCommun && wm.PassCommun.version}), réglage du site « documents »`,
+    !!wm.PassCommun && wm.PassCommun.reglage && wm.PassCommun.reglage.site === "documents" && wm.document.getElementById("pass-form").getAttribute("data-branche") === "1"); }
+
 console.log(erreurs ? `\n${erreurs} PROBLÈME(S)` : "\nTOUT PASSE");
 process.exit(erreurs ? 1 : 0);

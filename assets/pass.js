@@ -165,99 +165,16 @@ function majEtatPass() {
   }
 }
 
-/* ---- page pass/ : formulaire de demande (Formspree) ---- */
-function telephoneTn(v) {
-  let n = String(v || "").replace(/\D/g, "");
-  if (n.length === 11 && n.indexOf("216") === 0) n = n.slice(3);
-  return n.length === 8 ? n : "";
-}
-function brancherFormulairePass() {
-  const form = document.getElementById("pass-form");
-  if (!form || form.dataset.branche) return;
-  form.dataset.branche = "1";
-  const statut = document.getElementById("pass-status"), bouton = form.querySelector("button[type=submit]");
-  const apres = document.getElementById("apres-pass");
-  const dire = (classe, fr, ar) => { statut.className = classe; statut.textContent = T(fr, ar); };
-  const champ = n => form.querySelector('[name="' + n + '"]');
-  const val = n => { const x = champ(n); return x ? String(x.value || "").trim() : ""; };
-  let codeEnCours = "";                       // même code si l'envoi échoue et que le client réessaie
-  let emailPour = "";                         // code de commande déjà envoyé au service d'e-mail
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    if (bouton.disabled) return;
-    const tel = telephoneTn(val("telephone"));
-    if (!val("nom")) { dire("err", "Indiquez votre nom.", "اكتب اسمك."); champ("nom").focus(); return; }
-    if (!tel) { dire("err", "Téléphone : 8 chiffres, par exemple 24 321 390.", "الهاتف: ⁨8⁩ أرقام، مثال ⁨24 321 390⁩."); champ("telephone").focus(); return; }
-    const email = val("email");
-    // la promesse « vous y recevez votre code… » n'est dite que si l'e-mail automatique est en service (EMAIL_AUTO)
-    if (!email) { if (EMAIL_AUTO) dire("err", "Indiquez votre e-mail : vous y recevez votre code et les étapes du paiement.", "اكتب بريدك الإلكتروني: يصلك عليه رمزك وخطوات الدفع.");
-                  else dire("err", "Indiquez votre e-mail.", "اكتب بريدك الإلكتروني."); if (champ("email")) champ("email").focus(); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { dire("err", "E-mail invalide : vérifiez-le.", "البريد الإلكتروني غير صحيح: تثبّت منه."); champ("email").focus(); return; }
-    if (!champ("conditions").checked) { dire("err", "Cochez « J'accepte les conditions du Pass Journée ».", "يجب الموافقة على شروط باقة اليوم."); return; }
-    // code de commande créé ICI, au formulaire valide (motif du paiement, message WhatsApp, puis code d'accès)
-    if (!codeEnCours) codeEnCours = nouveauCodeCommande();
-    const commande = { code: codeEnCours, formule: val("formule") || FORMULE, date: jourLocal() };
-    const fini = () => {
-      ecrireCommande(commande);
-      codeEnCours = "";
-      montrerCommande(commande, val("nom"));   // le nom va SEULEMENT dans le message WhatsApp (jamais dans le téléphone)
-      form.hidden = true;
-      const attente = document.getElementById("commande-attente"), deja = document.getElementById("commande-deja");
-      if (attente) attente.hidden = true;     // la « Dernière étape » ci-dessous dit déjà tout
-      if (deja) deja.hidden = true;
-      if (apres) { apres.hidden = false; try { apres.scrollIntoView({ block: "start" }); } catch (x) {} }
-    };
-    if (val("_gotcha")) { fini(); return; }                // champ piège rempli = robot : rien n'est envoyé
-    champ("page").value = location.href.split("#")[0];
-    const donnees = new FormData(form);
-    donnees.set("telephone", tel);
-    donnees.set("email", email);
-    donnees.set("code", joliCode(commande.code));
-    // ligne prête à coller dans le bouton GitHub « pass » (dépôt privé documents-pass, case « ligne »)
-    donnees.set("pour_activer", "action: paye ; nom: " + val("nom") + " ; telephone: " + tel + " ; code: " + joliCode(commande.code) + " ; email: " + email);
-    // e-mail automatique au client (code, prix, paiement, WhatsApp, lien du Pass ; langue de la page ; Ahmed en copie) :
-    // UNE fois par code de commande (si Formspree échoue et que le client réessaie, pas de 2e e-mail)
-    if (emailPour !== commande.code) {
-      emailPour = commande.code;
-      envoyerEmail({ site: "documents", langue: document.documentElement.lang === "ar" ? "ar" : "fr", nom: val("nom"), email: email,
-        code: joliCode(commande.code), formule: commande.formule });
-    }
-    bouton.disabled = true;
-    dire("", "Envoi…", "جارٍ الإرسال…");
-    fetch(form.getAttribute("action"), { method: "POST", body: donnees, headers: { "Accept": "application/json" } })
-      .then(r => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        dire("ok", "Merci ! Votre demande a bien été envoyée.", "شكرًا! تم إرسال طلبك.");
-        fini();
-      })
-      .catch(() => dire("err", "Échec de l'envoi — vérifiez votre connexion et réessayez, ou écrivez-nous sur WhatsApp au 24 321 390.",
-        "تعذّر الإرسال — تحقّق من الاتصال وأعد المحاولة، أو راسلنا عبر واتساب على ⁨24 321 390⁩."))
-      .then(() => { bouton.disabled = false; });
-  });
-}
-
-/* ---- code de commande (créé au formulaire) et commande en attente gardée sur le téléphone ---- */
+/* ---- page pass/ : formulaire de demande et commande du Pass ----
+   Depuis le 25 novembre 2026 (PASS.1, règle commune § 70.8) : le parcours d'achat (vérifications, code de commande créé au formulaire,
+   Formspree, e-mail automatique, « Dernière étape », mémoire « pass-commande », code essayé tout seul au retour, « Nouvelle commande »)
+   est fait par le MODULE COMMUN assets/pass-commun.js (copie exacte de projets-ahmed, ne pas la modifier ici) avec le réglage de ce
+   site assets/pass-reglages.js (chargés seulement par pass/). Ici restent les outils dont ils se servent et, sur les pages de modèle,
+   le code de la commande en attente déjà écrit dans « J'ai déjà un code ». */
 const FORMULE = "Pass Journée - 7 DT - 24 heures";
-// E-mail automatique au client (A.17) : EN SERVICE depuis le 25/11/2026 (service commun « email-clients » : Worker Cloudflare
-// + Resend, copie à Ahmed ; clé « documents » de sites.json, dépôt privé projets-ahmed). EMAIL_AUTO = true : phrases
-// « vous y recevez votre code… » / « Vous le recevez aussi par e-mail » affichées et demande envoyée au service ;
-// false = tout caché, rien envoyé (retour en arrière en un mot si le service tombe).
-const EMAIL_AUTO = true;
-const EMAIL_API = "https://api-email.clicvia.com/inscription";
-// envoi au service d'e-mail : sans attendre la réponse, jamais bloquant (Formspree et le code restent la voie principale)
-function envoyerEmail(d) {
-  if (!EMAIL_AUTO || !window.fetch) return;
-  try {
-    fetch(EMAIL_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(d), keepalive: true })
-      .catch(function () {});
-  } catch (e) {}
-}
 function joliCode(c) { return c.slice(0, 4) + "-" + c.slice(4); }
-function nouveauCodeCommande() {
-  const t = new Uint8Array(PASS.longueur);
-  try { crypto.getRandomValues(t); } catch (e) { for (let k = 0; k < t.length; k++) t[k] = Math.floor(Math.random() * 256); }
-  return Array.from(t, b => PASS.alphabet[b % PASS.alphabet.length]).join("");   // 32 caractères : 256 % 32 = 0, aucun biais
-}
+function formuleLisible(f) { return f === FORMULE ? T("Pass Journée 7 DT (24 heures)", "باقة اليوم ⁨7⁩ د (⁨24⁩ ساعة)") : f; }
+// commande gardée (« pass-commande » : code, formule, date ; jamais nom, téléphone ni e-mail), lue comme le module commun
 function lireCommande() {
   try {
     const c = JSON.parse(localStorage.getItem(PASS.cleCommande) || "null");
@@ -269,90 +186,23 @@ function lireCommande() {
   } catch (e) { try { localStorage.removeItem(PASS.cleCommande); } catch (x) {} }
   return null;
 }
-function ecrireCommande(c) {
-  try { if (c) localStorage.setItem(PASS.cleCommande, JSON.stringify({ code: c.code, formule: c.formule, date: c.date }));
-        else localStorage.removeItem(PASS.cleCommande); } catch (e) {}
-}
-function formuleLisible(f) { return f === FORMULE ? T("Pass Journée 7 DT (24 heures)", "باقة اليوم ⁨7⁩ د (⁨24⁩ ساعة)") : f; }
-// message WhatsApp de la preuve : code + nom (nom tapé dans le formulaire ; au retour sur la page il n'est pas connu :
-// la mémoire « pass-commande » ne garde jamais le nom) + formule
-function texteWhatsApp(c, nom) {
-  const n = nom ? " — " + nom : "";
-  return T("Voici ma preuve de paiement — Documents Tunisie — code " + joliCode(c.code) + n + " — " + formuleLisible(c.formule),
-           "هذا وصل الدفع — وثائق تونس — الرمز " + joliCode(c.code) + n + " — " + formuleLisible(c.formule));
-}
-// remplit la page avec le code : grand code, motif du paiement, liens WhatsApp, case « J'ai un code »
-function montrerCommande(c, nom) {
-  document.querySelectorAll(".code-commande").forEach(x => { x.textContent = joliCode(c.code); x.setAttribute("dir", "ltr"); });
-  document.querySelectorAll(".motif-code").forEach(x => {
-    if (!x.dataset.origine) x.dataset.origine = x.innerHTML;
-    x.textContent = joliCode(c.code); x.setAttribute("dir", "ltr");
-  });
-  document.querySelectorAll(".motif-aide").forEach(x => { x.hidden = true; });
-  document.querySelectorAll(".email-auto").forEach(x => { x.hidden = !EMAIL_AUTO; });
-  document.querySelectorAll("a.btn-wa").forEach(a => {
-    if (!a.dataset.origine) a.dataset.origine = a.getAttribute("href");
-    a.setAttribute("href", "https://wa.me/" + PASS.whatsapp + "?text=" + encodeURIComponent(texteWhatsApp(c, nom)));
-  });
-  const ligne = document.getElementById("commande-ligne");
-  if (ligne) {
-    ligne.textContent = T("Votre commande en attente : code ", "طلبك في الانتظار: الرمز ");
-    const b = document.createElement("b");
-    b.className = "code-commande"; b.dir = "ltr"; b.textContent = joliCode(c.code);
-    ligne.appendChild(b);
-    ligne.appendChild(document.createTextNode(" — " + formuleLisible(c.formule)));
-  }
-  document.querySelectorAll("form.code-form input[name=code]").forEach(x => { if (!x.value) x.value = joliCode(c.code); });
-}
-function oublierCommande() {
-  ecrireCommande(null);
+// la commande est terminée (activée, expirée ou « Nouvelle commande ») : la page revient à son état de départ
+function remettreCommande() {
   document.querySelectorAll(".motif-code").forEach(x => { if (x.dataset.origine) x.innerHTML = x.dataset.origine; x.removeAttribute("dir"); });
   document.querySelectorAll(".motif-aide").forEach(x => { x.hidden = false; });
-  document.querySelectorAll("a.btn-wa").forEach(a => { if (a.dataset.origine) a.setAttribute("href", a.dataset.origine); });
+  document.querySelectorAll("a.btn-wa[data-texte]").forEach(a => { a.setAttribute("href", "https://wa.me/" + PASS.whatsapp + "?text=" + encodeURIComponent(a.getAttribute("data-texte"))); });
   document.querySelectorAll(".code-commande").forEach(x => { x.textContent = ""; });
   document.querySelectorAll("form.code-form input[name=code]").forEach(x => { x.value = ""; });
-  const form = document.getElementById("pass-form");
-  ["commande-attente", "apres-pass", "commande-deja"].forEach(id => { const x = document.getElementById(id); if (x) x.hidden = true; });
-  if (form) form.hidden = false;
+  const deja = document.getElementById("commande-deja"); if (deja) deja.hidden = true;
 }
-// page pass/ : au retour, bandeau de la commande en attente, et le site essaie le code tout seul
-async function reprendreCommande() {
+// pages de modèle : le code de la commande en attente est déjà écrit dans « J'ai déjà un code » (sauf s'il est déjà ouvert ici)
+function codeCommandeSurModele() {
+  if (document.getElementById("pass-form")) return;   // page pass/ : le module commun s'en occupe
   const c = lireCommande();
   if (!c) return;
   const p = lirePass();
-  if (p && p.code === c.code && encore(p.fin)) { ecrireCommande(null); return; }   // déjà ouverte sur ce téléphone
-  montrerCommande(c);
-  const attente = document.getElementById("commande-attente");
-  if (!attente) return;                       // pages de modèle : le code est seulement prérempli dans « J'ai déjà un code »
-  const form = document.getElementById("pass-form"), deja = document.getElementById("commande-deja"), etat = document.getElementById("commande-etat");
-  attente.hidden = false;
-  if (form) form.hidden = true;
-  if (deja) deja.hidden = false;
-  if (etat) etat.textContent = T("Vérification de votre paiement…", "جارٍ التثبت من دفعتك…");
-  const r = await activerCode(c.code);       // même vérification que la case « J'ai un code »
-  if (r.etat === "ok" || r.etat === "expire") {
-    oublierCommande();
-    if (r.etat === "ok") {
-      const pe = document.getElementById("pass-etat");
-      if (pe) { majEtatPass(); pe.textContent = T("Paiement reçu : votre code " + joliCode(c.code) + " est ouvert. ", "وصل الدفع: رمزك " + joliCode(c.code) + " مفعّل. ") + pe.textContent; }
-    }
-    return;
-  }
-  if (etat) etat.textContent = r.etat === "reseau"
-    ? T("Pas de connexion : impossible de vérifier votre paiement maintenant. Réessayez plus tard.", "لا يوجد اتصال: تعذّر التثبت من دفعتك الآن. أعد المحاولة لاحقًا.")
-    : T("En attente de votre paiement : dès qu'il est reçu, votre code s'ouvre et votre Pass Journée démarre (revenez sur cette page).",
-        "في انتظار دفعتك: بمجرد وصولها يُفعَّل رمزك وتبدأ باقة اليوم (عد إلى هذه الصفحة).");
-}
-function brancherNouvelleCommande() {
-  document.querySelectorAll("button.nouvelle-commande").forEach(b => {
-    if (b.dataset.branche) return;
-    b.dataset.branche = "1";
-    b.addEventListener("click", () => {
-      oublierCommande();
-      const i = document.getElementById("inscription");
-      try { if (i) i.scrollIntoView({ block: "start" }); } catch (e) {}
-    });
-  });
+  if (p && p.code === c.code && encore(p.fin)) { try { localStorage.removeItem(PASS.cleCommande); } catch (e) {} return; }
+  document.querySelectorAll("form.code-form input[name=code]").forEach(x => { if (!x.value) x.value = joliCode(c.code); });
 }
 
 /* ---- « J'ai déjà un code » (page pass/ et écran de blocage des pages de modèle) ---- */
@@ -460,11 +310,9 @@ window.PassJour = { acces: accesPdf, noter: noterPdf, bloquer: bloquerPdf, actif
 document.addEventListener("pass", majEtatPass);
 document.addEventListener("langue", majEtatPass);
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".email-promesse").forEach(x => { x.hidden = !EMAIL_AUTO; });   // étiquette de l'e-mail : promesse seulement si EMAIL_AUTO
-  brancherFormulairePass();
   brancherCodes();
-  brancherNouvelleCommande();
   majEtatPass();
   noterFinPass();
-  reverifierPass().catch(() => {}).then(() => { noterFinPass(); afficherRappel(); return reprendreCommande(); }).catch(() => {});
+  // la commande en attente n'est regardée qu'APRÈS la revérification du Pass gardé (module commun : attendreRetour de pass-reglages.js)
+  window.PASS_PRET = reverifierPass().catch(() => {}).then(() => { noterFinPass(); afficherRappel(); codeCommandeSurModele(); }).catch(() => {});
 });
