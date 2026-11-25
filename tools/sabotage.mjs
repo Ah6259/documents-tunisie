@@ -96,10 +96,17 @@ const SABOTAGES = [
   ["Pass : réglage du site pas chargé par la page du Pass", d => changer(d, "tools/generer.mjs", 'scripts: ["page.js", "pass.js", "pass-commun.js", "pass-reglages.js"]', 'scripts: ["page.js", "pass.js", "pass-commun.js"]')],
   ["Pass : formule arabe fausse dans le message WhatsApp", d => changer(d, "assets/pass-reglages.js", 'ar: "باقة اليوم ⁨7⁩ د (⁨24⁩ ساعة)" } }', 'ar: "باقة" } }')],
   ["Pass : code tapé sur une page de modèle sans le code de la commande", d => changer(d, "assets/pass.js", "if (!x.value) x.value = joliCode(c.code);", "")],
+  // phrase propre au document vers le Pass Journée + clics comptés (25/11/2026, décision d'Ahmed, pas de gratuité)
+  ["Pass : phrase sous « Télécharger le PDF » redevenue générale (plus liée au document)", d => changer(d, "tools/generer.mjs", "`Besoin d'${a[0]} aujourd'hui", "`Besoin d'un autre document aujourd'hui")],
+  ["Pass : clic vers pass/ compté sans le préfixe du site", d => changer(d, "assets/page.js", 'path: "/documents-tunisie/clic/" + nom', 'path: "clic/" + nom')],
+  ["Pass : clic du bouton de l'écran de blocage non compté", d => changer(d, "tools/generer.mjs", ' data-clic="pass-blocage"', "")],
+  ["Pass : « Comment fonctionne le site ? » sans la phrase du Pass sous le téléchargement", d => changer(d, "tools/generer.mjs", "<b>Pass Journée sous le téléchargement</b> : sur chaque modèle", "<b>Pass Journée</b> : sur chaque modèle")],
   ["lien « Avocats et notaires » retiré de l'en-tête", d => changer(d, "assets/page.js", '<a class="entete-annuaire"', '<a class="x"')],
 ];
 let rates = 0;
-for (const [nom, saboter] of SABOTAGES) {
+// SABOTAGE=<mot> : ne lance que les sabotages dont le nom contient ce mot (essai rapide sur le PC ; GitHub les lance tous)
+const FILTRE = process.env.SABOTAGE || "", LANCES = SABOTAGES.filter(([n]) => !FILTRE || n.includes(FILTRE));
+for (const [nom, saboter] of LANCES) {
   const copie = mkdtempSync(join(tmpdir(), "sabotage-"));
   cpSync(site, copie, { recursive: true, filter: s => !/node_modules|captures|\.git$/.test(s) });
   try {
@@ -113,5 +120,5 @@ for (const [nom, saboter] of SABOTAGES) {
   } catch (e) { rates++; console.log("ERREUR    " + nom + " : " + e.message); }
   rmSync(copie, { recursive: true, force: true });
 }
-console.log(rates ? `\n${rates} sabotage(s) NON détecté(s)` : `\nLes ${SABOTAGES.length} sabotages ont tous été détectés.`);
+console.log(rates ? `\n${rates} sabotage(s) NON détecté(s)` : `\nLes ${LANCES.length} sabotages ont tous été détectés.`);
 process.exit(rates ? 1 : 0);

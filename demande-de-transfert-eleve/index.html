@@ -32,11 +32,11 @@
 <meta name="theme-color" content="#8C2B3A">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&amp;family=Noto+Kufi+Arabic:wght@400;600;700;800&amp;family=Noto+Naskh+Arabic:wght@400;700&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/style.css?v=a47cf92543">
-<script defer src="../assets/documents.js?v=a47cf92543"></script>
-<script defer src="../assets/page.js?v=a47cf92543"></script>
-<script defer src="../assets/modele.js?v=a47cf92543"></script>
-<script defer src="../assets/pass.js?v=a47cf92543"></script>
+<link rel="stylesheet" href="../assets/style.css?v=b253ec8381">
+<script defer src="../assets/documents.js?v=b253ec8381"></script>
+<script defer src="../assets/page.js?v=b253ec8381"></script>
+<script defer src="../assets/modele.js?v=b253ec8381"></script>
+<script defer src="../assets/pass.js?v=b253ec8381"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"إلى من يُوجه مطلب النقلة؟","acceptedAnswer":{"@type":"Answer","text":"إلى المندوب الجهوي للتربية، على يد مدير المؤسسة الحالية."}},{"@type":"Question","name":"ما هي الوثائق المؤيدة؟","acceptedAnswer":{"@type":"Answer","text":"ما يثبت السبب: شهادة إقامة عند تغيير السكنى، قرار النقلة المهنية، شهادة طبية."}}],"inLanguage":"ar"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"وثائق تونس","item":"https://documents.clicvia.com/"},{"@type":"ListItem","position":2,"name":"نموذج مطلب نقلة تلميذ","item":"https://documents.clicvia.com/demande-de-transfert-eleve/"}]}</script>
 <script data-goatcounter="https://prix-eaux-tunisie.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
@@ -72,7 +72,7 @@
   <div class="apercu-tampon" id="apercu-bloque" hidden>
     <span class="tampon-titre"><span data-l="ar">باقة اليوم</span></span>
     <span class="tampon-sous"><span data-l="ar">استعملت وثيقتك المجانية لهذا اليوم. ادفع الباقة لتحميل ومعاينة عدة وثائق.</span></span>
-    <a href="../pass/" target="_blank" rel="noopener"><span data-l="ar">⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a>
+    <a href="../pass/" target="_blank" rel="noopener" data-clic="pass-apercu"><span data-l="ar">⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a>
     <span class="tampon-demain"><span data-l="ar">أو عد غدًا</span></span>
   </div>
   </div>
@@ -88,12 +88,12 @@
   <button class="bouton" type="button" id="telecharger"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg><span data-l="ar">تحميل ملف ⁨PDF⁩</span></button>
   <a class="voir-apercu" id="voir-apercu" href="#apercu-carte"><span data-l="ar">↑ معاينة الوثيقة</span></a>
   <p class="aide-pdf"><span data-l="ar">في النافذة التي تظهر، اختر « حفظ بصيغة ⁨PDF⁩ ».</span></p>
-  <p class="pass-lien" id="pass-lien"><a class="btn-pass" href="../pass/" target="_blank" rel="noopener"><span data-l="ar">باقة اليوم ⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a><span class="petit"><span data-l="ar">وثيقة ⁨PDF⁩ واحدة مجانية كل يوم على هذا الهاتف.</span></span></p>
+  <p class="pass-lien" id="pass-lien"><span class="pass-accroche" id="pass-accroche"><span data-l="ar">تحتاج إلى مطلب نقلة آخر اليوم، أو إلى وثيقة أخرى؟</span></span><a class="btn-pass" href="../pass/" target="_blank" rel="noopener" data-clic="pass-modele"><span data-l="ar">باقة اليوم ⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a><span class="petit"><span data-l="ar">وثيقة ⁨PDF⁩ واحدة مجانية كل يوم على هذا الهاتف.</span></span></p>
   <p class="pass-actif" id="pass-actif" role="status" hidden></p>
   <div class="pass-bloque abo" id="pass-bloque" tabindex="-1" hidden>
     <h3><span data-l="ar">لقد حمّلت وثيقتك المجانية لهذا اليوم</span></h3>
     <p><span data-l="ar">كل يوم، وثيقة ⁨PDF⁩ واحدة مجانية على هذا الهاتف. لتحميل هذه الوثيقة اليوم:</span></p>
-    <a class="btn-pro" href="../pass/" target="_blank" rel="noopener"><span data-l="ar">باقة اليوم ⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a>
+    <a class="btn-pro" href="../pass/" target="_blank" rel="noopener" data-clic="pass-blocage"><span data-l="ar">باقة اليوم ⁨7⁩ د: كل الوثائق طيلة ⁨24⁩ ساعة</span></a>
     <p class="demain"><span data-l="ar">وإلا، عد غدًا: وثيقة مجانية جديدة في انتظارك.</span></p>
     <p class="petit"><span data-l="ar">ما كتبته يبقى في هذه الصفحة: الباقة تُفتح في نافذة جديدة.</span></p>
     <details class="pass-code"><summary><span data-l="ar">لدي رمز</span></summary>

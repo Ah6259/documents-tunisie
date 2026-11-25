@@ -67,8 +67,8 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
 - Formspree gratuit = 50 envois/mois pour TOUS les sites (même formulaire). Test : `node tools/test_avis.mjs` (accepte un dossier).
 
 ## Tests (obligatoires avant toute publication)
-- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 1290 vérifications) → **TOUT PASSE**.
-- `node tools/sabotage.mjs` : sabotages (76 au 25/11/2026), tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
+- `node tools/generer.mjs` puis `node tools/test_site.mjs` (≈ 2660 vérifications) → **TOUT PASSE**.
+- `node tools/sabotage.mjs` : sabotages (83 au 25/11/2026), tous doivent être attrapés. `node tools/test_robot.mjs` : pannes du robot.
 - **Pas de faux boutons** (Ahmed, 06/10/2026) : badges « Gratuit / Données / Français et arabe » de l'accueil supprimés (cartes avec icône qui ne menaient nulle part) ; « Gratuit, sans inscription, rien n'est envoyé » est dans l'intro. Test sur toutes les pages + sabotage : aucune carte avec icône sans lien.
 - CSS : `[hidden]{display:none!important}` obligatoire (sinon un `display:flex/grid` rend visibles les éléments cachés par le JS : recherche, « aucun résultat ») ; test + sabotage (06/10/2026).
 - `node tools/test_sw.mjs` : service worker (réseau d'abord, exclusions, meta iPhone).
@@ -304,3 +304,17 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
   interne, mémoire abîmée effacée) ; différence voulue : piège anti-robot rempli = commande pas gardée.
 - Tests : bloc « module commun du Pass » de test_site.mjs (empreinte, copie identique si projets-ahmed est à côté — variable `PROJETS_AHMED` —,
   scripts, module branché) ; sabotage.mjs : les sabotages « Pass : … » visent maintenant pass-reglages.js / la copie du module, + 3 nouveaux (79).
+
+## 25/11/2026 — Vers le Pass Journée : phrase propre à chaque document + clics comptés ; PAS de gratuité (décision d'Ahmed)
+- Rien sur l'accueil ni dans l'en-tête (décision d'Ahmed, à garder). Prix et « 1 document PDF gratuit par jour » inchangés : rien de gratuit en plus.
+- **Sous « Télécharger le PDF »** des 27 modèles (`PASS_MODELE(d)` de tools/generer.mjs) : phrase LIÉE AU DOCUMENT `#pass-accroche`, puis le bouton doré
+  « Pass Journée 7 DT : tous les documents pendant 24 heures » (-> pass/, nouvel onglet), puis la ligne « 1 document PDF gratuit par jour sur ce téléphone. ».
+  FR (fr/) : « Besoin d'une autre attestation de travail aujourd'hui, ou d'un autre document ? » ; AR (racine) : « تحتاج إلى شهادة عمل أخرى اليوم، أو إلى وثيقة أخرى؟ ».
+  Le nom de chaque document (avec son article en français, accordé en arabe) est dans `AUTRE` de generer.mjs : **nouveau modèle = une ligne dans `AUTRE`**
+  (sinon la construction s'arrête avec un message).
+- **Clics vers pass/ comptés** (page.js, tout lien `data-clic`) : événements GoatCounter `/documents-tunisie/clic/pass-modele` (phrase sous le téléchargement),
+  `…/clic/pass-blocage` (écran « document gratuit du jour déjà pris »), `…/clic/pass-apercu` (tampon de l'aperçu brouillé), `…/clic/pass-rappel`
+  (« Renouveler mon Pass », pass.js). Rien si GoatCounter est bloqué. Dans GoatCounter : chercher « clic/ ».
+- « Comment fonctionne le site ? » (FR + AR) : ligne « Pass Journée sous le téléchargement » + clics dans « Vos données » ; FONCTIONS (23).
+- Tests : bloc « 25/11/2026 » de test_site.mjs (27 modèles × 2 langues, aucune gratuité promise, liens comptés, faux GoatCounter / GoatCounter bloqué) ;
+  4 sabotages (83). `SABOTAGE=<mot> node tools/sabotage.mjs` ne lance que les sabotages dont le nom contient ce mot (essai rapide ; GitHub les lance tous).

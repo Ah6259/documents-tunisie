@@ -326,6 +326,7 @@ html[lang="fr"] [data-l="fr"],html[lang="ar"] [data-l="ar"]{display:revert}
 .btn-pass{display:inline-block;background:#F2B33D;color:#3A2A00;text-decoration:none;font-weight:800;font-size:14.5px;border-radius:999px;padding:9px 16px;line-height:1.35}
 .btn-pass:hover{filter:brightness(1.05)}
 .pass-lien .petit{display:block}
+.pass-accroche{display:block;font-weight:700;font-size:15px;line-height:1.45;color:var(--texte);margin:0 0 8px}
 .pass-actif{margin:12px 0 0;background:var(--vert-clair);color:var(--vert);border-radius:12px;padding:10px 12px;font-weight:700;font-size:14px;text-align:center}
 .pass-bloque{margin:14px 0 0;background:var(--or-clair);border:2px solid #F2B33D;border-radius:16px;padding:16px;outline:0}
 .pass-bloque h3{margin:0 0 8px;font-size:17px}

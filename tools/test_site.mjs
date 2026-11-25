@@ -938,6 +938,41 @@ check("toutes les pages : lien vers le manifeste, icône iPhone et theme-color",
   return s.includes(`<link rel="manifest" href="${r}manifest.webmanifest">`) && s.includes(`<link rel="apple-touch-icon" href="${r}assets/icons/apple-touch-icon.png">`) && s.includes('<meta name="theme-color"'); }));
 check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vignette) : ${Math.round(ogJpg.length / 1024)} Ko`, ogJpg[0] === 0xFF && ogJpg[1] === 0xD8 && ogJpg.length < 250000);
 
+// ---- 25/11/2026 (décision d'Ahmed : amener vers le Pass Journée, PAS de gratuité) : sous « Télécharger le PDF », phrase LIÉE AU DOCUMENT
+//      (FR sur fr/, arabe à l'adresse principale) + bouton vers pass/ ; clics vers pass/ comptés (événements GoatCounter /documents-tunisie/clic/<nom>).
+{ const accroche = h => sansIsol((h.match(/id="pass-accroche">([\s\S]*?)<\/span><\/span>/) || [])[1] || "").replace(/<[^>]+>/g, "").replace(/ /g, " ").trim();
+  const ko = [], vus = { fr: new Set(), ar: new Set() };
+  for (const d of DOCS) for (const L of ["fr", "ar"]) {
+    const f = (L === "fr" ? "fr/" : "") + d.slug + "/index.html", h = lire(f), a = accroche(h);
+    const mot = L === "fr" ? d.titre.fr.split(/[ ']/)[0].toLowerCase() : d.titre.ar.split(" ")[0];
+    const bonne = L === "fr" ? /^Besoin d'(une|un) autre .+ aujourd'hui, ou d'un autre document \?$/.test(a) && !ARABE.test(a) && a.toLowerCase().includes(mot)
+      : /^تحتاج إلى .+ اليوم، أو إلى وثيقة أخرى؟$/.test(a) && !/[A-Za-z]/.test(a) && a.includes(mot);
+    const bouton = (h.match(/id="pass-lien">[\s\S]*?<a class="btn-pass" href="\.\.\/pass\/" target="_blank" rel="noopener" data-clic="pass-modele">([\s\S]*?)<\/a><span class="petit">([\s\S]*?)<\/span><\/span><\/p>/) || []);
+    const btnOk = L === "fr" ? /Pass Journée 7 DT : tous les documents pendant 24 heures/.test(bouton[1] || "") && /1 document PDF gratuit par jour sur ce téléphone\./.test(bouton[2] || "")
+      : /باقة اليوم/.test(sansIsol(bouton[1])) && /وثيقة ⁨?PDF⁩? واحدة مجانية كل يوم/.test(bouton[2] || "");
+    if (!bonne || !btnOk || vus[L].has(a)) ko.push(`${f} (« ${a.slice(0, 60)} »)`);
+    vus[L].add(a);
+  }
+  check(`Pass : sur les ${DOCS.length} modèles (FR + AR), phrase propre au document sous « Télécharger le PDF » (« Besoin d'une autre … aujourd'hui, ou d'un autre document ? » / « تحتاج إلى … اليوم، أو إلى وثيقة أخرى؟ »), bouton Pass Journée 7 DT vers pass/ compté « pass-modele », ligne « 1 document PDF gratuit par jour » gardée` + (ko.length ? " — " + ko.slice(0, 3).join(", ") : ""), DOCS.length >= 20 && !ko.length);
+  const txt = DOCS.map(d => accroche(lire("fr/" + d.slug + "/index.html")) + " " + accroche(lire(d.slug + "/index.html"))).join(" ");
+  check("Pass : aucune gratuité nouvelle promise dans la phrase (ni essai, ni offert, ni gratuit)", txt.length > 1000 && !/gratuit|offert|essai|مجان|تجربة/i.test(txt));
+  const p0 = lire("fr/" + DOCS[0].slug + "/index.html");
+  check("Pass : liens vers pass/ des pages de modèle comptés (écran de blocage « pass-blocage », tampon de l'aperçu « pass-apercu », rappel de fin « pass-rappel »)",
+    /id="pass-bloque"[\s\S]*?<a class="btn-pro" href="\.\.\/pass\/"[^>]*data-clic="pass-blocage"/.test(p0) && /id="apercu-bloque"[\s\S]*?<a href="\.\.\/pass\/"[^>]*data-clic="pass-apercu"/.test(p0)
+    && /rappel-renouveler" href="' \+ site \+ 'pass\/#offre" data-clic="pass-rappel"/.test(lire("assets/pass.js"))
+    && (p0.match(/href="\.\.\/pass\/"/g) || []).length === (p0.match(/href="\.\.\/pass\/"[^>]*data-clic="pass-(modele|blocage|apercu)"/g) || []).length);
+  // clic compté avec un faux GoatCounter ; sans GoatCounter (bloqué) : rien, aucune erreur, le lien reste
+  for (const [chemin, L, sel, nom] of [[DOCS[0].slug + "/index.html", "fr", "#pass-lien a.btn-pass", "pass-modele"], [DOCS[1].slug + "/index.html", "ar", "#pass-bloque a.btn-pro", "pass-blocage"], [DOCS[2].slug + "/index.html", "fr", "#apercu-bloque a", "pass-apercu"]]) {
+    for (const gc of [true, false]) {
+      const w = await page(chemin, L), comptes = [], avant = erreurs;
+      if (gc) w.goatcounter.count = o => comptes.push(o); else delete w.goatcounter.count;
+      const a = w.document.querySelector(sel);
+      if (a) { a.addEventListener("click", e => e.preventDefault()); a.dispatchEvent(new w.MouseEvent("click", { bubbles: true, cancelable: true })); }
+      check(gc ? `clic compté (faux GoatCounter) ${L} ${chemin} ${sel} → événement « /documents-tunisie/clic/${nom} »` : `sans GoatCounter (bloqué) ${L} ${chemin} ${sel} : aucun compte, aucune erreur`,
+        !!a && erreurs === avant && (gc ? comptes.length === 1 && comptes[0].path === "/documents-tunisie/clic/" + nom && comptes[0].event === true && !!comptes[0].title : !comptes.length));
+    }
+  }
+}
 // 25/10/2026 (RÈGLE d'Ahmed, règle commune § 44 : « la page Comment fonctionne le site doit être mise à jour chaque fois qu'on modifie le site ») :
 // chaque fonction visible du site (repère dans le code ou les pages) doit être expliquée dans a-propos/ ; nouvelle fonction = une ligne ici + son explication FR + AR dans tools/generer.mjs
 { const brut = lire("fr/a-propos/index.html"), ap = brut.replace(/<[^>]+>/g, " ").replace(/[\u00a0\u2068\u2069]/g, " ").replace(/\s+/g, " ");
@@ -950,6 +985,7 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     ["démarches expliquées", /GUIDES/.test(js), /Démarches expliquées : explication seulement/],
     ["schéma case par case", /id="schema"/.test(js), /Schéma « case par case »/],
     ["sources citées et « à vérifier »", true, /Sources citées : chaque page donne ses sources officielles/],
+    ["phrase propre au document sous « Télécharger le PDF » vers le Pass Journée, clics comptés (25/11/2026)", /data-clic="pass-modele"/.test(js), /Pass Journée sous le téléchargement : sur chaque modèle, sous « Télécharger le PDF », une phrase propre au document[\s\S]{0,250}Les clics vers la page du Pass sont comptés, sans savoir qui clique/],
     ["annuaires gratuits et calculateur de crédit", /cat-annuaire/.test(acc) && /outils\.clicvia\.com\/credit/.test(js), /Annuaires gratuits : liens vers nos annuaires[^.]*calculateur de crédit/],
     ["langue FR / AR", /\.langue/.test(js), /Français \/ arabe : le bouton de langue/],
     ["une adresse par langue (arabe à l'adresse principale, français sous fr/)", existsSync(join(root, "fr/index.html")) && /data-langue-fixe/.test(js), /Une adresse par langue : chaque page existe en arabe à l'adresse principale[\s\S]{0,80}en français sous « fr\/ »/],

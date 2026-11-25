@@ -133,6 +133,21 @@ document.addEventListener("click", e => {
   try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: a.dataset.annuaire, title: "Annuaire : " + a.dataset.annuaire, event: true }); } catch (err) {}
 });
 
+/* --- clics vers la page du Pass Journée (25/11/2026, décision d'Ahmed ; PAS de gratuité) : tout lien data-clic="<nom>" (phrase sous
+   « Télécharger le PDF », écran de blocage, tampon de l'aperçu, rappel « Renouveler mon Pass ») est compté dans GoatCounter comme un
+   ÉVÉNEMENT « /documents-tunisie/clic/<nom> » (préfixe du site, compteur commun), sans savoir qui clique. Rien si GoatCounter est absent
+   ou bloqué ; le lien s'ouvre toujours. --- */
+const TITRES_CLIC = { "pass-modele": "Clic vers le Pass (phrase sous « Télécharger le PDF »)", "pass-blocage": "Clic vers le Pass (écran « document gratuit du jour déjà pris »)",
+  "pass-apercu": "Clic vers le Pass (tampon de l'aperçu)", "pass-rappel": "Clic « Renouveler mon Pass » (rappel de fin)" };
+document.addEventListener("click", e => {
+  const a = e.target && e.target.closest && e.target.closest("a[data-clic]");
+  if (!a) return;
+  const nom = (a.getAttribute("data-clic") || "").replace(/[^a-z-]/g, "");
+  if (!nom) return;
+  try { if (window.goatcounter && typeof window.goatcounter.count === "function")
+    window.goatcounter.count({ path: "/documents-tunisie/clic/" + nom, title: TITRES_CLIC[nom] || "Clic " + nom, event: true }); } catch (err) {}
+});
+
 function lienWhatsApp(texte) { return "https://wa.me/?text=" + encodeURIComponent(texte + " " + location.href.split("?")[0]); }
 
 /* --- accueil : recherche et catégories --- */

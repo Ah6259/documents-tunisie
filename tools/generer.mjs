@@ -216,18 +216,51 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
       <button type="submit" class="btn-pro">${bi("Activer mon Pass", "تفعيل الباقة")}</button>
       <p class="code-status" role="status" aria-live="polite"></p>
     </form>`;
-  const PASS_MODELE = `  <p class="pass-lien" id="pass-lien"><a class="btn-pass" href="../pass/" target="_blank" rel="noopener">${bi("Pass Journée 7 DT : tous les documents pendant 24 heures", "باقة اليوم 7 د: كل الوثائق طيلة 24 ساعة")}</a><span class="petit">${bi("1 document PDF gratuit par jour sur ce téléphone.", "وثيقة PDF واحدة مجانية كل يوم على هذا الهاتف.")}</span></p>
+  // 25/11/2026 (décision d'Ahmed, PAS de gratuité) : sous « Télécharger le PDF », une phrase LIÉE AU DOCUMENT de la page
+  // (« Besoin d'une autre procuration aujourd'hui, ou d'un autre document ? ») au lieu du texte général ; clic compté (data-clic, page.js).
+  // AUTRE = [français avec son article, arabe accordé] ; un modèle sans ligne ici arrête la construction (jamais de phrase fausse).
+  const AUTRE = {
+    "procuration-conduite-vehicule": ["une autre procuration de conduite", "توكيل سياقة آخر"],
+    "attestation-de-travail": ["une autre attestation de travail", "شهادة عمل أخرى"],
+    "demande-de-conge": ["une autre demande de congé", "مطلب عطلة آخر"],
+    "lettre-de-demission": ["une autre lettre de démission", "مطلب استقالة آخر"],
+    "demande-d-emploi": ["une autre demande d'emploi", "مطلب شغل آخر"],
+    "demande-de-stage": ["une autre demande de stage", "مطلب تربص آخر"],
+    "lettre-de-motivation": ["une autre lettre de motivation", "رسالة دوافع أخرى"],
+    "autorisation-de-voyage-mineur": ["une autre autorisation de voyage", "ترخيص سفر آخر"],
+    "declaration-sur-l-honneur": ["une autre déclaration sur l'honneur", "تصريح على الشرف آخر"],
+    "demande-de-transfert-eleve": ["une autre demande de transfert", "مطلب نقلة آخر"],
+    "reclamation-administration": ["une autre réclamation", "شكاية أخرى"],
+    "resiliation-de-bail": ["une autre résiliation de bail", "إعلام بفسخ كراء آخر"],
+    "reconnaissance-de-dette": ["une autre reconnaissance de dette", "اعتراف بدين آخر"],
+    "procuration": ["une autre procuration", "توكيل آخر"],
+    "attestation-d-hebergement": ["une autre attestation d'hébergement", "شهادة إيواء أخرى"],
+    "recu-de-loyer": ["un autre reçu", "وصل آخر"],
+    "resiliation-internet-telephone": ["une autre résiliation d'abonnement", "مطلب فسخ اشتراك آخر"],
+    "demande-pret-d-honneur": ["une autre demande de prêt d'honneur", "مطلب قرض على الشرف آخر"],
+    "demande-acces-information": ["une autre demande d'accès à l'information", "مطلب نفاذ إلى معلومة آخر"],
+    "recours-acces-information": ["un autre recours", "مطلب تظلّم آخر"],
+    "requete-inai-acces-information": ["une autre requête à l'Instance d'accès à l'information", "عريضة أخرى لدى هيئة النفاذ إلى المعلومة"],
+    "requisition-immatriculation-fonciere": ["une autre réquisition d'immatriculation", "مطلب تسجيل عقار آخر"],
+    "demande-mise-a-jour-titre-foncier": ["une autre demande de mise à jour d'un titre foncier", "مطلب تحيين رسم عقاري آخر"],
+    "vente-voiture": ["un autre contrat de vente de voiture", "عقد بيع سيارة آخر"],
+    "vente-moto": ["un autre contrat de vente de moto", "عقد بيع دراجة نارية آخر"],
+    "location-maison": ["un autre contrat de location", "عقد كراء آخر"],
+    "bail-commercial": ["un autre bail commercial", "عقد كراء محل تجاري آخر"] };
+  const PASS_MODELE = d => { const a = AUTRE[d.slug];
+    if (!a) throw new Error(`phrase du Pass manquante pour le modèle « ${d.slug} » (ajouter une ligne à AUTRE dans tools/generer.mjs)`);
+    return `  <p class="pass-lien" id="pass-lien"><span class="pass-accroche" id="pass-accroche">${bi(`Besoin d'${a[0]} aujourd'hui, ou d'un autre document\u00a0?`, `تحتاج إلى ${a[1]} اليوم، أو إلى وثيقة أخرى؟`)}</span><a class="btn-pass" href="../pass/" target="_blank" rel="noopener" data-clic="pass-modele">${bi("Pass Journée 7 DT : tous les documents pendant 24 heures", "باقة اليوم 7 د: كل الوثائق طيلة 24 ساعة")}</a><span class="petit">${bi("1 document PDF gratuit par jour sur ce téléphone.", "وثيقة PDF واحدة مجانية كل يوم على هذا الهاتف.")}</span></p>
   <p class="pass-actif" id="pass-actif" role="status" hidden></p>
   <div class="pass-bloque abo" id="pass-bloque" tabindex="-1" hidden>
     <h3>${bi("Vous avez téléchargé votre document gratuit du jour", "لقد حمّلت وثيقتك المجانية لهذا اليوم")}</h3>
     <p>${bi("Chaque jour, 1 document PDF est gratuit sur ce téléphone. Pour télécharger celui-ci aujourd'hui :", "كل يوم، وثيقة PDF واحدة مجانية على هذا الهاتف. لتحميل هذه الوثيقة اليوم:")}</p>
-    <a class="btn-pro" href="../pass/" target="_blank" rel="noopener">${bi("Pass Journée 7 DT : tous les documents pendant 24 heures", "باقة اليوم 7 د: كل الوثائق طيلة 24 ساعة")}</a>
+    <a class="btn-pro" href="../pass/" target="_blank" rel="noopener" data-clic="pass-blocage">${bi("Pass Journée 7 DT : tous les documents pendant 24 heures", "باقة اليوم 7 د: كل الوثائق طيلة 24 ساعة")}</a>
     <p class="demain">${bi("Sinon, revenez demain : un nouveau document gratuit vous attend.", "وإلا، عد غدًا: وثيقة مجانية جديدة في انتظارك.")}</p>
     <p class="petit">${bi("Ce que vous avez écrit reste sur cette page : le Pass s'ouvre dans un nouvel onglet.", "ما كتبته يبقى في هذه الصفحة: الباقة تُفتح في نافذة جديدة.")}</p>
     <details class="pass-code"><summary>${bi("J'ai déjà un code", "لدي رمز")}</summary>
     ${formCode("code-modele")}
     </details>
-  </div>`;
+  </div>`; };
   const dlPaiement = `<div class="paie"><ol class="paie-etapes"><li><span data-l="fr">Ouvrez l&#39;application :</span><span data-l="ar">افتح التطبيق:</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer"><img src="../assets/paiement/d17.png" alt="D17" width="44" height="44"></a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer"><img src="../assets/paiement/izi.png" alt="IZI" width="44" height="44"></a></span><br><span class="petit"><span data-l="fr">Sur iPhone :</span><span data-l="ar">على آيفون:</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li><li><span data-l="fr">Dans D17 : « Transfert d’argent » puis « Transfert rapide ». Dans IZI : « Transfert ». Tapez le numéro</span><span data-l="ar">في D17: « تحويل الأموال » ثم « التحويل السريع ». في IZI: « تحويل ». أدخل الرقم</span> <strong><bdi dir="ltr"><span data-l="fr">24 321 390</span><span data-l="ar">24321390</span></bdi></strong>.<br><span data-l="fr">Montant :</span><span data-l="ar">المبلغ:</span> <strong>${bi("7 DT (Pass Journée, 24 heures)", "7 د (باقة اليوم، 24 ساعة)")}</strong><details class="aide-transfert"><summary title="Voir comment faire" aria-label="Voir comment faire">?</summary><div class="aide-images"><figure><img src="../assets/paiement/transfert-d17.svg" alt="Exemple D17 : Transfert rapide, numéro 24 321 390, montant, Envoyer" width="240" height="300" loading="lazy"><figcaption>D17</figcaption></figure><figure><img src="../assets/paiement/transfert-izi.svg" alt="Exemple IZI : Transfert, montant, numéro 24 321 390, Suivant" width="240" height="300" loading="lazy"><figcaption>IZI</figcaption></figure></div></details></li><li><span data-l="fr">Motif :</span><span data-l="ar">سبب الدفع:</span> <strong class="motif-code">${bi("votre code de commande", "رقم طلبك")}</strong><span class="motif-aide"> ${bi("(il s'affiche dès l'envoi du formulaire)", "(يظهر بمجرد إرسال الاستمارة)")}</span>. <span data-l="fr">Puis envoyez la capture du paiement par WhatsApp (bouton vert).</span><span data-l="ar">ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li></ol><p class="paie-confiance"><span data-l="fr">Vous payez directement dans l&#39;application officielle de La Poste Tunisienne (D17) ou de Zitouna Paiement (IZI) : nous ne voyons jamais vos codes.</span><span data-l="ar">تدفع مباشرة في التطبيق الرسمي للبريد التونسي (D17) أو لزيتونة للدفع (IZI): لا نطّلع أبدًا على رموزك.</span></p></div>`;
   const btnWa = id => `<a class="btn-wa" id="${id}" href="https://wa.me/21624321390?text=${encodeURIComponent(PASS_WA)}" data-texte="${esc(PASS_WA)}" target="_blank" rel="noopener noreferrer">${WHATSAPP}${bi("Envoyer la preuve de paiement par WhatsApp", "أرسل إثبات الدفع عبر واتساب")}</a>`;
 
@@ -316,7 +349,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   <div class="apercu-tampon" id="apercu-bloque" hidden>
     <span class="tampon-titre">${bi("Pass Journée", "باقة اليوم")}</span>
     <span class="tampon-sous">${bi("Votre document gratuit du jour est déjà utilisé. Payez le Pass pour télécharger et voir l'aperçu de plusieurs documents.", "استعملت وثيقتك المجانية لهذا اليوم. ادفع الباقة لتحميل ومعاينة عدة وثائق.")}</span>
-    <a href="../pass/" target="_blank" rel="noopener">${bi("7 DT : tous les documents pendant 24 heures", "7 د: كل الوثائق طيلة 24 ساعة")}</a>
+    <a href="../pass/" target="_blank" rel="noopener" data-clic="pass-apercu">${bi("7 DT : tous les documents pendant 24 heures", "7 د: كل الوثائق طيلة 24 ساعة")}</a>
     <span class="tampon-demain">${bi("ou revenez demain", "أو عد غدًا")}</span>
   </div>
   </div>
@@ -332,7 +365,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   <button class="bouton" type="button" id="telecharger">${svg(ICONES.pdf)}${bi("Télécharger le PDF", "تحميل ملف PDF")}</button>
   <a class="voir-apercu" id="voir-apercu" href="#apercu-carte">${bi("↑ Voir l'aperçu", "↑ معاينة الوثيقة")}</a>
   <p class="aide-pdf">${bi("Dans la fenêtre qui s'ouvre, choisissez « Enregistrer au format PDF ».", "في النافذة التي تظهر، اختر « حفظ بصيغة PDF ».")}</p>
-${PASS_MODELE}
+${PASS_MODELE(d)}
 </section>
 <p class="avert">${bi("Modèle indicatif — ce site n'est pas officiel et ne remplace pas un avocat. Relisez le document avant de le signer.", "نموذج استرشادي — هذا الموقع ليس رسميا ولا يعوض المحامي. أعد قراءة الوثيقة قبل إمضائها.")}</p>\n`;
     }
@@ -434,6 +467,7 @@ ${pied}`;
   <ul class="liste" data-l="fr">
     <li><b>Chercher un document</b> : la case de recherche de l'accueil comprend aussi les fautes d'orthographe (« au son ») et affiche le nombre de documents trouvés ; les catégories trient la liste.</li>
     <li><b>Remplir un modèle</b> : vous remplissez le formulaire, l'aperçu du document suit votre saisie (bouton « Voir l'aperçu »), puis « Télécharger le PDF » fabrique le PDF dans votre téléphone.</li>
+    <li><b>Pass Journée sous le téléchargement</b> : sur chaque modèle, sous « Télécharger le PDF », une phrase propre au document (par exemple « Besoin d'une autre procuration aujourd'hui, ou d'un autre document ? ») mène à la page du Pass Journée (7 DT, tous les documents pendant 24 heures). Les clics vers la page du Pass sont comptés, sans savoir qui clique.</li>
     <li><b>Les grands contrats</b> : vente de voiture, de moto, location de maison, avec toutes les étapes (légalisation, enregistrement, carte grise).</li>
     <li><b>Les étapes après la signature</b> : une rangée d'étapes numérotées en haut, puis le détail de chaque étape (légalisation, enregistrement, administration à contacter, pièces à apporter).</li>
     <li><b>Démarches expliquées</b> : explication seulement, à partir des textes officiels, sans modèle à remplir (divorce, mariage, contrat de travail…).</li>
@@ -452,6 +486,7 @@ ${pied}`;
   <ul class="liste" data-l="ar">
     <li><b>البحث عن وثيقة</b>: خانة البحث في الصفحة الرئيسية تفهم أيضًا الأخطاء الإملائية («حسب النطق») وتعرض عدد الوثائق؛ والأصناف ترتّب القائمة.</li>
     <li><b>تعمير نموذج</b>: تعمّر الاستمارة، ومعاينة الوثيقة تتبع ما تكتبه (زر «معاينة الوثيقة»)، ثم «تحميل ⁨PDF⁩» يصنع الملف في هاتفك.</li>
+    <li><b>باقة اليوم تحت زر التحميل</b>: في كل نموذج، تحت «تحميل ⁨PDF⁩»، جملة خاصة بالوثيقة (مثلا «تحتاج إلى توكيل آخر اليوم، أو إلى وثيقة أخرى؟») تؤدي إلى صفحة باقة اليوم (⁨7⁩ د، كل الوثائق طيلة ⁨24⁩ ساعة). تُحسب النقرات نحو صفحة الباقة دون معرفة من نقر.</li>
     <li><b>العقود الكبرى</b>: بيع سيارة أو دراجة نارية، كراء منزل، مع كل المراحل (التعريف بالإمضاء، التسجيل، البطاقة الرمادية).</li>
     <li><b>المراحل بعد الإمضاء</b>: صف مراحل مرقّمة في الأعلى، ثم تفاصيل كل مرحلة (التعريف بالإمضاء، التسجيل، الإدارة المعنية، الوثائق المطلوبة).</li>
     <li><b>إجراءات مشروحة</b>: شرح فقط انطلاقًا من النصوص الرسمية، دون نموذج للتعمير (الطلاق، الزواج، عقد الشغل…).</li>
@@ -484,8 +519,8 @@ ${pied}`;
   <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
-  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seuls votre choix de langue, le jour et le nom du document gratuit du jour (pour compter 1 document gratuit par jour) et, si vous en avez un, votre code de Pass Journée ou votre commande en attente (code de commande, formule et date : ni nom, ni téléphone, ni e-mail) sont gardés dans votre navigateur ; le code est vérifié dans votre téléphone. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, et le nom des modèles dont le téléchargement attend un Pass Journée, jamais ce que vous écrivez dans les formulaires. Seules exceptions, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer » ; la demande de Pass Journée envoie votre nom, votre téléphone et votre e-mail de la même façon, seulement pour reconnaître votre paiement et vous envoyer votre code (voir les <a href="../pass/conditions/">conditions du Pass Journée</a>). L'e-mail de confirmation part par notre service d'envoi (Resend) ; rien n'est gardé.</p>
-  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة، ويوم واسم الوثيقة المجانية لهذا اليوم (لحساب وثيقة مجانية واحدة كل يوم)، ورمز باقة اليوم أو طلبك في الانتظار إن كان لديك (رقم الطلب والباقة والتاريخ: دون اسم ولا هاتف ولا بريد)، تُحفظ في متصفحك؛ ويتم التثبت من الرمز داخل هاتفك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية (المحامون، عدول الإشهاد، المحاسبون) وحاسبة القروض، واسم النماذج التي ينتظر تحميلها باقة اليوم، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناءان الوحيدان، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال»؛ وطلب باقة اليوم يُرسل اسمك وهاتفك وبريدك الإلكتروني بنفس الطريقة، فقط للتعرّف على دفعتك وإرسال الرمز إليك (انظر <a href="../pass/conditions/">شروط باقة اليوم</a>). بريد التأكيد يُرسل عبر خدمة الإرسال لدينا (⁨Resend⁩)؛ ولا يُحفظ شيء.</p>
+  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seuls votre choix de langue, le jour et le nom du document gratuit du jour (pour compter 1 document gratuit par jour) et, si vous en avez un, votre code de Pass Journée ou votre commande en attente (code de commande, formule et date : ni nom, ni téléphone, ni e-mail) sont gardés dans votre navigateur ; le code est vérifié dans votre téléphone. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, le nom des modèles dont le téléchargement attend un Pass Journée et les clics vers la page du Pass Journée, jamais ce que vous écrivez dans les formulaires. Seules exceptions, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer » ; la demande de Pass Journée envoie votre nom, votre téléphone et votre e-mail de la même façon, seulement pour reconnaître votre paiement et vous envoyer votre code (voir les <a href="../pass/conditions/">conditions du Pass Journée</a>). L'e-mail de confirmation part par notre service d'envoi (Resend) ; rien n'est gardé.</p>
+  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة، ويوم واسم الوثيقة المجانية لهذا اليوم (لحساب وثيقة مجانية واحدة كل يوم)، ورمز باقة اليوم أو طلبك في الانتظار إن كان لديك (رقم الطلب والباقة والتاريخ: دون اسم ولا هاتف ولا بريد)، تُحفظ في متصفحك؛ ويتم التثبت من الرمز داخل هاتفك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية (المحامون، عدول الإشهاد، المحاسبون) وحاسبة القروض، واسم النماذج التي ينتظر تحميلها باقة اليوم والنقرات نحو صفحة باقة اليوم، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناءان الوحيدان، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال»؛ وطلب باقة اليوم يُرسل اسمك وهاتفك وبريدك الإلكتروني بنفس الطريقة، فقط للتعرّف على دفعتك وإرسال الرمز إليك (انظر <a href="../pass/conditions/">شروط باقة اليوم</a>). بريد التأكيد يُرسل عبر خدمة الإرسال لدينا (⁨Resend⁩)؛ ولا يُحفظ شيء.</p>
 </section>
 <section class="carte" id="credits">${h2("info", "Crédits photos", "مصادر الصور")}
   <ul class="sources">${Object.values(CREDITS).map(c => `<li>${esc(c.titre)} — ${esc(c.auteur)}, <a href="${esc(c.licence_url || c.source)}" rel="noopener noreferrer" target="_blank">${esc(c.licence)}</a>, <a href="${esc(c.source)}" rel="noopener noreferrer" target="_blank">Wikimedia Commons</a> (${bi("recadrée et compressée", "مقصوصة ومضغوطة")})</li>`).join("")}</ul>
