@@ -1,12 +1,13 @@
 // Fabrique toutes les pages HTML du site à partir des données (assets/documents.js) :
 //   node tools/generer.mjs
 // À relancer après chaque modification des données, des textes ou des fichiers assets/ (le ?v= change tout seul).
-import { readFileSync, writeFileSync, mkdirSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
 import { createHash } from "crypto";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { createRequire } from "module";
 import { versions, renvoi } from "./langues.mjs";
+import { lireMemoire, dateConnue, majMemoire } from "./lastmod.mjs";
 
 export function pages(root) {
   const lire = f => readFileSync(join(root, f), "utf8");
@@ -686,10 +687,13 @@ ${pied}`;
   /* ---------------- plan du site ---------------- */
   const pages_ = ["", ...DOCS.map(d => d.slug + "/"), ...CONTRATS.map(d => d.slug + "/"), ...GUIDES.map(d => d.slug + "/"), "a-propos/", "pass/"];
   const urls = [...pages_.flatMap(u => [u, "fr/" + u]), "video/"];   // arabe (racine) + français (fr/) ; ar/ = renvois, hors du plan ; video/ : une seule adresse (?lang=)
-  const [j, m, a] = MAJ.split("/");
+  // date de chaque adresse = dernier VRAI changement de sa page (25/11/2026, plan Google B.2 ; tools/lastmod.mjs, mémoire donnees/lastmod.json),
+  // jamais la même date pour tout ; contenu pas encore en mémoire = date du jour (la mémoire est mise à jour quand les pages sont écrites)
+  const memoire = lireMemoire(root), auj = new Date().toISOString().slice(0, 10);
+  const contenuDe = f => out[f] ?? (existsSync(join(root, f)) ? readFileSync(join(root, f), "utf8") : null);
   out["sitemap.xml"] = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(u => `  <url><loc>${URL}${u}</loc><lastmod>${a}-${m}-${j}</lastmod></url>`).join("\n")}
+${urls.map(u => `  <url><loc>${URL}${u}</loc><lastmod>${dateConnue(memoire, u + "index.html", contenuDe(u + "index.html")) || auj}</lastmod></url>`).join("\n")}
 </urlset>
 `;
   return out;
@@ -705,5 +709,9 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   // la page vidéo est tirée de a-propos/ (arabe à langue fixe) : elle garde UNE adresse, sa langue vient de ?lang= (défaut : arabe)
   { const f = join(root, "video/index.html"), h = readFileSync(f, "utf8").replace(/ data-langue-fixe="(fr|ar)" data-autre-langue="[^"]*"/, "");
     writeFileSync(f, h); }
+  // plan du site : mémoire des dates mise à jour d'après les pages écrites, puis plan refait avec ces dates (25/11/2026, B.2)
+  const adresses = [...p["sitemap.xml"].matchAll(/<loc>https:\/\/[^/]+\/([^<]*)<\/loc>/g)].map(m => m[1] + "index.html");
+  majMemoire(root, Object.fromEntries(adresses.map(f => [f, readFileSync(join(root, f), "utf8")])), new Date().toISOString().slice(0, 10));
+  writeFileSync(join(root, "sitemap.xml"), pages(root)["sitemap.xml"]);
   console.log(Object.keys(p).length + " fichiers écrits");
 }

@@ -318,3 +318,4 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 - « Comment fonctionne le site ? » (FR + AR) : ligne « Pass Journée sous le téléchargement » + clics dans « Vos données » ; FONCTIONS (23).
 - Tests : bloc « 25/11/2026 » de test_site.mjs (27 modèles × 2 langues, aucune gratuité promise, liens comptés, faux GoatCounter / GoatCounter bloqué) ;
   4 sabotages (83). `SABOTAGE=<mot> node tools/sabotage.mjs` ne lance que les sabotages dont le nom contient ce mot (essai rapide ; GitHub les lance tous).
+- **25/11/2026 — plan Google B.2** : date honnête de chaque adresse du plan du site (`tools/lastmod.mjs`, mémoire `donnees/lastmod.json`, empreinte du contenu sans dates ni ?v= ; page inconnue = date retrouvée dans git) ; test dans test_site.mjs. Aucune page maigre retirée (B.1 : les 73 adresses sont de vrais modèles et guides).

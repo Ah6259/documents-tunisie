@@ -880,6 +880,34 @@ const gen = await import("file://" + join(root, "tools/generer.mjs").replace(/\\
 const attendu = gen.pages(root);
 const perimees = Object.entries(attendu).filter(([f, s]) => !existsSync(join(root, f)) || lire(f).replace(/\r\n/g, "\n") !== s).map(([f]) => f);
 check(`pages à jour (sinon : node tools/generer.mjs)${perimees.length ? " — " + perimees.join(", ") : ""}`, !perimees.length);
+// ---- 25/11/2026 (plan Google B.2) : <lastmod> = dernier VRAI changement de chaque page (tools/lastmod.mjs, mémoire donnees/lastmod.json),
+//      jamais la même date pour tout (avant : la date MAJ de page.js sur les 73 adresses). Aucune page maigre sur ce site (B.1 : rien en noindex).
+{
+  const sm = lire("sitemap.xml"), urlsD = [...sm.matchAll(/<url><loc>https:\/\/[^/]+\/([^<]*)<\/loc><lastmod>([^<]+)<\/lastmod>/g)];
+  const jourT = new Date().toISOString().slice(0, 10), LMJ = existsSync(join(root, "donnees/lastmod.json")) ? JSON.parse(lire("donnees/lastmod.json")) : {};
+  const L = await import("file://" + join(root, "tools/lastmod.mjs").replace(/\\/g, "/"));
+  const faux = urlsD.filter(([, u, d]) => !LMJ[u + "index.html"] || LMJ[u + "index.html"].date !== d || LMJ[u + "index.html"].empreinte !== L.empreinte(lire(u + "index.html"))).map(m => m[1]);
+  check(`plan du site : chaque date = celle de donnees/lastmod.json, pour le contenu actuel de la page (${urlsD.length} adresses)` + (faux.length ? " — " + faux.slice(0, 3).join(", ") : ""), urlsD.length > 10 && !faux.length);
+  const toutAuj = urlsD.every(m => m[2] === jourT);
+  // le jour où TOUTES les pages ont vraiment changé (ex. 25/11/2026 : pied de page refait), elles sont toutes du jour : seul ce cas est permis
+  check("plan du site : les dates ne sont pas toutes celles du jour (sauf si la mémoire montre que tout a vraiment changé ce jour-là)",
+    !toutAuj || Object.entries(LMJ).filter(([k]) => k !== "_version").every(([, x]) => x.date === jourT));
+  check("tools/generer.mjs : dates du plan du site tirées de la mémoire (tools/lastmod.mjs), plus la date MAJ pour tout", /dateConnue\(memoire/.test(lire("tools/generer.mjs")) && !/<lastmod>\$\{a\}-\$\{m\}-\$\{j\}/.test(lire("tools/generer.mjs")));
+  const noidx = urlsD.filter(([, u]) => /<meta name="robots" content="[^"]*noindex/.test(lire(u + "index.html"))).map(m => m[1]);
+  check("plan du site : aucune page en noindex ; accueil (arabe et fr/) jamais en noindex" + (noidx.length ? " — " + noidx.join(", ") : ""), !noidx.length
+    && !/noindex/.test(lire("index.html").match(/<meta name="robots"[^>]*>/)[0]) && !/noindex/.test(lire("fr/index.html").match(/<meta name="robots"[^>]*>/)[0]));
+  // données inventées : page dont seuls la date, l'heure et le ?v= changent = date gardée ; contenu changé = date du jour ; page inconnue hors git = date du jour
+  const { mkdtempSync, writeFileSync: ecr, rmSync } = await import("fs"), { tmpdir } = await import("os");
+  const tmp = mkdtempSync(join(tmpdir(), "lastmod-"));
+  try {
+    const m1 = L.majMemoire(tmp, { "a/index.html": '<p>Vérifié le 01/11/2026 16:42</p><link href="s.css?v=1">', "b/index.html": "<p>Procuration</p>" }, "2026-11-01");
+    const m2 = L.majMemoire(tmp, { "a/index.html": '<p>Vérifié le 02/11/2026 07:05</p><link href="s.css?v=2">', "b/index.html": "<p>Procuration générale</p>" }, "2026-11-02");
+    check("tools/lastmod.mjs (données inventées) : seuls la date, l'heure et le ?v= changent = date gardée ; contenu changé = date du jour",
+      m1["a/index.html"].date === "2026-11-01" && m2["a/index.html"].date === "2026-11-01" && m2["b/index.html"].date === "2026-11-02"
+      && L.dateConnue(m2, "a/index.html", '<p>Vérifié le 09/12/2026</p><link href="s.css?v=9">') === "2026-11-01" && L.dateConnue(m2, "b/index.html", "<p>autre</p>") === null);
+  } catch (e) { check("tools/lastmod.mjs (données inventées) : " + e.message, false); }
+  finally { rmSync(tmp, { recursive: true, force: true }); }
+}
 check("plan du site : au moins 29 pages (dont pass/ et la page vidéo)", (lire("sitemap.xml").match(/<loc>/g) || []).length >= 29 && lire("sitemap.xml").includes("documents.clicvia.com/pass/</loc>") && lire("sitemap.xml").includes("documents.clicvia.com/video/</loc>"));
 
 // photos : licence libre, crédit, preuves
