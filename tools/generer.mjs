@@ -200,7 +200,15 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
   /* ---------------- Pass Journée (assets/pass.js ; accord écrit d'Ahmed du 06/10/2026) ----------------
      1 PDF gratuit par jour et par appareil ; Pass Journée 7 DT = tous les documents pendant 24 heures.
      Bouton « Pass Journée » seulement sur les pages de modèle (près du téléchargement) et sur pass/ : JAMAIS sur l'accueil. */
-  const PASS_WA = "Bonjour, voici la preuve de paiement de mon Pass Journée (7 DT, Documents Tunisie). Nom et téléphone : ";
+  // 25/11/2026 (parcours commun des Pass, règle § 70) : le code de commande est créé AU FORMULAIRE (assets/pass.js) ;
+  // il est le motif du paiement, il est dans le message WhatsApp, et c'est lui qui s'ouvre dès réception du paiement.
+  const PASS_WA = "Bonjour, voici la preuve de paiement de mon Pass Journée (7 DT, Documents Tunisie).";
+  const PHRASE_CODE = bi("C'est votre numéro de commande : écrivez-le dans le motif du paiement, il nous sert à reconnaître votre paiement.", "هذا رقم طلبك: اكتبه في خانة سبب الدفع، يساعدنا على التعرّف على دفعتك.")
+    // e-mail automatique PAS ENCORE en service (25/11/2026) : phrase cachée ; assets/pass.js ne l'affiche que si EMAIL_AUTO = true
+    + `<span class="email-auto" hidden> ${bi("Vous le recevez aussi par e-mail.", "يصلك أيضًا عبر البريد الإلكتروني.")}</span>`;
+  const FILET = `<p class="filet">${bi("Vous avez oublié le code dans le motif ? Ce n'est pas grave : envoyez quand même la preuve sur WhatsApp, nous retrouvons votre demande.", "نسيت الرمز في سبب الدفع؟ لا بأس: أرسل الوصل على واتساب وسنجد طلبك.")}</p>`;
+  const ENSUITE = `<p class="ensuite">${bi("Ensuite : votre code de commande s'ouvre dès réception du paiement (le code marche 10 minutes au plus après). Revenez sur cette page : le site essaie votre code tout seul et ouvre votre Pass Journée pour 24 heures. Vous pouvez aussi taper le code dans « J'ai un code » ou sur la page du document.", "بعد ذلك: يُفعَّل رقم طلبك بمجرد وصول الدفع (يعمل الرمز بعد ⁨10⁩ دقائق على الأكثر). عد إلى هذه الصفحة: يجرّب الموقع رمزك وحده ويفتح باقة اليوم لمدة ⁨24⁩ ساعة. يمكنك أيضًا كتابة الرمز في «لدي رمز» أو في صفحة الوثيقة.")}</p>`;
+  const NOUVELLE = `<button type="button" class="btn-clair nouvelle-commande">${bi("Nouvelle commande", "طلب جديد")}</button>`;
   const formCode = id => `<form class="code-form" id="${id}" novalidate>
       <label class="abo-etiquette" for="${id}-saisie">${bi("Votre code d'accès (8 caractères)", "رمز الدخول (8 حروف وأرقام)")}</label>
       <input type="text" id="${id}-saisie" name="code" required maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false">
@@ -219,7 +227,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
     ${formCode("code-modele")}
     </details>
   </div>`;
-  const dlPaiement = `<div class="paie"><ol class="paie-etapes"><li><span data-l="fr">Ouvrez l&#39;application :</span><span data-l="ar">افتح التطبيق:</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer"><img src="../assets/paiement/d17.png" alt="D17" width="44" height="44"></a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer"><img src="../assets/paiement/izi.png" alt="IZI" width="44" height="44"></a></span><br><span class="petit"><span data-l="fr">Sur iPhone :</span><span data-l="ar">على آيفون:</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li><li><span data-l="fr">Dans D17 : « Transfert d’argent » puis « Transfert rapide ». Dans IZI : « Transfert ». Tapez le numéro</span><span data-l="ar">في D17: « تحويل الأموال » ثم « التحويل السريع ». في IZI: « تحويل ». أدخل الرقم</span> <strong><bdi dir="ltr">24 321 390</bdi></strong>.<br><span data-l="fr">Montant :</span><span data-l="ar">المبلغ:</span> <strong>${bi("7 DT (Pass Journée, 24 heures)", "7 د (باقة اليوم، 24 ساعة)")}</strong><details class="aide-transfert"><summary title="Voir comment faire" aria-label="Voir comment faire">?</summary><div class="aide-images"><figure><img src="../assets/paiement/transfert-d17.svg" alt="Exemple D17 : Transfert rapide, numéro 24 321 390, montant, Envoyer" width="240" height="300" loading="lazy"><figcaption>D17</figcaption></figure><figure><img src="../assets/paiement/transfert-izi.svg" alt="Exemple IZI : Transfert, montant, numéro 24 321 390, Suivant" width="240" height="300" loading="lazy"><figcaption>IZI</figcaption></figure></div></details></li><li><span data-l="fr">Motif :</span><span data-l="ar">سبب الدفع:</span> <strong>${bi("votre nom et votre téléphone", "اسمك ورقم هاتفك")}</strong>. <span data-l="fr">Puis envoyez la capture du paiement par WhatsApp (bouton vert).</span><span data-l="ar">ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li></ol><p class="paie-confiance"><span data-l="fr">Vous payez directement dans l&#39;application officielle de La Poste Tunisienne (D17) ou de Zitouna Paiement (IZI) : nous ne voyons jamais vos codes.</span><span data-l="ar">تدفع مباشرة في التطبيق الرسمي للبريد التونسي (D17) أو لزيتونة للدفع (IZI): لا نطّلع أبدًا على رموزك.</span></p></div>`;
+  const dlPaiement = `<div class="paie"><ol class="paie-etapes"><li><span data-l="fr">Ouvrez l&#39;application :</span><span data-l="ar">افتح التطبيق:</span> <span class="applis"><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.mobipost" target="_blank" rel="noopener noreferrer"><img src="../assets/paiement/d17.png" alt="D17" width="44" height="44"></a><a class="appli-btn" href="https://play.google.com/store/apps/details?id=tn.izi.consumer" target="_blank" rel="noopener noreferrer"><img src="../assets/paiement/izi.png" alt="IZI" width="44" height="44"></a></span><br><span class="petit"><span data-l="fr">Sur iPhone :</span><span data-l="ar">على آيفون:</span> <a class="appli" href="https://apps.apple.com/tn/app/digipostbank-d17/id1475640303" target="_blank" rel="noopener noreferrer">D17</a> · <a class="appli" href="https://apps.apple.com/tn/app/izi/id1603653941" target="_blank" rel="noopener noreferrer">IZI</a></span></li><li><span data-l="fr">Dans D17 : « Transfert d’argent » puis « Transfert rapide ». Dans IZI : « Transfert ». Tapez le numéro</span><span data-l="ar">في D17: « تحويل الأموال » ثم « التحويل السريع ». في IZI: « تحويل ». أدخل الرقم</span> <strong><bdi dir="ltr"><span data-l="fr">24 321 390</span><span data-l="ar">24321390</span></bdi></strong>.<br><span data-l="fr">Montant :</span><span data-l="ar">المبلغ:</span> <strong>${bi("7 DT (Pass Journée, 24 heures)", "7 د (باقة اليوم، 24 ساعة)")}</strong><details class="aide-transfert"><summary title="Voir comment faire" aria-label="Voir comment faire">?</summary><div class="aide-images"><figure><img src="../assets/paiement/transfert-d17.svg" alt="Exemple D17 : Transfert rapide, numéro 24 321 390, montant, Envoyer" width="240" height="300" loading="lazy"><figcaption>D17</figcaption></figure><figure><img src="../assets/paiement/transfert-izi.svg" alt="Exemple IZI : Transfert, montant, numéro 24 321 390, Suivant" width="240" height="300" loading="lazy"><figcaption>IZI</figcaption></figure></div></details></li><li><span data-l="fr">Motif :</span><span data-l="ar">سبب الدفع:</span> <strong class="motif-code">${bi("votre code de commande", "رقم طلبك")}</strong><span class="motif-aide"> ${bi("(il s'affiche dès l'envoi du formulaire)", "(يظهر بمجرد إرسال الاستمارة)")}</span>. <span data-l="fr">Puis envoyez la capture du paiement par WhatsApp (bouton vert).</span><span data-l="ar">ثم أرسل لقطة الدفع عبر واتساب (الزر الأخضر).</span></li></ol><p class="paie-confiance"><span data-l="fr">Vous payez directement dans l&#39;application officielle de La Poste Tunisienne (D17) ou de Zitouna Paiement (IZI) : nous ne voyons jamais vos codes.</span><span data-l="ar">تدفع مباشرة في التطبيق الرسمي للبريد التونسي (D17) أو لزيتونة للدفع (IZI): لا نطّلع أبدًا على رموزك.</span></p></div>`;
   const btnWa = id => `<a class="btn-wa" id="${id}" href="https://wa.me/21624321390?text=${encodeURIComponent(PASS_WA)}" data-texte="${esc(PASS_WA)}" target="_blank" rel="noopener noreferrer">${WHATSAPP}${bi("Envoyer la preuve de paiement par WhatsApp", "أرسل إثبات الدفع عبر واتساب")}</a>`;
 
   const out = {};
@@ -460,8 +468,8 @@ ${pied}`;
   </ul>
 </section>
 <section class="carte" id="gratuit-pass">${h2("pdf", "Gratuit et Pass Journée", "المجاني وباقة اليوم")}
-  <p data-l="fr">Les pages, les formulaires et les étapes sont <b>gratuits</b>. <b>1 document PDF est gratuit chaque jour</b> sur chaque téléphone (retélécharger le même document le même jour reste permis). Pour un autre document le même jour, le <a href="../pass/">Pass Journée</a> (payant, 7 DT) donne tous les documents pendant 24 heures : paiement D17 ou IZI, puis vous recevez un <b>code</b> à taper sur la page du Pass. Pas de renouvellement automatique. Peu avant la fin du Pass, un bandeau vous prévient.</p>
-  <p data-l="ar">الصفحات والاستمارات والمراحل <b>مجانية</b>. <b>وثيقة ⁨PDF⁩ واحدة مجانية كل يوم</b> على كل هاتف (إعادة تحميل نفس الوثيقة في نفس اليوم مسموحة). ولوثيقة أخرى في نفس اليوم، <a href="../pass/">باقة اليوم</a> (بمقابل، ⁨7⁩ د) تمنح كل الوثائق طيلة ⁨24⁩ ساعة: الدفع عبر ⁨D17⁩ أو ⁨IZI⁩، ثم تتلقى <b>رمزًا</b> تكتبه في صفحة الباقة. دون تجديد آلي. وقبل نهاية الباقة بقليل، يُعلمك شريط بذلك.</p>
+  <p data-l="fr">Les pages, les formulaires et les étapes sont <b>gratuits</b>. <b>1 document PDF est gratuit chaque jour</b> sur chaque téléphone (retélécharger le même document le même jour reste permis). Pour un autre document le même jour, le <a href="../pass/">Pass Journée</a> (payant, 7 DT) donne tous les documents pendant 24 heures : le formulaire vous donne tout de suite un <b>code de commande</b>, à écrire dans le motif du paiement D17 ou IZI ; ce code s'ouvre dès réception du paiement, et en revenant sur la page du Pass le site l'active tout seul sur votre téléphone (ou tapez-le dans « J'ai un code »). Code oublié dans le motif : envoyez quand même la preuve sur WhatsApp, nous retrouvons votre demande. Pas de renouvellement automatique. Peu avant la fin du Pass, un bandeau vous prévient.</p>
+  <p data-l="ar">الصفحات والاستمارات والمراحل <b>مجانية</b>. <b>وثيقة ⁨PDF⁩ واحدة مجانية كل يوم</b> على كل هاتف (إعادة تحميل نفس الوثيقة في نفس اليوم مسموحة). ولوثيقة أخرى في نفس اليوم، <a href="../pass/">باقة اليوم</a> (بمقابل، ⁨7⁩ د) تمنح كل الوثائق طيلة ⁨24⁩ ساعة: تعطيك الاستمارة حالًا <b>رقم طلب</b> تكتبه في سبب الدفع عبر ⁨D17⁩ أو ⁨IZI⁩؛ يُفعَّل هذا الرقم بمجرد وصول الدفع، وعند عودتك إلى صفحة الباقة يفعّله الموقع وحده على هاتفك (أو اكتبه في «لدي رمز»). وإن نسيت الرمز في سبب الدفع: أرسل الوصل على واتساب وسنجد طلبك. دون تجديد آلي. وقبل نهاية الباقة بقليل، يُعلمك شريط بذلك.</p>
 </section>
 <section class="carte">${h2("livre", "Méthode et sources officielles", "المنهجية والمصادر الرسمية")}
   <p data-l="fr">Les textes des modèles sont <b>écrits par nous</b> à partir des textes de loi et des sites officiels ; ils ne sont copiés d'aucun autre site. Chaque page cite ses sources et sa date de vérification (<span data-maj>${MAJ}</span>). <b>Mises à jour automatiques</b> : un robot vérifie chaque mois que ces sources répondent toujours. Ce site est <b>indépendant</b> : il n'a aucun lien avec l'administration.</p>
@@ -475,8 +483,8 @@ ${pied}`;
   <ul class="liste" data-l="ar"><li>هذا الموقع <b>ليس رسميا</b> ولا يعوض المحامي أو عدل الإشهاد أو الإدارة.</li><li>المبالغ والآجال غير المؤكدة تحمل عبارة <b>« يُتثبت منه »</b>.</li><li>الوثائق التي تسلمها الإدارة (شهادة الإقامة، عدم الرهن…) ليست نماذج: اطلبها من الإدارة.</li></ul>
 </section>
 <section class="carte">${h2("cadenas", "Vos données personnelles", "معطياتك الشخصية")}
-  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seuls votre choix de langue, le jour et le nom du document gratuit du jour (pour compter 1 document gratuit par jour) et, si vous en avez un, votre code de Pass Journée sont gardés dans votre navigateur ; le code est vérifié dans votre téléphone. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, et le nom des modèles dont le téléchargement attend un Pass Journée, jamais ce que vous écrivez dans les formulaires. Seules exceptions, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer » ; la demande de Pass Journée envoie votre nom, votre téléphone et votre e-mail de la même façon, seulement pour vous envoyer votre code (voir les <a href="../pass/conditions/">conditions du Pass Journée</a>).</p>
-  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة، ويوم واسم الوثيقة المجانية لهذا اليوم (لحساب وثيقة مجانية واحدة كل يوم)، ورمز باقة اليوم إن كان لديك، تُحفظ في متصفحك؛ ويتم التثبت من الرمز داخل هاتفك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية (المحامون، عدول الإشهاد، المحاسبون) وحاسبة القروض، واسم النماذج التي ينتظر تحميلها باقة اليوم، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناءان الوحيدان، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال»؛ وطلب باقة اليوم يُرسل اسمك وهاتفك وبريدك الإلكتروني بنفس الطريقة، فقط لإرسال الرمز إليك (انظر <a href="../pass/conditions/">شروط باقة اليوم</a>).</p>
+  <p data-l="fr">Ce que vous écrivez dans les formulaires <b>reste dans votre téléphone</b> : le document et le PDF sont fabriqués par votre navigateur. Rien n'est envoyé, rien n'est enregistré, il n'y a pas de compte. Seuls votre choix de langue, le jour et le nom du document gratuit du jour (pour compter 1 document gratuit par jour) et, si vous en avez un, votre code de Pass Journée ou votre commande en attente (code de commande, formule et date : ni nom, ni téléphone, ni e-mail) sont gardés dans votre navigateur ; le code est vérifié dans votre téléphone. Des statistiques de visite anonymes, sans cookies (GoatCounter), comptent seulement les pages consultées, le nom des modèles transformés en PDF les mots cherchés sans résultat (sans les chiffres) les clics vers les annuaires gratuits (avocats, notaires, comptables) et le calculateur de crédit, et le nom des modèles dont le téléchargement attend un Pass Journée, jamais ce que vous écrivez dans les formulaires. Seules exceptions, à votre initiative : la section « Votre avis » de l'accueil envoie votre message (et votre e-mail si vous le donnez) au créateur du site par le service Formspree, uniquement quand vous cliquez sur « Envoyer » ; la demande de Pass Journée envoie votre nom, votre téléphone et votre e-mail de la même façon, seulement pour reconnaître votre paiement et vous envoyer votre code (voir les <a href="../pass/conditions/">conditions du Pass Journée</a>).</p>
+  <p data-l="ar">ما تكتبه في الاستمارات <b>يبقى في هاتفك</b>: الوثيقة وملف ⁨PDF⁩ يصنعهما متصفحك. لا يُرسل أي شيء ولا يُحفظ، ولا يوجد حساب. فقط اختيارك للغة، ويوم واسم الوثيقة المجانية لهذا اليوم (لحساب وثيقة مجانية واحدة كل يوم)، ورمز باقة اليوم أو طلبك في الانتظار إن كان لديك (رقم الطلب والباقة والتاريخ: دون اسم ولا هاتف ولا بريد)، تُحفظ في متصفحك؛ ويتم التثبت من الرمز داخل هاتفك. إحصائيات زيارة مجهولة، بدون ملفات تعريف الارتباط (⁨GoatCounter⁩)، تحسب فقط الصفحات التي تمت زيارتها واسم النماذج التي صُنع منها ملف ⁨PDF⁩ والكلمات التي بُحث عنها دون نتيجة (بدون الأرقام) والنقرات على الأدلة المجانية (المحامون، عدول الإشهاد، المحاسبون) وحاسبة القروض، واسم النماذج التي ينتظر تحميلها باقة اليوم، ولا تحسب أبدًا ما تكتبه في الاستمارات. الاستثناءان الوحيدان، بمبادرة منك: قسم «رأيك» في الصفحة الرئيسية يُرسل رسالتك (وبريدك إن أعطيته) إلى صاحب الموقع عبر خدمة ⁨Formspree⁩، فقط عند الضغط على «إرسال»؛ وطلب باقة اليوم يُرسل اسمك وهاتفك وبريدك الإلكتروني بنفس الطريقة، فقط للتعرّف على دفعتك وإرسال الرمز إليك (انظر <a href="../pass/conditions/">شروط باقة اليوم</a>).</p>
 </section>
 <section class="carte" id="credits">${h2("info", "Crédits photos", "مصادر الصور")}
   <ul class="sources">${Object.values(CREDITS).map(c => `<li>${esc(c.titre)} — ${esc(c.auteur)}, <a href="${esc(c.licence_url || c.source)}" rel="noopener noreferrer" target="_blank">${esc(c.licence)}</a>, <a href="${esc(c.source)}" rel="noopener noreferrer" target="_blank">Wikimedia Commons</a> (${bi("recadrée et compressée", "مقصوصة ومضغوطة")})</li>`).join("")}</ul>
@@ -501,6 +509,16 @@ ${pied}`;
                 "كل الوثائق بصيغة PDF طيلة 24 ساعة، مقابل 7 د. دون باقة، تبقى وثيقة PDF واحدة مجانية كل يوم، وتبقى الصفحات والمراحل مجانية.") });
     s += `\n<main class="wrap chevauche">
 <section class="carte pass-etat" id="pass-etat" role="status" hidden></section>
+<section class="carte abo commande-attente" id="commande-attente" hidden>
+  <h2>${bi("Votre commande en attente", "طلبك في الانتظار")}</h2>
+  <p class="commande-ligne" id="commande-ligne"></p>
+  <p class="code-explication">${PHRASE_CODE}</p>
+  <p class="commande-etat" id="commande-etat" role="status" aria-live="polite"></p>
+  ${dlPaiement}
+  ${btnWa("pass-preuve-attente")}
+  ${FILET}
+  ${NOUVELLE}
+</section>
 <section class="carte abo code-haut" id="code-acces">
   <h2>${bi("J'ai un code", "لدي رمز")}</h2>
   ${formCode("code-pass")}
@@ -513,23 +531,23 @@ ${pied}`;
   <ul class="avantages masque-si-paiement" data-l="fr">
     <li><b>Tous les modèles en PDF</b>, autant que vous voulez, pendant 24 heures</li>
     <li>En <b>français, en arabe ou les deux</b></li>
-    <li><b>Valable 24 heures à partir de l'envoi de votre code</b></li>
-    <li>Pas de compte ni d'application : un code à taper une fois</li>
+    <li><b>Valable 24 heures à partir de l'ouverture de votre code</b> (dès réception du paiement)</li>
+    <li>Pas de compte ni d'application : un code de commande, qui s'ouvre tout seul sur ce téléphone</li>
     <li><strong>Pas de renouvellement automatique</strong> : après 24 heures, retour au gratuit (1 document par jour)</li>
     <li>Vos documents sont toujours fabriqués dans votre téléphone : rien n'est envoyé</li>
   </ul>
   <ul class="avantages masque-si-paiement" data-l="ar">
     <li><b>كل النماذج بصيغة ⁨PDF⁩</b>، بقدر ما تريد، طيلة ⁨24⁩ ساعة</li>
     <li><b>بالعربية أو بالفرنسية أو بالاثنتين</b></li>
-    <li><b>صالحة ⁨24⁩ ساعة ابتداءً من إرسال رمزك</b></li>
-    <li>دون حساب ولا تطبيق: رمز تكتبه مرة واحدة</li>
+    <li><b>صالحة ⁨24⁩ ساعة ابتداءً من تفعيل رمزك</b> (بمجرد وصول الدفع)</li>
+    <li>دون حساب ولا تطبيق: رقم طلب يُفعَّل وحده على هذا الهاتف</li>
     <li><strong>لا تجديد آلي</strong>: بعد ⁨24⁩ ساعة تعود إلى المجاني (وثيقة واحدة كل يوم)</li>
     <li>وثائقك تُصنع دائمًا في هاتفك: لا يُرسل أي شيء</li>
   </ul>
   <details class="paiement" id="paiement"><summary class="btn-clair">${bi("Paiement", "الدفع")}</summary>
     ${dlPaiement}
     ${btnWa("pass-preuve")}
-    <p class="petit">${bi("Payez avec pour motif votre nom et votre téléphone, puis envoyez la preuve par WhatsApp : vous recevrez votre code par WhatsApp.", "ادفع مع ذكر اسمك ورقم هاتفك كسبب للدفع، ثم أرسل الإثبات عبر واتساب: سيصلك رمزك عبر واتساب.")}</p>
+    <p class="petit">${bi("Payez avec pour motif votre code de commande (il s'affiche dès l'envoi du formulaire ci-dessous), puis envoyez la preuve par WhatsApp : votre code de commande s'ouvre dès réception du paiement.", "ادفع مع كتابة رقم طلبك في سبب الدفع (يظهر بمجرد إرسال الاستمارة أسفله)، ثم أرسل الإثبات عبر واتساب: يُفعَّل رقم طلبك بمجرد وصول الدفع.")}</p>
   </details>
   <a class="btn-pro" href="#inscription">${bi("Je demande mon Pass Journée", "أطلب باقة اليوم")}</a>
   <p class="petit">${bi("Prix en dinars tunisiens. Voir les", "الأسعار بالدينار التونسي. انظر")} <a href="conditions/">${bi("conditions du Pass Journée", "شروط باقة اليوم")}</a>.</p>
@@ -537,16 +555,16 @@ ${pied}`;
 <section class="carte">
   <h2>${bi("Comment ça marche ?", "كيف يعمل؟")}</h2>
   <ol class="etapes" data-l="fr">
-    <li>Remplissez le formulaire ci-dessous (nom, téléphone WhatsApp et e-mail).</li>
-    <li>Payez 7 DT par D17 ou IZI au 24 321 390 et envoyez la preuve par WhatsApp.</li>
-    <li>Vous recevez votre <b>code d'accès</b> par WhatsApp. Le Pass dure 24 heures à partir de cet envoi.</li>
-    <li>Tapez ce code une seule fois dans « J'ai un code » (ou sur la page du document) : tous les documents se téléchargent.</li>
+    <li>Remplissez le formulaire ci-dessous (nom, téléphone WhatsApp et e-mail) : votre <b>code de commande</b> s'affiche tout de suite.</li>
+    <li>Payez 7 DT par D17 ou IZI au 24 321 390, avec ce code pour motif du paiement, et envoyez la preuve par WhatsApp (bouton vert : le message contient déjà le code).</li>
+    <li>Votre code de commande s'ouvre dès réception du paiement. Le Pass dure 24 heures à partir de ce moment.</li>
+    <li>Revenez sur cette page : le code s'active tout seul sur ce téléphone (ou tapez-le dans « J'ai un code », ou sur la page du document) : tous les documents se téléchargent.</li>
   </ol>
   <ol class="etapes" data-l="ar">
-    <li>املأ الاستمارة أسفله (الاسم وهاتف واتساب والبريد الإلكتروني).</li>
-    <li>ادفع ⁨7⁩ د عبر ⁨D17⁩ أو ⁨IZI⁩ على الرقم ⁨24 321 390⁩ وأرسل الإثبات عبر واتساب.</li>
-    <li>يصلك <b>رمز الدخول</b> عبر واتساب. تدوم الباقة ⁨24⁩ ساعة ابتداءً من هذا الإرسال.</li>
-    <li>اكتب الرمز مرة واحدة في «لدي رمز» (أو في صفحة الوثيقة): تُحمَّل كل الوثائق.</li>
+    <li>املأ الاستمارة أسفله (الاسم وهاتف واتساب والبريد الإلكتروني): يظهر <b>رقم طلبك</b> حالًا.</li>
+    <li>ادفع ⁨7⁩ د عبر ⁨D17⁩ أو ⁨IZI⁩ على الرقم ⁨24321390⁩ مع كتابة هذا الرقم في سبب الدفع، وأرسل الوصل عبر واتساب (الزر الأخضر: الرسالة فيها الرمز).</li>
+    <li>يُفعَّل رقم طلبك بمجرد وصول الدفع. تدوم الباقة ⁨24⁩ ساعة ابتداءً من تلك اللحظة.</li>
+    <li>عد إلى هذه الصفحة: يُفعَّل الرمز وحده على هذا الهاتف (أو اكتبه في «لدي رمز» أو في صفحة الوثيقة): تُحمَّل كل الوثائق.</li>
   </ol>
 </section>
 <section class="carte abo" id="inscription" aria-labelledby="pass-titre">
@@ -556,7 +574,7 @@ ${pied}`;
     <input type="text" id="pass-nom" name="nom" required maxlength="100" autocomplete="name">
     <label class="abo-etiquette" for="pass-tel">${bi("Téléphone WhatsApp (8 chiffres)", "هاتف واتساب (8 أرقام)")}</label>
     <input type="text" id="pass-tel" name="telephone" required inputmode="tel" maxlength="14" autocomplete="tel">
-    <label class="abo-etiquette" for="pass-email">${bi("E-mail (vous y recevez votre code et les étapes du paiement)", "البريد الإلكتروني (يصلك عليه رمزك وخطوات الدفع)")}</label>
+    <label class="abo-etiquette" for="pass-email">${bi("E-mail", "البريد الإلكتروني")}<span class="email-promesse" hidden> ${bi("(vous y recevez votre code et les étapes du paiement)", "(يصلك عليه رمزك وخطوات الدفع)")}</span></label>
     <input type="email" id="pass-email" name="email" required maxlength="200" autocomplete="email">
     <label class="case"><input type="checkbox" name="conditions" value="oui" required id="pass-conditions"> <span><span data-l="fr">J'accepte les <a href="conditions/">conditions du Pass Journée</a>.</span><span data-l="ar">أوافق على <a href="conditions/">شروط باقة اليوم</a>.</span></span></label>
     <input type="hidden" name="site" value="Documents Tunisie">
@@ -566,14 +584,21 @@ ${pied}`;
     <input type="text" name="_gotcha" class="abo-piege" tabindex="-1" autocomplete="off" aria-hidden="true">
     <button type="submit" class="btn-pro">${bi("Envoyer ma demande", "أرسل طلبي")}</button>
     <p id="pass-status" role="status" aria-live="polite"></p>
-    <p class="petit">${bi("Votre nom, votre téléphone et votre e-mail servent seulement à vous envoyer votre code : ils ne sont jamais publiés ni vendus (envoi par le service Formspree). Rien n'est envoyé sans clic sur « Envoyer ma demande ».", "يُستعمل اسمك وهاتفك وبريدك الإلكتروني فقط لإرسال الرمز إليك: لا تُنشر ولا تُباع أبدًا (إرسال عبر خدمة Formspree). لا يُرسل أي شيء دون الضغط على «أرسل طلبي».")}</p>
+    <p class="petit">${bi("Votre nom, votre téléphone et votre e-mail servent seulement à reconnaître votre paiement et à vous envoyer votre code : ils ne sont jamais publiés ni vendus (envoi par le service Formspree). Rien n'est envoyé sans clic sur « Envoyer ma demande ».", "يُستعمل اسمك وهاتفك وبريدك الإلكتروني فقط للتعرّف على دفعتك وإرسال الرمز إليك: لا تُنشر ولا تُباع أبدًا (إرسال عبر خدمة Formspree). لا يُرسل أي شيء دون الضغط على «أرسل طلبي».")}</p>
   </form>
-  <div class="apres-abo" id="apres-pass" hidden>
-    <h3>${bi("Merci, votre demande est bien reçue", "شكرًا، وصلنا طلبك")}</h3>
-    <p>${bi("Payez maintenant 7 DT par D17 ou IZI, avec pour motif votre nom et votre téléphone, puis envoyez la preuve par WhatsApp. Vous recevrez votre code par WhatsApp : le Pass est valable 24 heures à partir de l'envoi de votre code.", "ادفع الآن 7 د عبر D17 أو IZI مع ذكر اسمك ورقم هاتفك، ثم أرسل الإثبات عبر واتساب. سيصلك رمزك عبر واتساب: الباقة صالحة 24 ساعة ابتداءً من إرسال رمزك.")}</p>
+  <p class="commande-deja" id="commande-deja" hidden>${bi("Vous avez déjà une commande en attente (en haut de cette page). Pour en faire une autre, appuyez sur « Nouvelle commande ».", "لديك طلب في الانتظار (أعلى هذه الصفحة). لطلب آخر، اضغط على «طلب جديد».")}</p>
+  <div class="apres-abo derniere-etape" id="apres-pass" hidden>
+    <h3>${bi("Dernière étape : payez 7 DT avec votre code de commande", "الخطوة الأخيرة: ادفع ⁨7⁩ د مع رقم طلبك")}</h3>
+    <div class="code-bloc">
+      <p class="code-commande" id="code-commande" dir="ltr"></p>
+      <p class="code-explication">${PHRASE_CODE}</p>
+    </div>
     ${dlPaiement}
     ${btnWa("pass-preuve-apres")}
-    <p class="petit">${bi("Pas de renouvellement automatique. Quand vous avez le code, tapez-le plus haut dans « J'ai un code ».", "لا تجديد آلي. عندما يصلك الرمز، اكتبه أعلاه في «لدي رمز».")}</p>
+    ${ENSUITE}
+    ${FILET}
+    <p class="petit">${bi("Pas de renouvellement automatique. Le Pass est valable 24 heures à partir de l'ouverture de votre code.", "لا تجديد آلي. الباقة صالحة ⁨24⁩ ساعة ابتداءً من تفعيل رمزك.")}</p>
+    ${NOUVELLE}
   </div>
 </section>
 <p class="avert">${bi("Sans Pass, le site reste utilisable : toutes les pages, le remplissage, l'aperçu et les étapes sont gratuits, avec 1 document PDF gratuit par jour. Les modèles sont indicatifs et ne remplacent pas un avocat.", "دون باقة، يبقى الموقع قابلا للاستعمال: كل الصفحات والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم. النماذج استرشادية ولا تعوض المحامي.")}</p>
@@ -596,14 +621,14 @@ ${pied}`;
 ${art(1, "Le service", "الخدمة", "Le Pass Journée est vendu par l'éditeur du site « Documents Tunisie ». Pendant 24 heures, il permet de télécharger en PDF tous les modèles du site, en français, en arabe ou dans les deux langues. Sans Pass, les pages, le remplissage, l'aperçu et les étapes restent gratuits, avec 1 document PDF gratuit par jour et par téléphone.",
   "تُباع باقة اليوم من قبل ناشر موقع «وثائق تونس». وتمكّن، طيلة 24 ساعة، من تحميل كل نماذج الموقع بصيغة PDF، بالعربية أو بالفرنسية أو باللغتين. دون باقة، تبقى الصفحات والتعمير والمعاينة والمراحل مجانية، مع وثيقة PDF واحدة مجانية كل يوم وعلى كل هاتف.")}
 ${art(2, "Prix", "السعر", "7 DT pour 24 heures, en dinars tunisiens. Le prix affiché au moment de la demande s'applique.", "7 د مقابل 24 ساعة، بالدينار التونسي. يُطبَّق السعر المعروض عند الطلب.")}
-${art(3, "Durée", "المدة", "Le Pass est valable 24 heures à partir de l'envoi de votre code par WhatsApp. Le code marche quelques minutes après l'envoi (10 minutes au plus).", "الباقة صالحة 24 ساعة ابتداءً من إرسال رمزك عبر واتساب. يعمل الرمز بعد دقائق من إرساله (10 دقائق على الأكثر).")}
-${art(4, "Paiement", "الدفع", "Paiement par D17 ou IZI au 24 321 390, avec pour motif le nom et le téléphone de l'acheteur, puis preuve envoyée par WhatsApp au même numéro. Le code est envoyé après réception du paiement.", "الدفع عبر D17 أو IZI على الرقم 24 321 390 مع ذكر اسم المشتري ورقم هاتفه، ثم إرسال الإثبات عبر واتساب على نفس الرقم. يُرسل الرمز بعد وصول الدفع.")}
+${art(3, "Durée", "المدة", "Le Pass est valable 24 heures à partir de l'ouverture de votre code, dès réception du paiement. Le code marche quelques minutes après son ouverture (10 minutes au plus).", "الباقة صالحة 24 ساعة ابتداءً من تفعيل رمزك، بمجرد وصول الدفع. يعمل الرمز بعد دقائق من تفعيله (10 دقائق على الأكثر).")}
+${art(4, "Paiement", "الدفع", "Paiement par D17 ou IZI au 24 321 390, avec pour motif le code de commande affiché dès l'envoi du formulaire, puis preuve envoyée par WhatsApp au même numéro. Le code de commande s'ouvre dès réception du paiement. Code oublié dans le motif : envoyez quand même la preuve sur WhatsApp, nous retrouvons la demande.", "الدفع عبر D17 أو IZI على الرقم 24321390 مع كتابة رقم الطلب الذي يظهر بمجرد إرسال الاستمارة في سبب الدفع، ثم إرسال الوصل عبر واتساب على نفس الرقم. يُفعَّل رقم الطلب بمجرد وصول الدفع. وإن نسيت الرمز في سبب الدفع: أرسل الوصل على واتساب وسنجد طلبك.")}
 ${art(5, "Pas de renouvellement automatique", "لا تجديد آلي", "Aucun renouvellement automatique : après 24 heures, le Pass s'arrête simplement et le site revient à la version gratuite (1 document PDF par jour). Pour un nouveau Pass, il faut une nouvelle demande.", "لا يوجد أي تجديد آلي: بعد 24 ساعة تتوقف الباقة ببساطة ويعود الموقع إلى النسخة المجانية (وثيقة PDF واحدة كل يوم). لباقة جديدة يجب تقديم طلب جديد.")}
 ${art(6, "Arrêt et remboursement", "الإيقاف والاسترجاع", "Aucune période payée n'est remboursée. Si votre code ne marche pas, écrivez-nous sur WhatsApp : nous vérifions et corrigeons.", "لا تُسترجع أي مدة مدفوعة. إذا لم يعمل رمزك، راسلنا عبر واتساب: نتثبت ونصلح.")}
-${art(7, "Code d'accès", "رمز الدخول", "Le code d'accès est personnel : ne le publiez pas. Il est vérifié dans le téléphone et gardé sur l'appareil où il a été tapé. Un code publié ou revendu peut être désactivé.", "رمز الدخول شخصي: لا تنشره. يتم التثبت منه داخل الهاتف ويبقى محفوظًا على الجهاز الذي كُتب فيه. ويمكن تعطيل رمز منشور أو مُعاد بيعه.")}
+${art(7, "Code d'accès", "رمز الدخول", "Le code d'accès (votre code de commande) est personnel : ne le publiez pas. Il est vérifié dans le téléphone et gardé sur l'appareil où il a été tapé ou ouvert. Un code publié ou revendu peut être désactivé.", "رمز الدخول شخصي: لا تنشره. يتم التثبت منه داخل الهاتف ويبقى محفوظًا على الجهاز الذي كُتب فيه. ويمكن تعطيل رمز منشور أو مُعاد بيعه.")}
 ${art(8, "Limites", "الحدود", "Les modèles sont indicatifs : ils ne remplacent pas un avocat, un notaire ou l'administration, et le Pass ne garantit pas qu'un document sera accepté. Le site n'est pas officiel. Relisez chaque document avant de le signer.", "النماذج استرشادية: لا تعوض المحامي أو عدل الإشهاد أو الإدارة، والباقة لا تضمن قبول أي وثيقة. الموقع غير رسمي. أعد قراءة كل وثيقة قبل إمضائها.")}
-${art(9, "Données personnelles", "المعطيات الشخصية", "Nous gardons seulement : nom, téléphone, e-mail, dates du Pass et code d'accès, dans un espace privé. Ces données servent uniquement à envoyer le code, ne sont jamais publiées ni vendues, et sont supprimées sur simple demande (WhatsApp). Sur le site public, il n'y a que l'empreinte non réversible du code et son heure de fin. Le formulaire passe par le service Formspree. Ce que vous écrivez dans les modèles n'est jamais envoyé. Ce traitement a reçu l'accord de l'INPDP (Instance nationale de protection des données personnelles).",
-  "نحتفظ فقط بـ: الاسم، الهاتف، البريد الإلكتروني، تواريخ الباقة ورمز الدخول، في فضاء خاص. تُستعمل هذه المعطيات فقط لإرسال الرمز، ولا تُنشر ولا تُباع أبدًا، وتُحذف بمجرد الطلب (واتساب). وعلى الموقع العمومي لا يوجد إلا بصمة غير قابلة للعكس للرمز وساعة نهايته. تمر الاستمارة عبر خدمة Formspree. ما تكتبه في النماذج لا يُرسل أبدًا. وقد تحصّلت هذه المعالجة على موافقة الهيئة الوطنية لحماية المعطيات الشخصية.")}
+${art(9, "Données personnelles", "المعطيات الشخصية", "Nous gardons seulement : nom, téléphone, e-mail, dates du Pass et code d'accès, dans un espace privé. Ces données servent uniquement à reconnaître votre paiement et à vous envoyer le code, ne sont jamais publiées ni vendues, et sont supprimées sur simple demande (WhatsApp). Sur le site public, il n'y a que l'empreinte non réversible du code et son heure de fin. Le formulaire passe par le service Formspree. Ce que vous écrivez dans les modèles n'est jamais envoyé. Ce traitement a reçu l'accord de l'INPDP (Instance nationale de protection des données personnelles).",
+  "نحتفظ فقط بـ: الاسم، الهاتف، البريد الإلكتروني، تواريخ الباقة ورمز الدخول، في فضاء خاص. تُستعمل هذه المعطيات فقط للتعرّف على دفعتك وإرسال الرمز إليك، ولا تُنشر ولا تُباع أبدًا، وتُحذف بمجرد الطلب (واتساب). وعلى الموقع العمومي لا يوجد إلا بصمة غير قابلة للعكس للرمز وساعة نهايته. تمر الاستمارة عبر خدمة Formspree. ما تكتبه في النماذج لا يُرسل أبدًا. وقد تحصّلت هذه المعالجة على موافقة الهيئة الوطنية لحماية المعطيات الشخصية.")}
 ${art(10, "Contact", "الاتصال", "WhatsApp : 24 321 390.", "واتساب: 24 321 390.")}
   <p><a class="btn-pro" href="../#inscription">${bi("Retour au Pass Journée", "العودة إلى باقة اليوم")}</a></p>
 </section>

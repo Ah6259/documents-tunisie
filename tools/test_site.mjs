@@ -295,11 +295,11 @@ const EMPREINTE = async (code, sel, tours) => {
 };
 check("vecteur commun avec le robot du dépôt privé (Python) : PBKDF2-SHA-256, 100 000 tours",
   await EMPREINTE("ABCD2345", "sel-de-test", 100000) === "517bf9a9ea3ad38b3adcbeef5808d4efe420fbf10a2b7bd9179640f4d1c7c2dd");
-async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois = [] } = {}) {
+async function pagePass(chemin, { horloge, stockage = {}, liste = null, envois = [], retouche = null } = {}) {
   if (stockage.langue !== "ar" && existsSync(join(root, "fr", chemin))) chemin = "fr/" + chemin;   // une adresse par langue (français sous fr/)
   const dossier = dirname(join(root, chemin));
   const html = lire(chemin).replace(/<script([^>]*) src="(?!https?:)([^"?]+)(\?[^"]*)?"([^>]*)><\/script>/g,
-    (_, a, src) => `<script>${readFileSync(join(dossier, src), "utf8")}</script>`);
+    (_, a, src) => { const js = readFileSync(join(dossier, src), "utf8"); return `<script>${retouche ? retouche(src, js) : js}</script>`; });   // retouche : script modifié pour un essai (ex. EMAIL_AUTO = true)
   const vc = new VirtualConsole(); vc.on("jsdomError", e => { if (!/Not implemented/.test(e.message)) { console.log("   erreur JS :", chemin, e.message); erreurs++; } });
   const dom = new JSDOM(html, { url: `https://documents.clicvia.com/${chemin.replace("index.html", "")}`, runScripts: "dangerously", pretendToBeVisual: true, virtualConsole: vc,
     beforeParse(w) {
@@ -331,6 +331,38 @@ async function taperCode(w, code) {
   f.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
   await attendre(() => st.textContent && !/Vérification/.test(st.textContent));
   return st;
+}
+// 25/11/2026 (parcours commun des Pass, règle § 70) : code de commande créé AU FORMULAIRE, « Dernière étape », mémoire « pass-commande »
+const PHRASES_CODE = {
+  fr: ["C'est votre numéro de commande : écrivez-le dans le motif du paiement, il nous sert à reconnaître votre paiement.", "Vous le recevez aussi par e-mail.",
+       "Vous avez oublié le code dans le motif ? Ce n'est pas grave : envoyez quand même la preuve sur WhatsApp, nous retrouvons votre demande."],
+  ar: ["هذا رقم طلبك: اكتبه في خانة سبب الدفع، يساعدنا على التعرّف على دفعتك.", "يصلك أيضًا عبر البريد الإلكتروني.", "نسيت الرمز في سبب الدفع؟ لا بأس: أرسل الوصل على واتساب وسنجد طلبك."] };
+const sansIsol = x => String(x || "").replace(/[\u2068\u2069]/g, "").replace(/\s+/g, " ");
+async function passCommande(w, code, L, nom) {
+  const doc = w.document, ap = doc.getElementById("apres-pass"), txt = sansIsol(ap.textContent), brut = code.replace("-", "");
+  const grand = doc.getElementById("code-commande");
+  check(`${L} « Dernière étape » : le code de commande en GROS (dir="ltr"), avec la phrase « numéro de commande… motif du paiement » juste à côté`,
+    !ap.hidden && grand && grand.textContent === code && grand.getAttribute("dir") === "ltr" && txt.includes(sansIsol(PHRASES_CODE[L][0]))
+    && grand.parentElement.contains(ap.querySelector(".code-explication")));
+  // e-mail automatique pas encore en service : « Vous le recevez aussi par e-mail » ne doit PAS être visible aujourd'hui
+  const emails = [...doc.querySelectorAll(".email-auto")], nbPhrase = (doc.body.innerHTML.match(new RegExp(PHRASES_CODE[L][1].replace(/[.]/g, "\\."), "g")) || []).length;
+  check(`${L} « Vous le recevez aussi par e-mail » : CACHÉE tant que l'e-mail automatique n'est pas en service (EMAIL_AUTO = false)`,
+    emails.length >= 2 && emails.every(x => x.hidden) && nbPhrase === emails.length && emails.every(x => sansIsol(x.textContent).includes(sansIsol(PHRASES_CODE[L][1])))
+    && /const EMAIL_AUTO = false;/.test(lire("assets/pass.js")));
+  const paie = ap.querySelector(".paie"), motif = ap.querySelector(".motif-code");
+  check(`${L} « Dernière étape » : paiement en 3 étapes (D17 / IZI, écrans d'exemple, ${L === "ar" ? "24321390 sans espaces" : "24 321 390"}) et MOTIF = le code`,
+    paie && paie.querySelectorAll("ol.paie-etapes > li").length === 3 && paie.querySelector('img[alt="D17"]') && paie.querySelector('img[alt="IZI"]') && paie.querySelector(".aide-transfert img")
+    && (L === "ar" ? /24321390/.test(paie.textContent) && !/24 321 390/.test(paie.textContent.replace(/alt="[^"]*"/g, "")) : /24 321 390/.test(paie.textContent))
+    && motif && motif.textContent === code && [...ap.querySelectorAll(".motif-aide")].every(x => x.hidden));
+  const wa = decodeURIComponent(ap.querySelector("a.btn-wa").href);
+  check(`${L} « Dernière étape » : bouton vert WhatsApp pré-rempli AVEC le code ET le nom (le client n'a rien à recopier)`,
+    wa.startsWith("https://wa.me/21624321390?text=") && !!nom && wa.includes(L === "ar" ? `هذا وصل الدفع — وثائق تونس — الرمز ${code} — ${nom} — باقة اليوم` : `Voici ma preuve de paiement — Documents Tunisie — code ${code} — ${nom} — Pass Journée 7 DT`));
+  check(`${L} « Dernière étape » : ce qui se passe ensuite + filet de sécurité (code oublié dans le motif) + « Nouvelle commande »`,
+    txt.includes(sansIsol(PHRASES_CODE[L][2])) && !!ap.querySelector(".ensuite") && !!ap.querySelector("button.nouvelle-commande"));
+  const memo = JSON.parse(w.localStorage.getItem("pass-commande") || "null");
+  check(`${L} mémoire « pass-commande » = { code, formule, date } et RIEN d'autre (ni nom, ni téléphone, ni e-mail dans le téléphone)`,
+    memo && Object.keys(memo).sort().join() === "code,date,formule" && memo.code === brut && memo.formule === "Pass Journée - 7 DT - 24 heures" && /^\d{4}-\d{2}-\d{2}$/.test(memo.date)
+    && !Object.values(stock(w)).some(v => /Factice|98765432|factice\.tn|عميل/.test(v)));
 }
 {
   const [A, B] = [DOCS[0], DOCS[1]];
@@ -457,14 +489,14 @@ async function taperCode(w, code) {
   const envois = [];
   w = await pagePass("pass/index.html", { horloge: H, envois }); doc = w.document;
   const t = doc.body.textContent;
-  check("pass/ : prix 7 DT, tous les documents pendant 24 heures, valable 24 heures à partir de l'envoi du code", /7 DT/.test(doc.querySelector(".prix-pass").textContent) && /tous les documents pendant 24 heures/.test(t) && /Valable 24 heures à partir de l'envoi de votre code/.test(t));
-  check("pass/ : bouton « Paiement » (details) avec D17 et IZI (liens vers les applications officielles, Google Play + iPhone) au 24 321 390, mode d'emploi, plus de Wafacash, motif = nom + téléphone", doc.querySelector("details#paiement > summary")?.textContent.includes("Paiement")
+  check("pass/ : prix 7 DT, tous les documents pendant 24 heures, valable 24 heures à partir de l'ouverture du code", /7 DT/.test(doc.querySelector(".prix-pass").textContent) && /tous les documents pendant 24 heures/.test(t) && /Valable 24 heures à partir de l'ouverture de votre code/.test(t));
+  check("pass/ : bouton « Paiement » (details) avec D17 et IZI (liens vers les applications officielles, Google Play + iPhone) au 24 321 390, mode d'emploi, plus de Wafacash, motif = le code de commande", doc.querySelector("details#paiement > summary")?.textContent.includes("Paiement")
     && ["D17", "IZI", "Transfert rapide"].every(x => doc.querySelector("#paiement .paie").textContent.includes(x)) && !/Wafacash/i.test(lire("pass/index.html") + lire("pass/conditions/index.html"))
-    && ["https://play.google.com/store/apps/details?id=tn.mobipost", "https://play.google.com/store/apps/details?id=tn.izi.consumer", "https://apps.apple.com/tn/app/digipostbank-d17/id1475640303", "https://apps.apple.com/tn/app/izi/id1603653941"].every(u => doc.querySelector(`#paiement .paie a[href="${u}"]`)) && /24 321 390/.test(doc.querySelector("#paiement .paie").textContent) && /votre nom et votre téléphone/.test(doc.querySelector("#paiement .paie").textContent));
+    && ["https://play.google.com/store/apps/details?id=tn.mobipost", "https://play.google.com/store/apps/details?id=tn.izi.consumer", "https://apps.apple.com/tn/app/digipostbank-d17/id1475640303", "https://apps.apple.com/tn/app/izi/id1603653941"].every(u => doc.querySelector(`#paiement .paie a[href="${u}"]`)) && /24 321 390/.test(doc.querySelector("#paiement .paie").textContent) && /Motif :\s*votre code de commande/.test(doc.querySelector("#paiement .paie").textContent));
   check("paiement : logos D17 / IZI dans les boutons, étape 2 pour les deux applications, bouton « ? » avec les deux écrans d'exemple", ["d17.png", "izi.png", "transfert-d17.svg", "transfert-izi.svg"].every(f => existsSync(join(root, "assets/paiement", f))) && /class="appli-btn"[^>]*><img src="\.\.\/assets\/paiement\/d17\.png"/.test(lire("pass/index.html")) && /class="aide-transfert"/.test(lire("pass/index.html")) && /Transfert d’argent/.test(lire("fr/pass/index.html")));
   check("paiement simple et rassurant (règle commune du 08/10/2026) : 3 étapes numérotées, phrase de confiance, description de l'offre cachée quand « Paiement » est ouvert", /<ol class="paie-etapes">/.test(lire("pass/index.html")) && /class="paie-confiance"/.test(lire("pass/index.html")) && /class="avantages[^"]*masque-si-paiement/.test(lire("pass/index.html")) && lire("assets/style.css").includes(":has(> details.paiement[open]) > .masque-si-paiement{display:none}"));
   const wa = doc.getElementById("pass-preuve");
-  check("pass/ : bouton vert WhatsApp vers wa.me/21624321390 avec texte prérempli, « vous recevrez votre code par WhatsApp »", wa && wa.href.startsWith("https://wa.me/21624321390?text=") && /Pass%20Journ/.test(wa.href) && /noopener/.test(wa.rel) && /vous recevrez votre code par WhatsApp/i.test(t));
+  check("pass/ : bouton vert WhatsApp vers wa.me/21624321390 avec texte prérempli, « votre code de commande s'ouvre dès réception du paiement »", wa && wa.href.startsWith("https://wa.me/21624321390?text=") && /Pass%20Journ/.test(wa.href) && /noopener/.test(wa.rel) && /votre code de commande s'ouvre dès réception du paiement/i.test(t) && !/recevrez votre code par WhatsApp/i.test(t));
   check("pass/ : pas de renouvellement automatique, lien vers les conditions, « J'ai un code »", /Pas de renouvellement automatique/.test(t) && doc.querySelector('a[href="conditions/"]') && doc.querySelector("#code-acces form.code-form"));
   const pf = doc.getElementById("pass-form");
   check("pass/ : formulaire Formspree mwlpakqj (nom, téléphone, case conditions, champ piège)", pf.getAttribute("action") === "https://formspree.io/f/mwlpakqj" && pf.elements.nom && pf.elements.telephone && pf.elements.conditions?.type === "checkbox" && pf.elements._gotcha);
@@ -478,23 +510,113 @@ async function taperCode(w, code) {
     check(`${f} : e-mail obligatoire (type="email" name="email" required, après le téléphone, avec son étiquette)`,
       /type="email"/.test(champEmail) && /\brequired\b/.test(champEmail) && /id="pass-email"/.test(champEmail) && /maxlength="200"/.test(champEmail) && /autocomplete="email"/.test(champEmail)
       && iTel > 0 && iMail > iTel && iCond > iMail && /<label[^>]*for="pass-email"/.test(h)
-      && (f.startsWith("fr/") ? /E-mail \(vous y recevez votre code et les étapes du paiement\)/ : /البريد الإلكتروني \(يصلك عليه رمزك وخطوات الدفع\)/).test(h));
+      && (f.startsWith("fr/") ? /E-mail<\/span>/ : /البريد الإلكتروني<\/span>/).test((h.match(/<label[^>]*for="pass-email"[\s\S]*?<\/label>/) || [""])[0]));
   }
   pf.elements.telephone.value = "+216 98 765 432"; soumettre();
-  check("pass/ : e-mail vide refusé (« Indiquez votre e-mail »), rien n'est envoyé", envois.length === 0 && /(Indiquez votre e-mail|اكتب بريدك الإلكتروني)/.test(doc.getElementById("pass-status").textContent));
+  check("pass/ : e-mail vide refusé (« Indiquez votre e-mail. », sans promesse d'envoi par e-mail tant que EMAIL_AUTO = false), rien n'est envoyé",
+    envois.length === 0 && /^(Indiquez votre e-mail\.|اكتب بريدك الإلكتروني\.)$/.test(doc.getElementById("pass-status").textContent.trim()));
+  // promesse « vous y recevez votre code et les étapes du paiement » : INVISIBLE aujourd'hui (EMAIL_AUTO = false), FR + AR
+  for (const L of ["fr", "ar"]) {
+    const wp = L === "fr" ? w : await pagePass("pass/index.html", { horloge: H, stockage: { langue: "ar" } });
+    const lab = wp.document.querySelector('label[for="pass-email"]'), pr = lab && lab.querySelector(".email-promesse");
+    const visible = [...lab.childNodes].filter(n => !(n.nodeType === 1 && n.hidden)).map(n => n.textContent).join("");
+    check(`${L} étiquette de l'e-mail : « ${L === "fr" ? "E-mail" : "البريد الإلكتروني"} » seulement, promesse « vous y recevez votre code… » cachée (EMAIL_AUTO = false)`,
+      pr && pr.hidden && !/recevez|يصلك/.test(visible) && /(recevez votre code|يصلك عليه رمزك)/.test(pr.textContent));
+  }
+  { const envE = [], copie = (src, js) => /pass\.js$/.test(src) ? js.replace("const EMAIL_AUTO = false;", "const EMAIL_AUTO = true;") : js;
+    const we = await pagePass("pass/index.html", { horloge: H, envois: envE, retouche: copie }), fe = we.document.getElementById("pass-form");
+    fe.elements.nom.value = "Client Factice"; fe.elements.telephone.value = "98765432";
+    fe.dispatchEvent(new we.Event("submit", { bubbles: true, cancelable: true }));
+    check("EMAIL_AUTO = true : l'étiquette et l'erreur de l'e-mail disent « vous y recevez votre code et les étapes du paiement »",
+      !we.document.querySelector('label[for="pass-email"] .email-promesse').hidden && /vous y recevez votre code et les étapes du paiement/.test(we.document.getElementById("pass-status").textContent) && envE.length === 0); }
   pf.elements.email.value = "client@factice"; soumettre();
   check("pass/ : e-mail invalide refusé, rien n'est envoyé", envois.length === 0 && /(E-mail invalide|البريد الإلكتروني غير صحيح)/.test(doc.getElementById("pass-status").textContent));
   pf.elements.email.value = "client@factice.tn"; soumettre();
   check("pass/ : conditions non cochées refusées, rien n'est envoyé", envois.length === 0 && /conditions/.test(doc.getElementById("pass-status").textContent));
   pf.elements.conditions.checked = true; soumettre();
   await attendre(() => !doc.getElementById("apres-pass").hidden);
-  check("pass/ : demande envoyée à Formspree (site, ligne « pour_activer » prête pour le bouton GitHub), écran de paiement affiché",
-    envois.length === 1 && envois[0].get("site") === "Documents Tunisie" && envois[0].get("telephone") === "98765432" && envois[0].get("email") === "client@factice.tn" && envois[0].get("pour_activer") === "action: paye ; nom: Client Factice ; telephone: 98765432"
+  const CODE_JOLI = /^[A-HJ-NP-Z2-9]{4}-[A-HJ-NP-Z2-9]{4}$/, codeEnvoye = envois[0] ? envois[0].get("code") : "";
+  check("pass/ : demande envoyée à Formspree avec le CODE DE COMMANDE créé au formulaire (8 caractères, même alphabet que les codes d'accès) et la ligne « pour_activer » (code + e-mail) pour le bouton GitHub",
+    envois.length === 1 && envois[0].get("site") === "Documents Tunisie" && envois[0].get("telephone") === "98765432" && envois[0].get("email") === "client@factice.tn"
+    && CODE_JOLI.test(codeEnvoye) && envois[0].get("pour_activer") === `action: paye ; nom: Client Factice ; telephone: 98765432 ; code: ${codeEnvoye} ; email: client@factice.tn`
     && !doc.getElementById("apres-pass").hidden && pf.hidden);
-  check("pass/ : message WhatsApp de la preuve complété avec le nom et le téléphone", decodeURIComponent(doc.getElementById("pass-preuve-apres").href).includes("Client Factice — 98765432"));
+  await passCommande(w, codeEnvoye, "fr", "Client Factice");
+  {
+    // retour sur la page : bandeau « Votre commande en attente » + paiement + WhatsApp ; le site essaie le code tout seul
+    const brut = codeEnvoye.replace("-", ""), memo = stock(w);
+    let wx = await pagePass("pass/index.html", { horloge: H, stockage: memo, liste: { sel: "sel-test", tours: 1000, codes: [] } }), dx = wx.document;
+    await attendre(() => /En attente de votre paiement/.test(dx.getElementById("commande-etat").textContent));
+    const ba = dx.getElementById("commande-attente");
+    check("retour sur pass/ : bandeau « Votre commande en attente : code … — Pass Journée 7 DT » + 3 étapes du paiement (motif = code) + WhatsApp avec le code, formulaire remplacé",
+      !ba.hidden && sansIsol(dx.getElementById("commande-ligne").textContent).includes(`Votre commande en attente : code ${codeEnvoye} — Pass Journée 7 DT`)
+      && ba.querySelectorAll(".paie ol.paie-etapes > li").length === 3 && ba.querySelector(".motif-code").textContent === codeEnvoye
+      && decodeURIComponent(ba.querySelector("a.btn-wa").href).includes(`code ${codeEnvoye} — Pass Journée 7 DT`) && !/Factice/.test(decodeURIComponent(ba.querySelector("a.btn-wa").href)) && dx.getElementById("pass-form").hidden && !dx.getElementById("commande-deja").hidden
+      && ba.compareDocumentPosition(dx.getElementById("code-acces")) === 4);
+    check("retour sur pass/ (paiement pas encore reçu) : « En attente de votre paiement », commande gardée, Pass fermé",
+      /En attente de votre paiement/.test(dx.getElementById("commande-etat").textContent) && !!wx.localStorage.getItem("pass-commande") && !wx.PassJour.actif());
+    const ml = await pagePass(DOCS[1].slug + "/index.html", { horloge: H, stockage: memo });
+    check("page de modèle : le code de commande est déjà écrit dans « J'ai déjà un code »", ml.document.querySelector("#code-modele input[name=code]").value === codeEnvoye);
+    // Ahmed a appuyé sur « paye » avec ce code : empreinte publiée -> le Pass s'ouvre tout seul, la commande est effacée
+    const listeOk = { sel: "sel-test", tours: 1000, codes: [{ h: await EMPREINTE(brut, "sel-test", 1000), fin: new Date(H.t + 24 * 36e5).toISOString() }] };
+    wx = await pagePass("pass/index.html", { horloge: H, stockage: memo, liste: listeOk }); dx = wx.document;
+    await attendre(() => wx.PassJour.actif() && !wx.localStorage.getItem("pass-commande"));
+    check("code activé par le bouton GitHub : au retour, le site l'essaie tout seul -> Pass ouvert, « Paiement reçu », clé « pass-commande » effacée, bandeau caché",
+      wx.PassJour.actif() && !wx.localStorage.getItem("pass-commande") && dx.getElementById("commande-attente").hidden && !dx.getElementById("pass-etat").hidden
+      && /Paiement reçu/.test(dx.getElementById("pass-etat").textContent) && JSON.parse(wx.localStorage.getItem("dt-pass-v1")).code === brut && !dx.getElementById("pass-form").hidden);
+    // « Nouvelle commande » efface la commande en attente
+    wx = await pagePass("pass/index.html", { horloge: H, stockage: memo, liste: { sel: "sel-test", tours: 1000, codes: [] } }); dx = wx.document;
+    await attendre(() => /En attente/.test(dx.getElementById("commande-etat").textContent));
+    dx.querySelector("#commande-attente button.nouvelle-commande").click();
+    check("« Nouvelle commande » : commande effacée du téléphone, bandeau caché, formulaire de nouveau visible",
+      !wx.localStorage.getItem("pass-commande") && dx.getElementById("commande-attente").hidden && !dx.getElementById("pass-form").hidden && dx.querySelector("#paiement .motif-code").textContent.includes("votre code de commande"));
+    // gardée 60 jours au plus
+    const vieille = { "pass-commande": JSON.stringify({ code: brut, formule: "Pass Journée - 7 DT - 24 heures", date: "2026-08-01" }) };
+    wx = await pagePass("pass/index.html", { horloge: H, stockage: vieille, liste: { sel: "sel-test", tours: 1000, codes: [] } });
+    await new Promise(r => setTimeout(r, 60));
+    check("commande en attente gardée 60 jours au plus (plus vieille : effacée, pas de bandeau)", !wx.localStorage.getItem("pass-commande") && wx.document.getElementById("commande-attente").hidden);
+    wx = await pagePass("pass/index.html", { horloge: H, stockage: { "pass-commande": "{abîmé" } });
+    check("mémoire « pass-commande » abîmée : pas de plantage, pas de bandeau", wx.document.getElementById("commande-attente").hidden && !wx.localStorage.getItem("pass-commande"));
+    // codes créés par le navigateur : bon format, tous différents
+    const lot = Array.from({ length: 300 }, () => w.nouveauCodeCommande());
+    check("codes de commande : crypto.getRandomValues, 8 caractères de l'alphabet des codes d'accès (sans O/0/I/1), 300 codes tous différents",
+      lot.every(c => /^[A-HJ-NP-Z2-9]{8}$/.test(c)) && new Set(lot).size === 300 && /crypto\.getRandomValues/.test(lire("assets/pass.js")));
+    // page ARABE (adresse principale) : même parcours
+    const envoisAr = [];
+    const wa = await pagePass("pass/index.html", { horloge: H, envois: envoisAr, stockage: { langue: "ar" } }), pa = wa.document.getElementById("pass-form");
+    pa.elements.nom.value = "عميل تجريبي"; pa.elements.telephone.value = "98765432"; pa.elements.email.value = "client@factice.tn"; pa.elements.conditions.checked = true;
+    pa.dispatchEvent(new wa.Event("submit", { bubbles: true, cancelable: true }));
+    await attendre(() => !wa.document.getElementById("apres-pass").hidden);
+    const codeAr = envoisAr[0] ? envoisAr[0].get("code") : "";
+    check("page arabe : formulaire envoyé avec le code de commande et la ligne « pour_activer »", CODE_JOLI.test(codeAr) && envoisAr[0].get("pour_activer").endsWith(`; code: ${codeAr} ; email: client@factice.tn`));
+    await passCommande(wa, codeAr, "ar", "عميل تجريبي");
+    // le jour où l'e-mail automatique est en service (EMAIL_AUTO = true dans assets/pass.js) : la phrase APPARAÎT (AR + FR)
+    for (const L of ["ar", "fr"]) {
+      const envoisE = [], copie = (src, js) => /pass\.js$/.test(src) ? js.replace("const EMAIL_AUTO = false;", "const EMAIL_AUTO = true;") : js;
+      const we = await pagePass("pass/index.html", { horloge: H, envois: envoisE, stockage: { langue: L }, retouche: copie }), pe = we.document.getElementById("pass-form");
+      pe.elements.nom.value = "Client Factice"; pe.elements.telephone.value = "98765432"; pe.elements.email.value = "client@factice.tn"; pe.elements.conditions.checked = true;
+      pe.dispatchEvent(new we.Event("submit", { bubbles: true, cancelable: true }));
+      await attendre(() => !we.document.getElementById("apres-pass").hidden);
+      const ph = we.document.querySelector("#apres-pass .email-auto");
+      check(`${L} EMAIL_AUTO = true (e-mail automatique en service) : « ${PHRASES_CODE[L][1]} » devient VISIBLE à côté du code`,
+        ph && !ph.hidden && sansIsol(ph.textContent).includes(sansIsol(PHRASES_CODE[L][1])));
+    }
+  }
+  // plus jamais « motif : nom et téléphone », plus jamais « vous recevrez votre code par WhatsApp »
+  { const tous_ = ["pass/index.html", "fr/pass/index.html", "pass/conditions/index.html", "fr/pass/conditions/index.html", "a-propos/index.html", "fr/a-propos/index.html", "assets/pass.js", "tools/generer.mjs"].map(f => sansIsol(lire(f))).join(" ");
+    check("plus aucun « motif : nom et téléphone » ni « code reçu par WhatsApp » (pages du Pass, conditions, « Comment fonctionne le site ? », FAQ, script)",
+      !/motif[^.<]{0,60}(nom et (votre )?t[ée]l[ée]phone|nom et le t[ée]l[ée]phone)|اسمك ورقم هاتفك|اسم المشتري ورقم هاتفه|recevrez votre code par WhatsApp|سيصلك رمزك عبر واتساب/i.test(tous_)
+      && TOUS.every(d => !/motif[^.]{0,60}nom et (votre )?téléphone/i.test(JSON.stringify(d.faq || []))));
+    check("pages du Pass (AR + FR) : la phrase « aussi par e-mail » est cachée dès la page (attribut hidden), avant tout script",
+      ["pass/index.html", "fr/pass/index.html"].every(f => { const h = lire(f), n = (h.match(/class="email-auto"/g) || []).length;
+        return n >= 2 && n === (h.match(/<span class="email-auto" hidden>/g) || []).length; }));
+    check("pages du Pass (AR + FR) : la promesse « vous y recevez votre code… » de l'étiquette de l'e-mail est cachée dès la page (attribut hidden), avant tout script",
+      ["pass/index.html", "fr/pass/index.html"].every(f => { const h = lire(f), n = (h.match(/class="email-promesse"/g) || []).length;
+        return n === 1 && /<span class="email-promesse" hidden>/.test(h); }));
+    check("« Comment fonctionne le site ? » (AR) : code de commande au formulaire, motif du paiement",
+      /تعطيك الاستمارة حالًا\s*(<b>)?رقم طلب/.test(sansIsol(lire("a-propos/index.html")))); }
   const cond = (await pagePass("pass/conditions/index.html", { horloge: H })).document.body.textContent;
   check("conditions : vendeur « l'éditeur du site », pas de renouvellement automatique, aucune période payée remboursée, INPDP, 24 heures",
-    /vendu par l'éditeur du site/.test(cond) && /Aucun renouvellement automatique/.test(cond) && /Aucune période payée n'est remboursée/.test(cond) && /INPDP/.test(cond) && /24 heures à partir de l'envoi de votre code/.test(cond));
+    /vendu par l'éditeur du site/.test(cond) && /Aucun renouvellement automatique/.test(cond) && /Aucune période payée n'est remboursée/.test(cond) && /INPDP/.test(cond) && /24 heures à partir de l'ouverture de votre code/.test(cond) && /motif le code de commande/.test(cond) && /envoyez quand même la preuve sur WhatsApp/.test(cond));
   check("conditions : aucun nom de société, prix non annoncés TTC, aucun numéro de déclaration inventé", !/\b(SARL|SUARL|S\.A\.|société|TTC|déclaration n°)/i.test(cond));
   // -- 20/10/2026 (demande d'Ahmed) : rappel de fin du Pass (merci, heure de fin, Renouveler, Donner mon avis), puis message après la fin
   {
@@ -781,6 +903,7 @@ check(`image d'aperçu JPEG < 250 Ko (sinon WhatsApp n'affiche qu'une petite vig
     ["vidéo de présentation", existsSync(join(root, "video/index.html")), /Vidéo de présentation : courte vidéo/],
     ["1 PDF gratuit par jour et Pass Journée (prix, code)", existsSync(join(root, "pass/index.html")), /1 document PDF est gratuit chaque jour[\s\S]*Pass Journée \(payant, 7 DT\)[\s\S]*code/],
     ["rappel de fin du Pass", /afficherRappel/.test(js), /Peu avant la fin du Pass, un bandeau vous prévient/],
+    ["code de commande créé au formulaire (motif du paiement) et commande en attente", /pass-commande/.test(js), /le formulaire vous donne tout de suite un code de commande ?, à écrire dans le motif du paiement[\s\S]{0,200}le site l'active tout seul/],
     ["vie privée", true, /Ce que vous écrivez dans les formulaires reste dans votre téléphone/],
     ["mises à jour automatiques", existsSync(join(root, "tools/surveiller_sources.mjs")), /Mises à jour automatiques : un robot vérifie chaque mois/],
     ["site indépendant", true, /Ce site est indépendant/]];

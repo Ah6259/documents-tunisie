@@ -52,3 +52,10 @@
   le résumé donne le CODE et un lien WhatsApp prêt. Publication sur le site par une clé de déploiement (secret `CLE_SITE`).
 - Tests jsdom avec horloge réglable, crypto de Node et pass.json simulé ; sabotages dédiés.
 - Bouton doré « Avocats et notaires » (accueil + en-tête) vers l'annuaire gratuit, clic compté `lien-site/avocats`.
+
+## 25/11/2026 — Parcours d'achat commun des Pass (code de commande créé au formulaire)
+- Le navigateur crée le code (`crypto.getRandomValues`, même alphabet/longueur que les codes existants) dès que le formulaire est valide ;
+  il part à Formspree avec la ligne `pour_activer`, s'affiche en gros, sert de motif du paiement et va dans le message WhatsApp.
+- Le téléphone garde `pass-commande` = {code, formule, date} (60 jours) ; au retour, bandeau + essai automatique du code.
+- Dépôt privé : le bouton `pass` / `paye` active le code donné (case « code » ou ligne collée), refuse mauvais format / doublon.
+- Phrase « aussi par e-mail » cachée tant que l'e-mail automatique n'existe pas (`EMAIL_AUTO = false`).

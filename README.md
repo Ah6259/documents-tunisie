@@ -57,6 +57,7 @@ changer `CACHE_VERSION` dans `sw.js`. Test : `node tools/test_sw.mjs`.
 **Points encore « à vérifier »** : ils sont marqués sur chaque page concernée (jamais inventés).
 
 ## Nouveautés
+- 25/11/2026 : **Pass Journée, parcours d'achat commun** : le code de commande est créé dès le formulaire de `pass/`, affiché en gros (« Dernière étape »), écrit dans le motif du paiement et dans le message WhatsApp ; il s'ouvre dès réception du paiement (bouton `pass` du dépôt privé, case « code » ou « ligne ») et le site l'active tout seul quand le client revient.
 - 21/11/2026 : **une adresse par langue, l'arabe à l'adresse principale** (décision d'Ahmed : les Tunisiens lisent l'arabe) : chaque page existe en arabe à son adresse (ex. `/procuration/`) et en français sous `fr/` (ex. `/fr/procuration/`), avec liens hreflang (x-default = arabe) ; les anciennes adresses `ar/…` renvoient vers l'adresse principale ; fabriquées par `node tools/generer.mjs` (`tools/langues.mjs`) — ne jamais modifier `fr/` ni `ar/` à la main.
 - 06/10/2026 : Pass Journée (7 DT, 24 heures) ; 1 document PDF gratuit par jour ; bouton « Avocats et notaires » vers l'annuaire.
 - 05/10/2026 : nouvelle icône ; PDF sans mention du site et mise en page de lettre ; recherches sans résultat notées pour ajouter les documents demandés ; robot de nuit privé.

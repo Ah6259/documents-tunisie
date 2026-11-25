@@ -121,7 +121,7 @@ Fichier lu automatiquement par Claude Code au début de chaque session dans ce d
   la saisie reste) et sur `pass/` (prix, avantages, « Paiement » D17/IZI 24 321 390, WhatsApp vert, formulaire Formspree
   `mwlpakqj` avec ligne `pour_activer`, « J'ai un code ») + `pass/conditions/` (vendeur « l'éditeur du site », jamais de nom de société,
   pas de TTC, pas de renouvellement automatique, aucune période payée remboursée, INPDP sans numéro). Pages fabriquées par generer.mjs.
-- **E-mail OBLIGATOIRE (règle d'Ahmed, 24/11/2026)** : champ `#pass-email` (`type="email" name="email" required`) après le téléphone dans `#pass-form` (generer.mjs) ; `assets/pass.js` refuse un e-mail vide ou invalide et l'envoie à Formspree (champ `email` ; la ligne `pour_activer` est inchangée). Un e-mail automatique enverra bientôt le code et les étapes du paiement. E-mail ajouté aux textes « données personnelles » (formulaire, conditions art. 9, À propos). Tests dans test_site.mjs (AR + FR, jsdom : vide / invalide refusés, rien n'est envoyé).
+- **E-mail OBLIGATOIRE (règle d'Ahmed, 24/11/2026)** : champ `#pass-email` (`type="email" name="email" required`) après le téléphone dans `#pass-form` (generer.mjs) ; `assets/pass.js` refuse un e-mail vide ou invalide et l'envoie à Formspree (champ `email` ; depuis le 25/11/2026 il est aussi dans la ligne `pour_activer`, voir plus bas). Un e-mail automatique enverra bientôt le code et les étapes du paiement. E-mail ajouté aux textes « données personnelles » (formulaire, conditions art. 9, À propos). Tests dans test_site.mjs (AR + FR, jsdom : vide / invalide refusés, rien n'est envoyé).
 - Codes : dépôt **PRIVÉ** `Ah6259/documents-pass` (dossier `../pass (prive)`), bouton `pass` (paye / arret / liste) depuis
   l'application GitHub, nettoyage toutes les 6 h. Le site ne reçoit que `donnees/pass.json` : empreinte PBKDF2-SHA-256 salée (100 000 tours)
   + heure de fin UTC (24 h après « paye »). Clé de déploiement « robot-pass » (écriture sur ce dépôt seulement) dans le secret `CLE_SITE`.
@@ -252,3 +252,26 @@ Les pages brutes arrivent dans `alerte-concours-tunisie/donnees/aneti/` : ce sit
 - `llms.txt` réécrit (arabe à la racine, français sous fr/, liste des modèles et démarches, SANS chiffre) ; l'ancien (outil commun du 13/10)
   donnait les adresses d'AVANT le changement de langue.
 - « Comment fonctionne le site ? » (AR + FR) : « Publié par Clicvia… pour nous écrire : Votre avis » (carte « Méthode et sources officielles »).
+
+## 25/11/2026 — Parcours d'achat COMMUN des Pass (règle commune § 70, référence : `outils communs/pass-commun/CONSIGNES.md` de projets-ahmed)
+- Le **code de commande est créé AU FORMULAIRE** de `pass/` (`nouveauCodeCommande()` de `assets/pass.js`, `crypto.getRandomValues`, MÊME alphabet
+  et MÊME longueur que les codes d'accès : 8 caractères sans O/0/I/1, affiché `ABCD-EF23`). Il part à Formspree (champ `code` + ligne
+  `pour_activer` = `action: paye ; nom: … ; telephone: … ; code: ABCD-EF23 ; email: …`). Les codes déjà vendus marchent comme avant (pass.json inchangé).
+- « Dernière étape » (`#apres-pass`, remplace le formulaire) : code en GROS (`.code-commande`, dir ltr) + phrase « C'est votre numéro de commande… »,
+  paiement en 3 étapes (motif = le code, `.motif-code` rempli par le script ; en arabe 24321390 sans espaces), bouton WhatsApp pré-rempli AVEC le
+  code, « Ensuite », filet de sécurité (code oublié dans le motif), « Nouvelle commande ».
+- **« Vous le recevez aussi par e-mail » CACHÉE** (`<span class="email-auto" hidden>`) : l'e-mail automatique n'est pas en service ;
+  la montrer le jour où il l'est = `const EMAIL_AUTO = true;` dans assets/pass.js (test : cachée aujourd'hui ET visible dans un essai avec `EMAIL_AUTO = true`, AR + FR ; 3 sabotages).
+- **Message WhatsApp de la preuve = code + NOM** (demande d'Ahmed du 25/11) : « Voici ma preuve de paiement — Documents Tunisie — code <CODE> — <nom> — <formule> »
+  (AR « هذا وصل الدفع — وثائق تونس — الرمز … — <nom> — … ») ; le nom vient du formulaire et n'est JAMAIS gardé dans le téléphone : au retour sur la page,
+  le bandeau et son bouton WhatsApp n'ont que code + formule. Test FR + AR + 2 sabotages.
+- **Aucune promesse d'e-mail tant que `EMAIL_AUTO = false`** (25/11) : étiquette « E-mail » / « البريد الإلكتروني » (la suite « (vous y recevez votre code
+  et les étapes du paiement) » est dans `<span class="email-promesse" hidden>`, montrée par pass.js seulement si EMAIL_AUTO) ; erreur « Indiquez votre e-mail. »
+  / « اكتب بريدك الإلكتروني. » (la version longue seulement si EMAIL_AUTO). Tests FR + AR (cachée aujourd'hui, visible avec EMAIL_AUTO = true) + 2 sabotages.
+- Mémoire du téléphone `pass-commande` = `{code, formule, date}` SEULEMENT (60 jours) ; au retour sur `pass/` : bandeau `#commande-attente`
+  (code — formule, paiement, WhatsApp, « En attente de votre paiement ») et le site essaie le code tout seul (`reprendreCommande()` = même
+  vérification que « J'ai un code ») : activé = Pass ouvert (« Paiement reçu »), clé effacée. Pages de modèle : code prérempli dans « J'ai déjà un code ».
+- Dépôt privé `documents-pass` : bouton `pass` / `paye` avec case « code » (active CE code, refuse mauvais format ou doublon ; vide = ancien
+  comportement) ou case « ligne » (toute la ligne `pour_activer` collée) ; case « email » facultative.
+- Tests : bloc « parcours commun des Pass » de test_site.mjs (FR + AR) ; 23 sabotages « Pass : … » ajoutés dans sabotage.mjs (67 en tout) ; ligne FONCTIONS
+  « code de commande créé au formulaire ».
