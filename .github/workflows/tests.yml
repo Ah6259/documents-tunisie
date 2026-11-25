@@ -14,7 +14,7 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 45   # 25/11/2026 : sabotage.mjs (79 sabotages du Pass) dure 21 à plus de 25 min sur GitHub -> coupé à 25 (dépôt public : minutes gratuites)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
